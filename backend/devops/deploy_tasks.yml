@@ -1,0 +1,58 @@
+  - name: ensure log directory
+    action: file dest={{log_dir}} state=directory
+
+  - name: make ssl directory
+    action: file dest=/etc/nginx/ssl state=directory
+
+  - name: copy ssl key and cert
+    action: copy src={{item.from}} dest={{item.to}}
+    with_items:
+      - { from: '{{nginx_crt}}', to: '/etc/nginx/ssl/nginx.crt' }
+      - { from: '{{nginx_key}}', to: '/etc/nginx/ssl/nginx.key' }
+
+  - name: deploy code from repository
+    git: repo={{repo_url}} dest={{src_dir}} remote={{repo_remote}} version={{repo_branch}} accept_hostkey=yes force=yes
+    notify:
+      - restart nginx
+      - restart webapp
+
+  - name: npm install package.json
+    npm: path={{backend_dir}}
+
+  - name: create nginx site config
+    action: template src=templates/nginx_site.conf dest=/etc/nginx/sites-available/{{app_name}}.conf
+    notify:
+      - restart nginx
+
+  - name: link nginx config
+    action: file src=/etc/nginx/sites-available/{{app_name}}.conf dest=/etc/nginx/sites-enabled/{{app_name}}.conf state=link
+
+  - name: ensure secrets directory
+    action: file dest={{backend_dir}}/devops/secret_files state=directory
+
+  - name: Copy secret.json file
+    copy: src=secret_files/secret.json dest={{backend_dir}}/devops/secret_files/secret.json
+
+  - name: Copy .env file
+    copy: src={{node_env}} dest={{backend_dir}}/.env
+
+  - name: make src_dir writeable by webgroup
+    action: file path={{src_dir}} mode=u=rwX,g=rwX,o=X recurse=yes group=webgroup owner=ubuntu
+
+  - name: make log_dir writeable by webgroup
+    action: file path={{log_dir}} mode=u=rwX,g=rwX,o=X recurse=yes group=webgroup owner=ubuntu
+
+  - name: Stop pm2
+    sudo_user: ubuntu
+    command: pm2 stop all
+    ignore_errors: yes
+
+  - name: Start pm2
+    sudo_user: ubuntu
+    command: pm2 start server.js --name {{app_name}} chdir={{backend_dir}}
+    ignore_errors: yes
+
+  - name: restart nginx
+    command: /bin/true
+    notify:
+      - restart nginx

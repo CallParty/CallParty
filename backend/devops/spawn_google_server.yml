@@ -1,0 +1,33 @@
+- name: Create google instance(s)
+  hosts: localhost
+  gather_facts: no
+  connection: local
+
+  tasks:
+    - include_vars: vars.yaml
+    - name: Launch instance
+      gce:
+          instance_names: callparty-prod
+          machine_type: "{{ google_machine_type }}"
+          image: "{{ google_image }}"
+          service_account_email: "{{ google_service_account_email }}"
+          credentials_file: "{{ google_credentials_file }}"
+          project_id: "{{ google_project_id }}"
+          tags: http-server,https-server
+      register: gce
+
+    - name: Wait for SSH to come up
+      wait_for: host={{ item.public_ip }} port=22 delay=10 timeout=60
+      with_items: "{{ gce.instance_data }}"
+
+    - name: Add the newly created gce instance(s) to the hosts file
+      local_action: lineinfile
+                    dest="./hosts"
+                    regexp={{ item.public_ip }}
+                    insertafter="[webservers]" line="{{ item.public_ip }} ansible_ssh_user=ubuntu ansible_ssh_private_key_file={{google_key_location}}"
+      with_items: "{{ gce.instance_data }}"
+
+    - name: add new hosts to known hosts
+      local_action: command ssh -o StrictHostKeyChecking=no ubuntu@{{ item.public_ip }} -i {{google_key_location}}
+      with_items: "{{ gce.instance_data }}"
+

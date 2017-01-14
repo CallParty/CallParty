@@ -1,0 +1,48 @@
+---
+
+- hosts: devservers,prodservers
+  user: ubuntu
+  sudo: True
+
+  tasks:
+    - include_vars: vars.yml
+
+    - name: add nginx ppa
+      action: apt_repository repo=ppa:nginx/stable state=present
+
+    - name: Install Packages
+      apt: name={{ item }} update_cache=yes state=latest
+      with_items:
+        - build-essential
+        - npm
+        - nodejs-legacy
+        - git
+        - mcrypt
+        - nginx
+        - curl
+
+    - name: remove default nginx site
+      action: file path=/etc/nginx/sites-enabled/default state=absent
+
+    - name: write nginx.conf
+      action: template src=templates/nginx.conf dest=/etc/nginx/nginx.conf
+
+    - name: Install pm2
+      npm: name=pm2 global=yes production=yes
+
+    - name: create webgroup if it doesn't exist
+      group: name=webgroup state=present
+      tags:
+        - debug
+
+    - name: ensure ubuntu belongs to webgroup
+      user: name=ubuntu groups=webgroup append=yes
+      tags:
+        - debug
+
+    - name: copy over ssh keys for deploy purposes
+      action: copy src={{item.from}} dest={{item.to}} mode={{item.mode}}
+      with_items:
+        - { from: 'secret_files/deploy_rsa.pub', to: '/root/.ssh/id_rsa.pub', mode: '0644' }
+        - { from: 'secret_files/deploy_rsa', to: '/root/.ssh/id_rsa', mode: '0600' }
+

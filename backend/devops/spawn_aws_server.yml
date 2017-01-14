@@ -1,0 +1,40 @@
+---
+
+- hosts: localhost
+  connection: local
+  gather_facts: False
+
+  tasks:
+    - include_vars: vars.yaml
+
+    - name: Provision a new instance
+      ec2:
+        key_name: "{{aws_key_name}}"
+        instance_type: t2.micro
+        image: ami-fce3c696
+        wait: yes
+        group: "{{aws_security_group}}"
+        count: 1
+        vpc_subnet_id: "{{aws_subnet}}"
+        assign_public_ip: yes
+        region: us-east-1
+        instance_tags:
+          Name: "{{aws_instance_name}}"
+      register: ec2
+
+    - name: Add the newly created EC2 instance(s) to the local host group (located inside the directory)
+      local_action: lineinfile
+                    dest="./hosts"
+                    regexp={{ item.public_ip }}
+                    insertafter="[webservers]" line="{{ item.public_ip }} ansible_ssh_user=ubuntu ansible_ssh_private_key_file={{aws_key_location}}"
+      with_items: ec2.instances
+
+
+    - name: Wait for SSH to come up
+      wait_for: host={{ item.public_dns_name }} port=22 delay=60 timeout=320 state=started
+      with_items: ec2.instances
+
+
+    - name: add ec2 hosts to known hosts
+      local_action: command ssh -o StrictHostKeyChecking=no ubuntu@{{ item.public_ip }} -i {{aws_key_location}}
+      with_items: ec2.instances

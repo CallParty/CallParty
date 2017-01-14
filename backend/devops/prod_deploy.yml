@@ -1,0 +1,13 @@
+- hosts: prodservers
+  user: ubuntu
+  sudo: True
+
+  tasks:
+    - include_vars: vars.yml
+    - include_vars: prod_vars.yml
+    - include: deploy_tasks.yml
+
+  handlers:
+
+    - name: restart nginx
+      action: service name=nginx state=restarted

@@ -1,0 +1,5 @@
+repo_branch: master
+nginx_crt: secret_files/memoryprosthetics_nginx.crt
+nginx_key: secret_files/memoryprosthetics_nginx.key
+node_env: secret_files/staging_env
+domain_name: memoryprosthetics.com
