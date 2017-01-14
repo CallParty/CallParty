@@ -4,12 +4,10 @@ var express = require('express'),    // framework d'appli
  	bodyParser = require('body-parser'), // BodyParser pour POST
 	http = require('http').Server(app),      // préparer le serveur web
 	dotenv = require('dotenv'),
-	path = require('path')
-
-var testingDB = require('./app/methods/methods.js').testingDB
+	path = require('path'),
+	mongoose 	= require('mongoose')
 
 // configuration ===========================================
-testingDB('words')
 // load environment variables,
 // either from .env files (development),
 // heroku environment in production, etc...
@@ -30,6 +28,20 @@ require('./app/routes/routes')(app)
 // port
 // app.set('port', (process.env.PORT || 5000))
 app.set('port', (8081));
+
+// mongodb
+// Mongodb Connect - mongo --ssl --sslAllowInvalidCertificates aws-us-east-1-portal.23.dblayer.com:16768/callpartyDev -u callparty -p callparty1234!
+var dbusername 	= 'callparty',
+	dbpassword 	= 'callparty1234!'
+
+mongoose.connect('mongodb://'+dbusername+':'+dbpassword+'@aws-us-east-1-portal.23.dblayer.com:16768/callpartyDev?ssl=true')
+//mongoose.connect('mongodb://'+dbusername+':'+dbpassword+'@aws-us-east-1-portal.23.dblayer.com:16768/callpartyProd?ssl=true')
+var db = mongoose.connection
+
+db.on('error', console.error.bind(console, 'connection error:'))
+db.once('open', function() {
+  console.log('!!!  MongoDB Connected  !!!')
+})
 
 // START ===================================================
 http.listen(app.get('port'), function () {
