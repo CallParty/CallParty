@@ -1,5 +1,5 @@
 repo_branch: prod
-nginx_crt: secret_files/callparty_nginx.crt
-nginx_key: secret_files/callparty_nginx.key
+nginx_crt: secret_files/admin.callparty.org_nginx.crt
+nginx_key: secret_files/admin.callparty.org_nginx.key
 node_env: secret_files/prod_env
-domain_name: callparty.org
+domain_name: admin.callparty.org
