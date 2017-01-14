@@ -20,10 +20,10 @@ module.exports = function (app) {
   })
 
   app.get('/api/test', function (req, res) {
-    res.json({"message": "hello"});
+    res.json({'message': 'hello'});
   })
 
-  app.get('/api/webhook', function (req, res) {
+  app.post('/api/webhook', function (req, res) {
     facebook_handler(req.body)
 
     res.send('ok')
