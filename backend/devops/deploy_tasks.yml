@@ -48,13 +48,19 @@
     sudo_user: ubuntu
     command: pm2 stop all
     ignore_errors: yes
+    tags:
+      quick
 
   - name: Start pm2
     sudo_user: ubuntu
     command: pm2 start server.js --name {{app_name}} chdir={{backend_dir}}
     ignore_errors: yes
+    tags:
+      quick
 
   - name: restart nginx
     command: /bin/true
     notify:
       - restart nginx
+    tags:
+      quick

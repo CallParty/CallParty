@@ -15,8 +15,6 @@ https://www.facebook.com/CallParty-243195752776526/
 
 # todo
 
-change "/" to serve a react app (instead of the static bootstrap page)
-
 admin.callparty.org goes to 104.198.233.193 (then redo letsencrypt)
 callparty.org goes to https://github.com/kelseyah/call-party
 
