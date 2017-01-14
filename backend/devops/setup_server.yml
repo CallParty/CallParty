@@ -1,6 +1,6 @@
 ---
 
-- hosts: devservers,prodservers
+- hosts: stagingservers,prodservers
   user: ubuntu
   sudo: True
 
@@ -32,17 +32,15 @@
 
     - name: create webgroup if it doesn't exist
       group: name=webgroup state=present
-      tags:
-        - debug
 
     - name: ensure ubuntu belongs to webgroup
       user: name=ubuntu groups=webgroup append=yes
-      tags:
-        - debug
 
     - name: copy over ssh keys for deploy purposes
       action: copy src={{item.from}} dest={{item.to}} mode={{item.mode}}
       with_items:
         - { from: 'secret_files/deploy_rsa.pub', to: '/root/.ssh/id_rsa.pub', mode: '0644' }
         - { from: 'secret_files/deploy_rsa', to: '/root/.ssh/id_rsa', mode: '0600' }
+
+
 

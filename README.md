@@ -15,10 +15,12 @@ https://www.facebook.com/CallParty-243195752776526/
 
 # todo
 
-testout botkits data store (once we have a mongo db in the cloud somewhere)
 change "/" to serve a react app (instead of the static bootstrap page)
-move to new git repository (delete old git repository with secrets in history)
 
+admin.callparty.org goes to 104.198.233.193 (then redo letsencrypt)
+callparty.org goes to https://github.com/kelseyah/call-party
+
+testout botkits data store (once we have a mongo db in the cloud somewhere)
 
 google todo:
 - way to upgrade gcloud account & get 2 static IP addresses?
