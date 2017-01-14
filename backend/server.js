@@ -6,8 +6,10 @@ var express = require('express'),    // framework d'appli
 	dotenv = require('dotenv'),
 	path = require('path')
 
-// configuration ===========================================
+var testingDB = require('./app/methods/methods.js').testingDB
 
+// configuration ===========================================
+testingDB('words')
 // load environment variables,
 // either from .env files (development),
 // heroku environment in production, etc...
