@@ -1,5 +1,5 @@
-var mongoose = require('mongoose')
-var Schema = mongoose.Schema
+var mongoose = require('mongoose'),
+	Schema = mongoose.Schema
 
 var repTerms = new Schema({
     type: String,
@@ -36,5 +36,4 @@ var representativesSchema = new Schema({
     wikidata: String
 })
 
-var Representatives = mongoose.model('Representatives', representativesSchema)
-module.exports = Representatives
+module.exports = representativesSchema

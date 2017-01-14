@@ -1,22 +1,32 @@
-var Reps = require('./schemas/representativesSchema.js'),
-// Mongodb Connect - mongo --ssl --sslAllowInvalidCertificates aws-us-east-1-portal.23.dblayer.com:16768/callpartyDev -u callparty -p callparty1234!
-	mongoose 	= require('mongoose'), 
-	dbusername 	= 'callparty',
-	dbpassword 	= 'callparty1234!'
+var representativesSchema = require('./schemas/representativesSchema.js'),
+	mongoose = require('mongoose')
 
-module.exports = function(props, mongoose) {
-	mongoose.connect('mongodb://'+dbusername+':'+dbpassword+'@aws-us-east-1-portal.23.dblayer.com:16768/callpartyDev?ssl=true')
-	//mongoose.connect('mongodb://'+dbusername+':'+dbpassword+'@aws-us-east-1-portal.23.dblayer.com:16768/callpartyProd?ssl=true')
-	var db = mongoose.connection
+representativesSchema.methods.insertReps = function () {
 
-	db.on('error', console.error.bind(console, 'connection error:'))
-	db.once('open', function() {
-	  console.log('!!!  MongoDB Connected  !!!')
-	})
+	var name = 'dogs'
+    	// id = this.id,
+    	// full_name = this.full_name,
+    	// first_name = this.first_name,
+    	// last_name = this.last_name,
+    	// official_full = this.official_full,
+	    // gender = this.gender,
+	    // state = this.state,
+	    // legislator_type = this.legislator_type,
+	    // term_start = this.term_start,
+	    // term_end = this.term_end,
+	    // party = this.party,
+	    // url = this.url,
+	    // phone = this.phone,
+	    // contact_form = this.contact_form,
+	    // state_rank = this.state_rank,
+	    // terms = this.terms,
+	    // bioguide = this.bioguide,
+	    // govtrack = this.govtrack,
+	    // wikipedia = this.wikipedia,
+	    // wikidata = this.wikidata
 
+	console.log('the name is: ' + name)
 }
 
-exports.insertReps = function(req, res) {
-  var rep = new Reps()
-  console.log('Reps')
-}
+var Reps = mongoose.model('Reps', representativesSchema)
+module.exports = Reps

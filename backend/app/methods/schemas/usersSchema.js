@@ -15,5 +15,4 @@ var usersSchema = new Schema({
 	subscribed: Boolean
 })
 
-var Users = mongoose.model('Users', usersSchema)
-module.exports = Users
+module.exports = UserSchema

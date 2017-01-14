@@ -5,7 +5,7 @@ var express = require('express'),    // framework d'appli
 	http = require('http').Server(app),      // préparer le serveur web
 	dotenv = require('dotenv'),
 	path = require('path'),
-	mongoose 	= require('mongoose')
+	mongoose = require('mongoose')
 
 // configuration ===========================================
 // load environment variables,
@@ -36,11 +36,14 @@ var dbusername 	= 'callparty',
 
 mongoose.connect('mongodb://'+dbusername+':'+dbpassword+'@aws-us-east-1-portal.23.dblayer.com:16768/callpartyDev?ssl=true')
 //mongoose.connect('mongodb://'+dbusername+':'+dbpassword+'@aws-us-east-1-portal.23.dblayer.com:16768/callpartyProd?ssl=true')
-var db = mongoose.connection
+var db = mongoose.connection,
+	Rep = require('./app/methods/representativesMethods.js')
 
 db.on('error', console.error.bind(console, 'connection error:'))
 db.once('open', function() {
-  console.log('!!!  MongoDB Connected  !!!')
+	var rep = new Rep()
+  	rep.insertReps({ name: 'frogs' })
+	console.log('***-----MongoDB Connected-----***')
 })
 
 // START ===================================================
