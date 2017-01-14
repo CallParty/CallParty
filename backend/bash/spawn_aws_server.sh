@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 set -e
-SCRIPTPATH=$( cd $(dirname $0) ; pwd -P )
+BASEDIR=$( cd $(dirname $(dirname $0)) ; pwd -P )
+cd $BASEDIR
 while read line; do export "$line";
-done <$SCRIPTPATH/.env
-cd $SCRIPTPATH/devops
+done <$BASEDIR/.env
+cd $BASEDIR/devops
 ansible-playbook spawn_aws_server.yml
-cd $SCRIPTPATH
+cd $BASEDIR
 ansible-playbook -i devops/hosts devops/setup_server.yml
 ansible-playbook -i devops/hosts devops/deploy.yml

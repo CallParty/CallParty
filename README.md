@@ -1,6 +1,9 @@
 # webhooks, testing
 
-for local development, run:
+for local development,
+install local tunnel with:
+`npm install -g localtunnel`
+and then run
 ````
 lt --subdomain callingtest2 --port 8081, and message https://www.facebook.com/CallingTest2-1284903778233560/
 lt --subdomain callingtest3 --port 8081, and message https://www.facebook.com/pg/CallingTest3-394972167517670/
@@ -14,9 +17,6 @@ for production, message:
 https://www.facebook.com/CallParty-243195752776526/
 
 # todo
-
-admin.callparty.org goes to 104.198.233.193 (then redo letsencrypt)
-callparty.org goes to https://github.com/kelseyah/call-party
 
 testout botkits data store (once we have a mongo db in the cloud somewhere)
 
@@ -51,6 +51,8 @@ fullchain.pem == nginx:ssl_certificate
 cp secret_files/certs/privkey.pem secret_files/nginx.key
 cp secret_files/certs/fullchain.pem secret_files/nginx.crt
 `````
+
+git command to use rebase and avoid merge commits: `git config branch.master.rebase true`
 
 
 
