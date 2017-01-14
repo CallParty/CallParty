@@ -13,24 +13,6 @@ https://www.facebook.com/Callingteststaging-392499054435475/
 for production, message:
 https://www.facebook.com/CallParty-243195752776526/
 
-
-# to install letsencrypt certificate
-
-1. set nginx.site.conf to have correct server domain
-2. ssh onto server
-3. install certbot-auto on server (https://certbot.eff.org/#ubuntutrusty-nginx)
-4. `certbot-auto --nginx` # follow instructions
-5. 
-`````
-this will produce the certs needed in: /etc/letsencrypt/live/memoryprosthetics.com/fullchain.pem
-sudo chown ubuntu -R /etc/letsencrypt
-scp -r -i secret_files/google_rsa ubuntu@104.198.233.193:/etc/letsencrypt/live/callparty.org/ secret_files/certs 
-privkey.pem == nginx:ssl_certificate_key
-fullchain.pem == nginx:ssl_certificate
-cp secret_files/certs/privkey.pem secret_files/nginx.key
-cp secret_files/certs/fullchain.pem secret_files/nginx.crt
-`````
-
 # todo
 
 testout botkits data store (once we have a mongo db in the cloud somewhere)
@@ -53,6 +35,27 @@ https://developers.google.com/identity/protocols/application-default-credentials
 
 example app this was based off of: 
 https://github.com/mvaragnat/botkit-messenger-express-demo
+
+
+... to install letsencrypt certificate
+
+1. set nginx.site.conf to have correct server domain
+2. ssh onto server
+3. install certbot-auto on server (https://certbot.eff.org/#ubuntutrusty-nginx)
+4. `certbot-auto --nginx` # follow instructions
+5. 
+`````
+this will produce the certs needed in: /etc/letsencrypt/live/memoryprosthetics.com/fullchain.pem
+sudo chown ubuntu -R /etc/letsencrypt
+scp -r -i secret_files/google_rsa ubuntu@104.198.233.193:/etc/letsencrypt/live/callparty.org/ secret_files/certs 
+privkey.pem == nginx:ssl_certificate_key
+fullchain.pem == nginx:ssl_certificate
+cp secret_files/certs/privkey.pem secret_files/nginx.key
+cp secret_files/certs/fullchain.pem secret_files/nginx.crt
+`````
+
+
+
 
 
 
