@@ -6,7 +6,7 @@ module.exports = function (app) {
   // public pages=============================================
   // root
   app.get('/api/home', function (req, res) {
-    res.render('home')
+    res.send('hello')
   })
 
   app.get('/api/webhook', function (req, res) {
