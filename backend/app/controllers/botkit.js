@@ -6,8 +6,17 @@ var Botkit = require('botkit')
 var mongoUri = process.env.MONGODB_URI || 'mongodb://localhost/botkit-demo'
 var db = require('../../config/db')({mongoUri: mongoUri})
 
+// set DEBUG_TICK based on .env
+if (process.env.DEBUG_TICK == 'true') {
+  DEBUG_TICK = true;
+}
+else {
+  DEBUG_TICK = false;
+}
+
+// initialize Botkit
 var controller = Botkit.facebookbot({
-  debug: true,
+  debug: DEBUG_TICK,
   access_token: process.env.FACEBOOK_PAGE_TOKEN,
   verify_token: process.env.FACEBOOK_VERIFY_TOKEN,
   storage: db
@@ -107,16 +116,14 @@ var handler = function (obj) {
 }
 
 var create_user_if_new = function (id, ts) {
-  // TODO: fix data storage
-  console.log('++ implement data storage once we have a database in the cloud');
-  // controller.storage.users.get(id, function (err, user) {
-  //   if (err) {
-  //     console.log(err)
-  //   }
-  //   else if (!user) {
-  //     controller.storage.users.save({id: id, created_at: ts})
-  //   }
-  // })
+  controller.storage.users.get(id, function (err, user) {
+    if (err) {
+      console.log(err)
+    }
+    else if (!user) {
+      controller.storage.users.save({id: id, created_at: ts})
+    }
+  })
 }
 
 exports.handler = handler
