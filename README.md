@@ -1,6 +1,9 @@
 # webhooks, testing
 
-for local development, run:
+for local development,
+install local tunnel with:
+`npm install -g localtunnel`
+and then run
 ````
 lt --subdomain callingtest2 --port 8081, and message https://www.facebook.com/CallingTest2-1284903778233560/
 lt --subdomain callingtest3 --port 8081, and message https://www.facebook.com/pg/CallingTest3-394972167517670/
