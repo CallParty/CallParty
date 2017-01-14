@@ -18,6 +18,7 @@
     "generate-object-property": "^1.2.0",
     "jsonpointer": "^4.0.0",
     "mongodb": "^2.1.20",
+    "mongoose": "^4.7.6",
     "monkii": "^1.2.0",
     "request": "^2.74.0",
     "xtend": "^4.0.1"

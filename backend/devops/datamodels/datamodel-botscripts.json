@@ -1,0 +1,8 @@
+//--- Non-targetted bot responses
+//--- Utility for Botscript - may need to be inserted into bot or ref elsewhere
+botscript: [{
+	"_id": "000000",
+	"message_type": "welcome",
+	"message_text": "Hi, welcome to Call Party"
+}]
+

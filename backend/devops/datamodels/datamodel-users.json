@@ -1,0 +1,21 @@
+users: [{
+	"_id": "00000",
+	"userid": "",
+	"fbtoken": "0000",
+	"state": "FL",
+	"congressional_district": 0000,
+	"create_date": "",
+	"fb_data": {
+		"unknown": ""
+	},
+	"active": true,
+	"subscribed": true
+}]
+
+userinteractions: [{
+	"_id": "000000",
+	"userid": "0000",
+	"campaign": "",
+	"date": "",
+	"messaginglocation": "msgsent/actiontaken/respondedto"
+}]

@@ -1,0 +1,31 @@
+representatives: [{
+    "id": "",
+    "full_name": "Rep. Sherrod Brown",
+    "name": {
+        "first": "Sherrod",
+        "last": "Brown",
+        "official_full": "Sherrod Brown"
+    },
+    "gender": "M",
+    "state": "OH",
+    "legislator_type": "sen",
+    "term_start": "2013-01-03",
+    "term_end":" 2019-01-03",
+    "party": "Democrat",
+    "url": "https://www.brown.senate.gov",
+    "phone": "202-224-2315",
+    "contact_form": "http://www.brown.senate.gov/contact",
+    "state_rank": "senior",
+    "terms": [{
+        "type": "rep",
+        "start": "1993-01-05",
+        "end": "1995-01-03",
+        "state": "OH",
+        "district": "13",
+        "party": "Democrat"
+    }],
+    "bioguide": "B000944",
+    "govtrack": "400050",
+    "wikipedia": "Sherrod Brown",
+    "wikidata": "Q381880"
+}] 

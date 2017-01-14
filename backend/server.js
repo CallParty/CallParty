@@ -1,10 +1,10 @@
 // modules =================================================
-var express = require('express')     // framework d'appli
-var app = express()
-var bodyParser = require('body-parser') // BodyParser pour POST
-var http = require('http').Server(app)      // préparer le serveur web
-var dotenv = require('dotenv')
-var path = require('path')
+var express = require('express'),    // framework d'appli
+ 	app = express(),
+ 	bodyParser = require('body-parser'), // BodyParser pour POST
+	http = require('http').Server(app),      // préparer le serveur web
+	dotenv = require('dotenv'),
+	path = require('path')
 
 // configuration ===========================================
 
