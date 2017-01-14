@@ -20,9 +20,7 @@ change "/" to serve a react app (instead of the static bootstrap page)
 move to new git repository (delete old git repository with secrets in history)
 
 
-# google cloud todo
-
-TODO:
+google todo:
 - way to upgrade gcloud account & get 2 static IP addresses?
 - create load balancer / static DNS
 ssh keys: https://console.cloud.google.com/compute/metadata/sshKeys?project=neat-bongo-155416
