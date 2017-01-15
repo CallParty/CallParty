@@ -25,6 +25,7 @@ app.set('view engine', 'ejs')
 // routes
 require('./app/routes/routes')(app)
 require('./app/routes/conversation_routes')(app)
+require('./app/routes/admin_API')(app)
 
 // port
 // app.set('port', (process.env.PORT || 5000))
@@ -33,12 +34,12 @@ app.set('port', (8081))
 // mongodb
 // Mongodb Connect - mongo --ssl --sslAllowInvalidCertificates aws-us-east-1-portal.23.dblayer.com:16768/callpartyDev -u callparty -p callparty1234!
 var dbusername 	= 'callparty',
-  dbpassword 	= 'callparty1234!'
+    dbpassword 	= 'callparty1234!'
 
 mongoose.connect('mongodb://'+dbusername+':'+dbpassword+'@aws-us-east-1-portal.23.dblayer.com:16768/callpartyDev?ssl=true')
 //mongoose.connect('mongodb://'+dbusername+':'+dbpassword+'@aws-us-east-1-portal.23.dblayer.com:16768/callpartyProd?ssl=true')
 var db = mongoose.connection,
-  Rep = require('./app/methods/representativesMethods.js')
+    Rep = require('./app/methods/representativesMethods.js')
 
 db.on('error', console.error.bind(console, 'connection error: '))
 db.once('open', function() {
