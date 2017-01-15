@@ -93,6 +93,9 @@ textarea, input[type=text]
   width: 100%
   display: block
   padding: 1em
+  border: 1px solid #bbb
+  &:focus
+    background: #dcffdc
 
 .action-var
   min-width: 1em
@@ -106,8 +109,13 @@ textarea, input[type=text]
   border-radius: 0.4em
   cursor: pointer
   &:hover
-    background: pink
+    background: #dcffdc
 
 .user-var
   font-style: italic
   color: rgba(255,255,255,0.6)
+
+.campaign
+  .meta
+    margin: 0 0 2em 0
+    line-height: 1.5
