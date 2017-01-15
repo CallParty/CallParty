@@ -12,18 +12,13 @@ var getCallToActionCampaign = function(fbId) {
 };
 
 
-var callToAction = function(fbId) {
-  // use a fakeMessage to initiate the conversation with the correct user
-  var fakeMessage = {
-    "channel": fbId,
-    "user": fbId
-  };
+var startCallToActionConversation = function(fbId) {
 
   // get the data we need about the user
   var callToActionCampaign = getCallToActionCampaign(fbId);
 
   // part 1
-  callToActionPart1 = function(response, convo) {
+  var callToActionPart1 = function(response, convo) {
     convo.say('Hi [firstName]! We’ve got an issue to call about.');
     convo.say("[issueMessage]. You can find out more about the issue here [issueLink].");
     convo.say(
@@ -46,37 +41,93 @@ var callToAction = function(fbId) {
       convo.next();
     });
   };
-  callToActionPart2 = function(response, convo) {
-    // How’d it go?
-    // I talked to a staff member
-    // I left a voicemail
-    // I changed my mind
-    // Something went wrong
-    // TODO: figure out how to do button attachments
-    // bot.reply(response, {
-    //   attachment: {
-    //     "payload": {
-    //       "template_type": "button",
-    //       "text": "What do you want to do next?",
-    //       "buttons": [
-    //         {
-    //           "type": "web_url",
-    //           "url": "https://petersapparel.parseapp.com",
-    //           "title": "Show Website"
-    //         },
-    //         {
-    //           "type": "postback",
-    //           "title": "Start Chatting",
-    //           "payload": "USER_DEFINED_PAYLOAD"
-    //         }
-    //       ]
-    //     }
-    //   });
+
+  // part 2
+  var callToActionPart2 = function(response, convo) {
+    var msg_attachment = {
+      attachment: {
+        "type": "template",
+        "payload": {
+          "template_type": "button",
+          "text": "How'd it go?",
+          "buttons": [
+            {
+              "type": "postback",
+              "title": "I talked to a staffer",
+              "payload": "I talked to a staffer"
+            },
+            {
+              "type": "postback",
+              "title": "I left a voicemail",
+              "payload": "I left a voicemail"
+            },
+            {
+              "type": "postback",
+              "title": "Something went wrong",
+              "payload": "Something went wrong"
+            }
+          ]
+        }
+      }
+    };
+    convo.ask(msg_attachment,
+      function(response, convo) {
+        callToActionPart3(response, convo);
+        convo.next();
+      });
   };
-  // start at the end
+
+  // part 3
+  var callToActionPart3 = function(response, convo) {
+    if (['I left a voicemail', 'I talk to a staffer'].indexOf(response.text) >= 0) {
+      // TODO: gifs are not sending
+      convo.say({
+        attachment: {
+          "type": "video",
+          "payload": {
+            "url": "http://i.imgur.com/d3L1XIm.gif"
+          }
+        }
+      });
+      convo.say("Woo thanks for your work! We’ve had [callCount] calls so far. " +
+        "We’ll reach out when we have updates and an outcome on the issue.");
+      convo.say("Share this action with your friends to make it a party [link]");
+      convo.next();
+    }
+    else if (response.text === 'Something went wrong') {
+      // TODO: gifs are not sending
+      convo.say({
+        attachment: {
+          "type": "video",
+          "payload": {
+            "url": "blob:http://imgur.com/586e2006-7a61-45c0-8e04-c492ad368456"
+          }
+        }
+      });
+      convo.ask("We’re sorry to hear that, but good on you for trying! Want to tell us about it?", function(response, convo) {
+        var thanksForSharing = function(response, convo) {
+          convo.say("Thanks for sharing! We’ll reach back out if we can be helpful.");
+          // TODO: log response.text to slack so we can see the feedback
+        };
+        thanksForSharing(response, convo);
+        convo.next();
+      });
+    }
+    else {
+      // TODO: log an exception (this should never happen)
+    }
+    // TODO: no response for x time (not sure how to handle this)
+  };
+
+  // start conversation using above parts
+  // use a fakeMessage to initiate the conversation with the correct user
+  var fakeMessage = {
+    "channel": fbId,
+    "user": fbId
+  };
   bot.startConversation(fakeMessage, callToActionPart1);
 };
 
 module.exports = {
-  callToAction: callToAction
+  startCallToActionConversation: startCallToActionConversation
 };

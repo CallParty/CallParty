@@ -23,7 +23,6 @@ module.exports = function (app) {
 
   app.post('/api/webhook', function (req, res) {
     facebook_handler(req.body);
-
     res.send('ok')
   });
 
