@@ -1,7 +1,7 @@
-var startCallToActionConversation = require('../conversations/calltoaction').startCallToActionConversation;
-var startUpdateConversation = require('../conversations/update').startUpdateConversation;
-var startSignupConversation = require('../conversations/signup').startSignupConversation;
-var startTestConversation1 = require('../conversations/testaction').startTestConversation1;
+var startCallToActionConversation = require('../conversations/calltoaction').startCallToActionConversation
+var startUpdateConversation = require('../conversations/update').startUpdateConversation
+var startSignupConversation = require('../conversations/signup').startSignupConversation
+var startTestConversation1 = require('../conversations/testaction').startTestConversation1
 
 module.exports = function (app) {
 
