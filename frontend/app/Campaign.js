@@ -84,10 +84,12 @@ class Campaign extends Component {
 
   render() {
     return (
-      <div>
-        <h1>{this.state.title}</h1>
-        <h2>{this.state.description}</h2>
-        <h4>Created on {this.state.date_created}</h4>
+      <div className="campaign">
+        <div className="meta">
+          <h1>{this.state.title}</h1>
+          <h2>{this.state.description}</h2>
+          <h4>Created on {this.state.date_created}</h4>
+        </div>
         <div className="table">
           <header>
             <h1>Conversations</h1>
