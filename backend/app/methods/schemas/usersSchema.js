@@ -11,8 +11,13 @@ var usersSchema = new Schema({
 	fb_data: {
 		unknown: String
 	},
+	actions: [{
+		actionRef: String,
+		actionStatus: String
+	}],
 	active: Boolean,
-	subscribed: Boolean
+	subscribed: Boolean,
+	firstCTA: Boolean
 })
 
 module.exports = UserSchema
