@@ -1,11 +1,11 @@
 // modules =================================================
 var express = require('express'),    // framework d'appli
- 	app = express(),
- 	bodyParser = require('body-parser'), // BodyParser pour POST
-	http = require('http').Server(app),      // préparer le serveur web
-	dotenv = require('dotenv'),
-	path = require('path'),
-	mongoose = require('mongoose')
+  app = express(),
+  bodyParser = require('body-parser'), // BodyParser pour POST
+  http = require('http').Server(app),      // préparer le serveur web
+  dotenv = require('dotenv'),
+  path = require('path'),
+  mongoose = require('mongoose')
 
 // configuration ===========================================
 // load environment variables,
@@ -28,24 +28,24 @@ require('./app/routes/conversation_routes')(app)
 
 // port
 // app.set('port', (process.env.PORT || 5000))
-app.set('port', (8081));
+app.set('port', (8081))
 
 // mongodb
 // Mongodb Connect - mongo --ssl --sslAllowInvalidCertificates aws-us-east-1-portal.23.dblayer.com:16768/callpartyDev -u callparty -p callparty1234!
 var dbusername 	= 'callparty',
-	dbpassword 	= 'callparty1234!'
+  dbpassword 	= 'callparty1234!'
 
 mongoose.connect('mongodb://'+dbusername+':'+dbpassword+'@aws-us-east-1-portal.23.dblayer.com:16768/callpartyDev?ssl=true')
 //mongoose.connect('mongodb://'+dbusername+':'+dbpassword+'@aws-us-east-1-portal.23.dblayer.com:16768/callpartyProd?ssl=true')
 var db = mongoose.connection,
-	Rep = require('./app/methods/representativesMethods.js')
+  Rep = require('./app/methods/representativesMethods.js')
 
 db.on('error', console.error.bind(console, 'connection error: '))
 db.once('open', function() {
-	Rep.insertReps()
+  Rep.insertReps()
 })
 
-	console.log('***-----MongoDB Connected-----***')
+console.log('***-----MongoDB Connected-----***')
 
 // START ===================================================
 http.listen(app.get('port'), function () {

@@ -1,5 +1,3 @@
-/* eslint-disable brace-style */
-/* eslint-disable camelcase */
 var Request = require('request')
 
 module.exports = function (controller) {
@@ -84,6 +82,3 @@ module.exports = function (controller) {
     }
   })
 }
-
-/* eslint-disable brace-style */
-/* eslint-disable camelcase */
