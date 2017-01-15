@@ -2,11 +2,9 @@ var Campaign = require('./schemas/campaignSchema.js'),
     mongoose = require('mongoose')
 
 exports.createCampaign = function(req, res) {
-  var campaignData = {title: "Lorem ipsum dolor sit amet", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."}
-  //var campaignData = {title: req.title, description: req.description}
   var addingcampaign = new Campaign({
-    campaign_title: campaignData.title,
-    campaign_description: campaignData.description
+    campaign_title: req.title,
+    campaign_description: req.description
   })
 
   addingcampaign.save(function (err) {
