@@ -33,7 +33,8 @@ var representativesSchema = new Schema({
     bioguide: String,
     govtrack: String,
     wikipedia: String,
-    wikidata: String
+    wikidata: String,
+    image_url: String
 })
 
 module.exports = representativesSchema
