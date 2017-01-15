@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "main": "main.js",
   "scripts": {
-    "start": "webpack-dev-server --colors --progress --port 8081",
+    "start": "webpack-dev-server --colors --progress --port 8082",
     "build": "webpack --colors --progress",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
