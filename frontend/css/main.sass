@@ -1,0 +1,113 @@
+@import 'reset'
+@import 'select.css'
+
+*
+  -moz-box-sizing: border-box
+  -webkit-box-sizing: border-box
+  box-sizing: border-box
+
+html
+  font-family: 'Helvetica', sans-serif
+  background: #f9f9f9
+  padding: 2em
+
+h1
+  font-size: 2em
+
+button, input[type=submit]
+  border: none
+  padding: 1em
+  background: #f7eaea
+  text-align: center
+  box-shadow: 4px 4px 0px #ffaadb
+  font-family: 'Cousine', monospace
+  cursor: pointer
+  margin: 0 4px 4px 0
+  min-width: 8em
+  &:hover
+    background: #fbd9d9
+    box-shadow: 4px 4px 0px #f3a8cb
+
+.table
+  header
+    margin: 0 0 1em 0
+    overflow: hidden
+    h1
+      float: left
+    button
+      float: right
+      margin-left: 0.2em
+  table
+    clear: both
+    width: 100%
+  tr
+    background: #f2f2f2
+    cursor: pointer
+    &:hover
+      background: #7070f9
+      color: #fff
+    &:first-child
+      background: #e4e7fb
+      color: #888
+  td, th
+    padding: 1em
+    text-align: left
+
+.preview-message
+  background: #4545ff
+  border-radius: 1em
+  padding: 1.5em
+  min-width: 16em
+  color: #fff
+  line-height: 1.4
+  float: right
+
+form, .preview
+  width: 50%
+  float: left
+  input[type=submit]
+    width: 100%
+    margin: 2em 0
+.preview
+  padding: 0 0 0 4em
+  margin: 1em 0
+  text-align: right
+  position: fixed
+  right: 1em
+  top: 3em
+  h4
+    margin-bottom: 1em
+
+fieldset
+  margin: 1em 0
+label
+  margin: 1em 0
+  display: block
+textarea
+  resize: vertical
+  min-height: 320px
+  line-height: 1.4
+  padding: 1em
+  font-size: 1.2em
+textarea, input[type=text]
+  width: 100%
+  display: block
+  padding: 1em
+
+.action-var
+  min-width: 1em
+  min-height: 1em
+  padding: 0.2em 0.4em
+  display: inline-block
+  background: #fdf8d8
+  color: #222
+  box-shadow: 2px 2px rgba(0,0,0,0.2)
+  margin: 0.1em 0.3em
+  border-radius: 0.4em
+  cursor: pointer
+  &:hover
+    background: pink
+
+.user-var
+  font-style: italic
+  color: rgba(255,255,255,0.6)
