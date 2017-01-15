@@ -14,6 +14,7 @@ var campaignActionsSchema = new Schema({
 var campaignSchema = new Schema({
 	_id: String,
 	campaign_title: String,
+	campaign_description: String,
 	active: Boolean,
 	campaign_link: String,
 	userActions: [{
