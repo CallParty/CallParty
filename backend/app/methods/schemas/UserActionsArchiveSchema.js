@@ -1,7 +1,7 @@
 var mongoose = require('mongoose')
 var Schema = mongoose.Schema
 
-var actionsSchema = new Schema({
+var UserActionsArchiveSchema = new Schema({
 	_id: String,
 	active: Boolean,
 	user_id: String,
@@ -12,4 +12,4 @@ var actionsSchema = new Schema({
 	actionStatus: String
 })
 
-module.exports = actionsSchema
+module.exports = UserActionsArchiveSchema

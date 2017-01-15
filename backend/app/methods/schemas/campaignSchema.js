@@ -1,15 +1,25 @@
 var mongoose = require('mongoose')
 var Schema = mongoose.Schema
 
+var campaignActionsSchema = new Schema({
+	_id: String,
+	campaignaction_title: String,
+	campaignaction_message: String,
+	campaignaction_cta: String,
+	campaignaction_users: Array,
+	active: Boolean,
+	campaignaction_type: String
+})
+
 var campaignSchema = new Schema({
 	_id: String,
 	campaign_title: String,
 	active: Boolean,
-	action_type: String,
-	campaign_text: String,
-	actions: [{
-		actionRef: String
-	}]
+	campaign_link: String,
+	userActions: [{
+		userActionRef: String
+	}],
+	campaignActions: [campaignActionsSchema]
 })
 
 module.exports = campaignSchema
