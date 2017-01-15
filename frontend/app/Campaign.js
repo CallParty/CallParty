@@ -1,3 +1,4 @@
+import API from './API';
 import React, {Component} from 'react';
 import {Link} from 'react-router';
 
@@ -22,14 +23,14 @@ window.campaigns = [{
 
 class Campaigns extends Component {
   componentWillMount() {
-    // TODO
-    fetch('/api/campaigns').then(function(response){
-      // perform setState here
-      console.log(response);
-    });
-    // TODO fetch this remotely
     this.setState({
-      campaigns: campaigns
+      campaigns: []
+    });
+    API.get('/getcampaigns', resp => {
+      console.log(resp);
+      this.setState({
+        campaigns: campaigns
+      });
     });
   }
 
