@@ -17,7 +17,6 @@
     "generate-function": "^2.0.0",
     "generate-object-property": "^1.2.0",
     "jsonpointer": "^4.0.0",
-    "localtunnel": "^1.8.2",
     "mongodb": "^2.1.20",
     "mongoose": "^4.7.6",
     "monkii": "^1.2.0",
