@@ -1,5 +1,7 @@
-/* eslint-disable brace-style */
-/* eslint-disable camelcase */
+/*
+ *
+ */
+// var startTestConversation2 = require("../conversations/testaction").startTestConversation2;
 
 module.exports = function (controller) {
   // this is triggered when a user clicks the send-to-messenger plugin
@@ -16,4 +18,13 @@ module.exports = function (controller) {
   controller.hears('(.*)', 'message_received', function (bot, message) {
     bot.reply(message, 'you said ' + message.match[1])
   })
-}
+
+  // handle postbacks (commented out because these will be handled within conversations)
+  // controller.on('facebook_postback', function (bot, message) {
+  //   const payload = JSON.parse(message.payload);
+    // if (payload.callback == 'testPart2') {
+    //   startTestConversation2(message.channel);
+    // }
+  // })
+
+};
