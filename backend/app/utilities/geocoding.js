@@ -1,10 +1,7 @@
 require('any-promise/register/es6-promise')
 
-var dotenv = require('dotenv')
 var Promise = require('any-promise')
 var rp = require('request-promise-any')
-
-dotenv.load()
 
 var googleMapsClient = require('@google/maps').createClient({
   key: process.env.GOOGLE_MAPS_API_KEY,
