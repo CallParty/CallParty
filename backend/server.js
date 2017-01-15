@@ -41,8 +41,15 @@ var db = mongoose.connection,
 
 db.on('error', console.error.bind(console, 'connection error:'))
 db.once('open', function() {
-	var rep = new Rep()
-  	rep.insertReps({ name: 'frogs' })
+	var rep = new Rep({ name: 'frogs', full_name: 'frogs dogs' })
+  	rep.insertReps()
+  	rep.save(function (err) {
+  		if (err) {
+  			return handleError(err)
+  		} else {
+  			console.log('success!')
+  		}
+	})
 	console.log('***-----MongoDB Connected-----***')
 })
 
