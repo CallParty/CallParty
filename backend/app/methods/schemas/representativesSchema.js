@@ -37,4 +37,5 @@ var representativesSchema = new Schema({
     image_url: String
 })
 
-module.exports = representativesSchema
+var Reps = mongoose.model('Reps', representativesSchema)
+module.exports = Reps

@@ -1,5 +1,5 @@
-var mongoose = require('mongoose')
-var Schema = mongoose.Schema
+var mongoose = require('mongoose'),
+	Schema = mongoose.Schema
 
 var usersSchema = new Schema({
 	_id: String,
@@ -22,4 +22,5 @@ var usersSchema = new Schema({
 	firstCTA: Boolean
 })
 
-module.exports = UserSchema
+var Users = mongoose.model('Users', usersSchema)
+module.exports = Users

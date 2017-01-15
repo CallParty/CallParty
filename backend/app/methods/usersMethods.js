@@ -1,9 +1,17 @@
-var UsersSchema = require('./schemas/usersSchema.js'),
+var Users 	 = require('./schemas/usersSchema.js'),
 	mongoose = require('mongoose')
 
-UsersSchema.methods.insertUser = function () {
+exports.insertUser = function(req, res) {
 	console.log('User Adding')
 }
 
-var Users = mongoose.model('Users', usersSchema)
-module.exports = Users
+exports.lookupUser = function(req, res) {
+	User.find({}, function(err, user) {
+		if (err) return res.send(err)
+		console.log(user)
+	})
+}
+
+//--- Using methods in application: 
+// var userfunc = require('')
+// userfunc.lookupUser()
