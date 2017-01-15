@@ -126,6 +126,7 @@ var create_user_if_new = function (id, ts) {
   })
 }
 
-exports.handler = handler
+exports.handler = handler;
+exports.bot = bot;
 /* eslint-disable brace-style */
 /* eslint-disable camelcase */

@@ -24,6 +24,7 @@ app.set('view engine', 'ejs')
 
 // routes
 require('./app/routes/routes')(app)
+require('./app/routes/conversation_routes')(app)
 
 // port
 // app.set('port', (process.env.PORT || 5000))
