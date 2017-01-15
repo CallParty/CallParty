@@ -24,7 +24,10 @@ class NewUpdate extends Component {
       label: a.subject
     }));
     return <div>
-      <h1>New Update</h1>
+      <div className="meta">
+        <h1>New Update</h1>
+        <h3>Campaign: {this.state.campaign.title}</h3>
+      </div>
       <form onSubmit={this.onSubmit.bind(this)}>
         <fieldset>
           <label htmlFor="actionReference">Action Reference</label>
@@ -129,6 +132,10 @@ class NewAction extends Component {
   render() {
     return (
       <div>
+        <div className="meta">
+          <h1>New Update</h1>
+          <h3>Campaign: {this.state.campaign.title}</h3>
+        </div>
         <form onSubmit={this.onSubmit.bind(this)}>
           <fieldset>
             <label>Targeting</label>

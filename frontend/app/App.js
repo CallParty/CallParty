@@ -4,9 +4,11 @@ import {NewUpdate, NewAction} from './Conversation';
 import {Router, Route, Link, IndexRoute, browserHistory} from 'react-router';
 
 // TODO nav?
-const Container = (props) => <div>
-  {props.children}
-</div>;
+const Container = (props) => {
+  return <div>
+    {props.children}
+  </div>;
+};
 
 const NotFound = () => <h1>404.. This page is not found!</h1>;
 
