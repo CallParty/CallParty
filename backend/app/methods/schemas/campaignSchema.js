@@ -2,7 +2,6 @@ var mongoose = require('mongoose')
 var Schema = mongoose.Schema
 
 var campaignActionsSchema = new Schema({
-	_id: String,
 	campaignaction_title: String,
 	campaignaction_message: String,
 	campaignaction_cta: String,
@@ -12,7 +11,6 @@ var campaignActionsSchema = new Schema({
 })
 
 var campaignSchema = new Schema({
-	_id: String,
 	campaign_title: String,
 	campaign_description: String,
 	active: Boolean,
@@ -23,4 +21,5 @@ var campaignSchema = new Schema({
 	campaignActions: [campaignActionsSchema]
 })
 
-module.exports = campaignSchema
+var Campaign = mongoose.model('Campaign', campaignSchema)
+module.exports = Campaign
