@@ -1,25 +1,8 @@
-// get the data we need about the user
-var getCallToActionCampaign = function(fbId) {
-  // TODO: pull these values from database
-  console.log(fbId)
-  return {
-    'firstName': 'user_first_name',
-    'issueMessage': 'issue_message',
-    'repType': 'rep_type',
-    'repName': 'repName'
-  }
-}
-
-
-var startCallToActionConversation = function(bot, fbId) {
-
-  // get the data we need about the user
-  var callToActionCampaign = getCallToActionCampaign(fbId)
-  console.log(callToActionCampaign)
+var startCallToActionConversation = function(bot, fbId, params) {
 
   // part 1
   var callToActionPart1 = function(response, convo) {
-    convo.say('Hi [firstName]! We’ve got an issue to call about.')
+    convo.say(`Hi ${params.firstName} We’ve got an issue to call about.`)
     convo.say('[issueMessage]. You can find out more about the issue here [issueLink].')
     convo.say(
       'You’ll be calling [repType] [RepName]. When you call you’ll talk to a staff member, or you’ll leave a voicemail. ' +

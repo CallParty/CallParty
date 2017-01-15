@@ -8,22 +8,31 @@ var startTestConversation1 = require('../conversations/testaction').startTestCon
 module.exports = function (app) {
 
   app.get('/api/start/calltoaction', function(req, res) {
-    startCallToActionConversation(bot, '1060815497377817')
+    const fbId = req.query.fbId
+    startCallToActionConversation(bot, fbId, {
+      'firstName': 'user_first_name',
+      'issueMessage': 'issue_message',
+      'repType': 'rep_type',
+      'repName': 'repName'
+    })
     res.send('ok')
   })
 
   app.get('/api/start/update', function(req, res) {
-    startUpdateConversation(bot, '1060815497377817')
+    const fbId = req.query.fbId
+    startUpdateConversation(bot, fbId)
     res.send('ok')
   })
 
   app.get('/api/start/signup', function(req, res) {
-    startSignupConversation(bot, '1060815497377817')
+    const fbId = req.query.fbId
+    startSignupConversation(bot, fbId)
     res.send('ok')
   })
 
   app.get('/api/start/testaction', function(req, res) {
-    startTestConversation1(bot, '1060815497377817')
+    const fbId = req.query.fbId
+    startTestConversation1(bot, fbId)
     res.send('ok')
   })
 
