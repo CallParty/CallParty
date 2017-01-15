@@ -1,3 +1,3 @@
-setup: `npm install -d`
-dev: `npm start`
-build: `npm run build`
+- setup: `npm install -d`
+- dev: `npm start`
+- build: `npm run build`
