@@ -3,8 +3,8 @@ var Campaign = require('./schemas/campaignSchema.js'),
 
 exports.createCampaign = function(req, res) {
   var addingcampaign = new Campaign({
-    campaign_title: req.title,
-    campaign_description: req.description
+      campaign_title: req.title,
+      campaign_description: req.description
   })
 
   addingcampaign.save(function (err) {
@@ -17,7 +17,16 @@ exports.createCampaign = function(req, res) {
 }
 
 exports.modifyCampaign = function(req, res) {
-  console.log('Campaign Adding')
+  Campaign.update({
+    _id: req._id,
+    campaign_title: req.campaign_title,
+    campaign_description: req.campaign_description,
+    active: req.active,
+    campaign_link: req.campaign_link,
+  }, function(err, campaign) {
+    if (err) return res.send(err)
+    console.log(campaign)
+  })
 }
 
 exports.lookupOneCampaign = function(req, res) {
@@ -35,7 +44,13 @@ exports.lookupAllCampaigns = function(req, res) {
 }
 
 exports.createCampaignAction = function(req, res) {
-  
+  Campaign.update({
+    _id: req._id,
+    campaignActions: [req.campaignActions]
+  }, function(err, campaign) {
+    if (err) return res.send(err)
+    console.log(campaign)
+  })
 }
 
 exports.createUserAction = function(req, res) {
