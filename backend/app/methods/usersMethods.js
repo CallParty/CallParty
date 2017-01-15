@@ -4,8 +4,11 @@ var Users 	 = require('./schemas/usersSchema.js'),
 exports.insertUser = function(req, res) {
 	console.log('User Adding')
 }
+exports.lookupDistrict = function(req, res) {
+	console.log('Looking up District')
+}
 
-exports.lookupUser = function(req, res) {
+exports.findUser = function(req, res) {
 	User.find({}, function(err, user) {
 		if (err) return res.send(err)
 		console.log(user)
