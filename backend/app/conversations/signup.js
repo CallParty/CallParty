@@ -1,4 +1,8 @@
+require('any-promise/register/es6-promise')
+var Promise = require('any-promise')
+var rp = require('request-promise-any')
 var geocoding = require('../utilities/geocoding')
+var { createUser } = require('../methods/userMethods')
 
 function startSignupConversation(bot, fbId) {
 
@@ -12,10 +16,26 @@ function startSignupConversation(bot, fbId) {
   }
 
   function handleAddressResponse(response, convo) {
-    geocoding.getStateAndCongressionalDistrictFromAddress(response.text)
-      .then(function(result) {
+    var facebookGraphRequestOptions = {
+      uri: `https://graph.facebook.com/${fbId}`,
+      qs: { access_token: process.env.FACEBOOK_PAGE_TOKEN },
+      json: true
+    }
+    var facebookGraphPromise = rp(facebookGraphRequestOptions)
+    var geocodingPromise = geocoding.getStateAndCongressionalDistrictFromAddress(response.text)
+
+    Promise.all([facebookGraphPromise, geocodingPromise])
+      .then(function([fbUserData, geocodingResult]) {
         convo.say('Great!')
-        // do some stuff with the result
+
+        createUser({
+          fbId: fbId,
+          state: geocodingResult.state,
+          congressionalDistrict: geocodingResult.congressional_district.district_number,
+          firstName: fbUserData.first_name,
+          lastName: fbUserData.last_name
+        })
+
         finishSignup(response, convo)
         convo.next()
       })

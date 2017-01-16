@@ -1,11 +1,11 @@
 users: [{
 	"_id": "00000",
-	"userid": "",
-	"fbtoken": "0000",
+	"userId": "",
+	"fbId": "0000",
 	"state": "FL",
-	"congressional_district": 0000,
-	"create_date": "",
-	"fb_data": {
+	"congressionalDistrict": 0000,
+	"createdAt": "",
+	"fbData": {
 		"unknown": ""
 	},
 	"active": true,

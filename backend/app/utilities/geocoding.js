@@ -27,6 +27,8 @@ function getStateAndCongressionalDistrictFromAddress(address) {
     }
     var result = geocodingResponse.results[0]
 
+    // for more details on the values of congressional_district and state_legislative_district,
+    // see https://geocod.io/docs/#fields
     return {
       state: result.address_components.state,
       congressional_district: result.fields.congressional_district,

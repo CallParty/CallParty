@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "any-promise": "^1.3.0",
     "body-parser": "^1.15.1",
     "botkit": "^0.2.2",
     "dotenv": "^2.0.0",
@@ -19,10 +20,12 @@
     "generate-object-property": "^1.2.0",
     "geocodio": "^2.0.0",
     "jsonpointer": "^4.0.0",
+    "moment": "^2.17.1",
     "mongodb": "^2.1.20",
     "mongoose": "^4.7.6",
     "monkii": "^1.2.0",
     "request": "^2.79.0",
+    "request-promise-any": "^1.0.3",
     "xtend": "^4.0.1"
   },
   "devDependencies": {
