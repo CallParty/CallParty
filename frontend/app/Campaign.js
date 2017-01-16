@@ -19,7 +19,7 @@ class Campaigns extends Component {
       <div className="table">
         <header>
           <h1>Campaigns</h1>
-          <button>New Campaign</button>
+          <Link to="/new"><button>New Campaign</button></Link>
         </header>
         <table>
           <tbody>
@@ -110,12 +110,29 @@ class ConversationItem extends Component {
 }
 
 class NewCampaign extends Component {
+  static contextTypes = {
+    notify: React.PropTypes.func.isRequired
+  }
+
   componentWillMount() {
-    this.setState({});
+    this.setState({
+      title: '',
+      description: ''
+    });
   }
 
   onSubmit(ev) {
     ev.preventDefault();
+    API.newCampaign(this.state, campaign => {
+      this.context.notify({
+        message: `Campaign created`,
+        level: 'success',
+        autoDismiss: 1,
+        onRemove: () => {
+          this.props.router.push(`/${campaign.id}`);
+        }
+      });
+    });
   }
 
   onInputChange(key, ev) {
