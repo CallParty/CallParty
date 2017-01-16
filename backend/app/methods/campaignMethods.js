@@ -1,20 +1,16 @@
 var Campaign = require('./schemas/campaignSchema.js'),
     mongoose = require('mongoose')
 
-exports.createCampaign = function(req, res) {
-  var campaignData = {title: "Lorem ipsum dolor sit amet", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."}
-  //var campaignData = {title: req.title, description: req.description}
-  var addingcampaign = new Campaign({
-    campaign_title: campaignData.title,
-    campaign_description: campaignData.description
+exports.newCampaign = function(req, res) {
+  var data = req.body
+  var campaign = new Campaign({
+    campaign_title: data.title,
+    campaign_description: data.description
   })
 
-  addingcampaign.save(function (err) {
-    if (err) {
-      return console.log(err)
-    } else {
-      console.log('success!')
-    }
+  campaign.save(function (err) {
+    if (err) return res.send(err)
+    res.json(campaign)
   })
 }
 
@@ -22,22 +18,37 @@ exports.modifyCampaign = function(req, res) {
   console.log('Campaign Adding')
 }
 
-exports.lookupOneCampaign = function(req, res) {
+exports.getCampaign = function(req, res) {
   Campaign.findOne({_id: req.params.id}, function(err, campaign) {
     if (err) return res.send(err)
     res.json(campaign)
   })
 }
 
-exports.lookupAllCampaigns = function(req, res) {
+exports.getCampaigns = function(req, res) {
   Campaign.find({}, function(err, campaigns) {
     if (err) return res.send(err)
     res.json(campaigns)
   })
 }
 
-exports.createCampaignAction = function(req, res) {
-
+exports.newCampaignAction = function(req, res) {
+  var data = req.body;
+  Campaign.findOne({_id: req.params.id}, function(err, campaign) {
+    if (err) return res.send(err)
+    campaign.campaignActions.push({
+      campaignaction_title: data.subject,
+      campaignaction_message: data.message,
+      campaignaction_cta: data.cta,
+      campaignaction_users: [],
+      active: false,
+      campaignaction_type: data.type
+    })
+    campaign.save(function (err) {
+      if (err) return res.send(err)
+      res.json(campaign)
+    })
+  })
 }
 
 exports.createUserAction = function(req, res) {
