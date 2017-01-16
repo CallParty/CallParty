@@ -31,4 +31,3 @@ exports.findUser = function(req, res) {
 //--- Using methods in application:
 // var userfunc = require('')
 // userfunc.lookupUser()
-
