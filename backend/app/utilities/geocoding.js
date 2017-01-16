@@ -10,7 +10,6 @@ var geocodio = new Geocodio({ api_key: process.env.GEOCODIO_API_KEY })
  * @throws Will throw an error if the address can't be geocoded.
  */
 function getStateAndCongressionalDistrictFromAddress(address) {
-  // first, turn the address into latitude and longitude using the Google Maps API
   return new Promise(function(resolve, reject) {
     geocodio.get('geocode', { q: address, fields: 'cd,stateleg' }, function(err, response) {
       if (err) {
