@@ -13,6 +13,12 @@ var express = require('express'),    // framework d'appli
 // heroku environment in production, etc...
 dotenv.load()
 
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+})
+
 app.use(express.static(path.join(__dirname, '/public')))
 
 // parsing
@@ -30,6 +36,7 @@ require('./app/routes/admin_API')(app)
 // port
 // app.set('port', (process.env.PORT || 5000))
 app.set('port', (8081))
+// Handle CORS
 
 // mongodb
 // Mongodb Connect - mongo --ssl --sslAllowInvalidCertificates aws-us-east-1-portal.23.dblayer.com:16768/callpartyDev -u callparty -p callparty1234!

@@ -6,8 +6,6 @@ module.exports = function (app) {
 		res.send('')
   	})
 
-  	app.get('/getcampaigns', function (req, res) {
-		var campaignresponse = campaignMethods.lookupAllCampaigns(req) ? campaignMethods.lookupAllCampaigns(req) : ''
-		res.send(campaignresponse)
-  	})
+  app.get('/campaigns', campaignMethods.lookupAllCampaigns);
+  app.get('/campaigns/:id', campaignMethods.lookupOneCampaign);
 }

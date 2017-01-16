@@ -23,21 +23,21 @@ exports.modifyCampaign = function(req, res) {
 }
 
 exports.lookupOneCampaign = function(req, res) {
-  Campaign.findOne({}, function(err, campaign) {
+  Campaign.findOne({_id: req.params.id}, function(err, campaign) {
     if (err) return res.send(err)
-    console.log(campaign)
+    res.json(campaign)
   })
 }
 
 exports.lookupAllCampaigns = function(req, res) {
-  Campaign.find({}, function(err, campaign) {
+  Campaign.find({}, function(err, campaigns) {
     if (err) return res.send(err)
-    console.log(campaign)
+    res.json(campaigns)
   })
 }
 
 exports.createCampaignAction = function(req, res) {
-  
+
 }
 
 exports.createUserAction = function(req, res) {

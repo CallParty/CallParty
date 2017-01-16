@@ -2,34 +2,14 @@ import API from './API';
 import React, {Component} from 'react';
 import {Link} from 'react-router';
 
-// TODO redux or sth to manage this
-window.campaigns = [{
-  id: 0,
-  title: 'foo',
-  description: 'fooo',
-  date_created: 'fooo',
-  conversations: [{
-    type: 'Action',
-    subject: 'Foo',
-    date_created: 'fasdf'
-  }]
-}, {
-  id: 1,
-  title: 'bar',
-  description: 'baarr',
-  date_created: 'baarr',
-  conversations: []
-}];
-
 class Campaigns extends Component {
   componentWillMount() {
     this.setState({
       campaigns: []
     });
-    API.get('/getcampaigns', resp => {
-      console.log(resp);
+    API.campaigns(data => {
       this.setState({
-        campaigns: campaigns
+        campaigns: data
       });
     });
   }
@@ -49,7 +29,7 @@ class Campaigns extends Component {
               <th>Description</th>
               <th>Date Created</th>
             </tr>
-            {this.state.campaigns.map((campaign, i) =>
+            {this.state.campaigns.map(campaign =>
               <CampaignItem key={campaign.id} onClick={this.viewCampaign.bind(this)} {...campaign} />)}
           </tbody>
         </table>
@@ -79,8 +59,12 @@ class CampaignItem extends Component {
 
 class Campaign extends Component {
   componentWillMount() {
-    // TODO fetch this remotely
-    this.setState(campaigns[this.props.params.id]);
+    this.setState({
+      actions: []
+    });
+    API.campaign(this.props.params.id, data => {
+      this.setState(data);
+    });
   }
 
   render() {
@@ -105,7 +89,7 @@ class Campaign extends Component {
                 <th>Subject</th>
                 <th>Date Created</th>
               </tr>
-              {this.state.conversations.map((convo, i) =>
+              {this.state.actions.map((convo, i) =>
                 <ConversationItem key={i} num={i} {...convo} />)}
             </tbody>
           </table>
