@@ -7,13 +7,7 @@ var mongoUri = process.env.MONGODB_URI || 'mongodb://localhost/botkit-demo'
 var db = require('../../config/db')({mongoUri: mongoUri})
 
 // set DEBUG_TICK based on .env
-var DEBUG_TICK
-if (process.env.DEBUG_TICK == 'true') {
-  DEBUG_TICK = true
-}
-else {
-  DEBUG_TICK = false
-}
+var DEBUG_TICK = process.env.DEBUG_TICK === 'true'
 
 // initialize Botkit
 var controller = Botkit.facebookbot({
@@ -32,7 +26,7 @@ require('./facebook_setup')(controller)
 require('./conversations')(controller)
 
 // this function processes the POST request to the webhook
-var handler = function (obj) {
+function handler(obj) {
   controller.debug('Message received from FB')
   var message
   if (obj.entry) {
@@ -116,7 +110,7 @@ var handler = function (obj) {
   }
 }
 
-var create_user_if_new = function (id, ts) {
+function create_user_if_new(id, ts) {
   controller.storage.users.get(id, function (err, user) {
     if (err) {
       console.log(err)
@@ -127,7 +121,9 @@ var create_user_if_new = function (id, ts) {
   })
 }
 
-exports.handler = handler;
-exports.bot = bot;
-/* eslint-disable brace-style */
-/* eslint-disable camelcase */
+module.exports = {
+  handler: handler,
+  bot: bot
+}
+/* eslint-enable brace-style */
+/* eslint-enable camelcase */
