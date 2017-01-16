@@ -1,0 +1,39 @@
+.notifications-wrapper
+  position: fixed
+  top: 0
+  left: 0
+  right: 0
+  z-index: 1
+
+.notifications-tr
+  margin: 0 auto
+  width: 320px
+
+.notification
+  margin-top: 1em
+  padding: 1em
+  transition: 0.3s ease-in-out
+  border-radius: 0.3em
+  position: relative
+  box-shadow: 2px 2px 8px rgba(0,0,0,0.2)
+
+.notification-error
+  background: #ff3d3d
+  color: #fff
+
+.notification-success
+  background: #75de7f
+  color: #fff
+
+.notification-visible
+  opacity: 1
+
+.notification-hidden
+  opacity: 0
+
+.notification-dismiss
+  position: absolute
+  top: 4px
+  right: 5px
+  cursor: pointer
+  font-size: 20px
