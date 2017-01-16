@@ -1,7 +1,6 @@
 /*
  * This is a file for quickly testing components of botkit conversations.
  */
-var bot = require('../controllers/botkit').bot
 
 var testPart1 = function(response, convo) {
   convo.say({
@@ -14,7 +13,7 @@ var testPart1 = function(response, convo) {
   })
 }
 
-var startTestConversation1 = function(fbId) {
+var startTestConversation1 = function(bot, fbId) {
   // use a fakeMessage to initiate the conversation with the correct user
   var fakeMessage = {
     'channel': fbId,

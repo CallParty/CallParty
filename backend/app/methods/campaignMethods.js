@@ -7,7 +7,6 @@ exports.newCampaign = function(req, res) {
     campaign_title: data.title,
     campaign_description: data.description
   })
-
   campaign.save(function (err) {
     if (err) return res.send(err)
     res.json(campaign)
@@ -15,7 +14,16 @@ exports.newCampaign = function(req, res) {
 }
 
 exports.modifyCampaign = function(req, res) {
-  console.log('Campaign Adding')
+  Campaign.update({
+    _id: req._id,
+    campaign_title: req.campaign_title,
+    campaign_description: req.campaign_description,
+    active: req.active,
+    campaign_link: req.campaign_link,
+  }, function(err, campaign) {
+    if (err) return res.send(err)
+    console.log(campaign)
+  })
 }
 
 exports.getCampaign = function(req, res) {
