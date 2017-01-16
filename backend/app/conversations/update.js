@@ -1,6 +1,4 @@
-var bot = require('../controllers/botkit').bot
-
-var startUpdateConversation = function(fbId) {
+var startUpdateConversation = function(bot, fbId) {
 
   // part 1
   var updatePart1 = function(response, convo) {

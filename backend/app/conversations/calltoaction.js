@@ -1,5 +1,3 @@
-var bot = require('../controllers/botkit').bot
-
 // get the data we need about the user
 var getCallToActionCampaign = function(fbId) {
   // TODO: pull these values from database
@@ -13,7 +11,7 @@ var getCallToActionCampaign = function(fbId) {
 }
 
 
-var startCallToActionConversation = function(fbId) {
+var startCallToActionConversation = function(bot, fbId) {
 
   // get the data we need about the user
   var callToActionCampaign = getCallToActionCampaign(fbId)
