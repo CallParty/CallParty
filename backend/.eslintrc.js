@@ -22,12 +22,17 @@ module.exports = {
     ],
     "quotes": [
       "error",
-      "single"
+      "single",
+      { "avoidEscape": true, "allowTemplateLiterals": true }
     ],
     "semi": [
       "error",
       "never"
     ],
-    "no-console": 0
+    "no-console": 0,
+    "quote-props": [
+      "error",
+      "as-needed"
+    ]
   }
 };
