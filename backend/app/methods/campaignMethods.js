@@ -1,18 +1,15 @@
 var Campaign = require('./schemas/campaignSchema.js'),
     mongoose = require('mongoose')
 
-exports.createCampaign = function(req, res) {
-  var addingcampaign = new Campaign({
-      campaign_title: req.title,
-      campaign_description: req.description
+exports.newCampaign = function(req, res) {
+  var data = req.body
+  var campaign = new Campaign({
+    campaign_title: data.title,
+    campaign_description: data.description
   })
-
-  addingcampaign.save(function (err) {
-    if (err) {
-      return console.log(err)
-    } else {
-      console.log('success!')
-    }
+  campaign.save(function (err) {
+    if (err) return res.send(err)
+    res.json(campaign)
   })
 }
 
@@ -29,27 +26,36 @@ exports.modifyCampaign = function(req, res) {
   })
 }
 
-exports.lookupOneCampaign = function(req, res) {
-  Campaign.findOne({}, function(err, campaign) {
+exports.getCampaign = function(req, res) {
+  Campaign.findOne({_id: req.params.id}, function(err, campaign) {
     if (err) return res.send(err)
-    console.log(campaign)
+    res.json(campaign)
   })
 }
 
-exports.lookupAllCampaigns = function(req, res) {
-  Campaign.find({}, function(err, campaign) {
+exports.getCampaigns = function(req, res) {
+  Campaign.find({}, function(err, campaigns) {
     if (err) return res.send(err)
-    console.log(campaign)
+    res.json(campaigns)
   })
 }
 
-exports.createCampaignAction = function(req, res) {
-  Campaign.update({
-    _id: req._id,
-    campaignActions: [req.campaignActions]
-  }, function(err, campaign) {
+exports.newCampaignAction = function(req, res) {
+  var data = req.body;
+  Campaign.findOne({_id: req.params.id}, function(err, campaign) {
     if (err) return res.send(err)
-    console.log(campaign)
+    campaign.campaignActions.push({
+      campaignaction_title: data.subject,
+      campaignaction_message: data.message,
+      campaignaction_cta: data.cta,
+      campaignaction_users: [],
+      active: false,
+      campaignaction_type: data.type
+    })
+    campaign.save(function (err) {
+      if (err) return res.send(err)
+      res.json(campaign)
+    })
   })
 }
 

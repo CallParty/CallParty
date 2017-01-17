@@ -13,11 +13,18 @@ var express = require('express'),    // framework d'appli
 // heroku environment in production, etc...
 dotenv.load()
 
-app.use(express.static(path.join(__dirname, '/public')))
+// Handle CORS
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+})
 
 // parsing
 app.use(bodyParser.json()) // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })) // for parsing url encoded
+
+app.use(express.static(path.join(__dirname, '/public')))
 
 // view engine ejs
 app.set('view engine', 'ejs')
