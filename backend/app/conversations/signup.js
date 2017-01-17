@@ -1,13 +1,16 @@
 require('any-promise/register/es6-promise')
-var Promise = require('any-promise')
-var rp = require('request-promise-any')
-var geocoding = require('../utilities/geocoding')
-var { createUser } = require('../methods/userMethods')
+const Promise = require('any-promise')
+const rp = require('request-promise-any')
+const mongoose = require('mongoose')
+const geocoding = require('../utilities/geocoding')
+const { User } = require('../models')
+
+mongoose.Promise = Promise
 
 function startSignupConversation(bot, fbId) {
 
   function askForAddress(response, convo) {
-    var organization = 'CallParty' // this should be looked up from the db eventually
+    const organization = 'CallParty' // this should be looked up from the db eventually
     convo.say(`Hi there! Nice to meet you. I’m a bot made to send you calls to action from the people at ${organization}, because taking civic action is way more effective in large groups. You can unsubscribe any time by just saying ‘stop’ or ‘unsubscribe’.`)
     convo.ask('First thing’s first: What’s the address of your voting registration? I’ll use this to identify who your reps are – don’t worry, I won’t be holding onto it.', function(response, convo) {
       handleAddressResponse(response, convo)
@@ -16,25 +19,18 @@ function startSignupConversation(bot, fbId) {
   }
 
   function handleAddressResponse(response, convo) {
-    var facebookGraphRequestOptions = {
-      uri: `https://graph.facebook.com/${fbId}`,
-      qs: { access_token: process.env.FACEBOOK_PAGE_TOKEN },
-      json: true
-    }
-    var facebookGraphPromise = rp(facebookGraphRequestOptions)
-    var geocodingPromise = geocoding.getStateAndCongressionalDistrictFromAddress(response.text)
+    const userPromise = User.findOne({ fbId }).exec()
+    const geocodingPromise = geocoding.getStateAndCongressionalDistrictFromAddress(response.text)
 
-    Promise.all([facebookGraphPromise, geocodingPromise])
-      .then(function([fbUserData, geocodingResult]) {
+    Promise.all([userPromise, geocodingPromise])
+      .then(function([user, geocodingResult]) {
         convo.say('Great!')
 
-        createUser({
-          fbId: fbId,
-          state: geocodingResult.state,
-          congressionalDistrict: geocodingResult.congressional_district.district_number,
-          firstName: fbUserData.first_name,
-          lastName: fbUserData.last_name
-        })
+        user.state = geocodingResult.state
+        user.congressionalDistrict = geocodingResult.congressional_district.district_number
+        user.active = true
+        user.save()
+          .catch(function(err) { throw err })
 
         finishSignup(response, convo)
         convo.next()
@@ -52,13 +48,27 @@ function startSignupConversation(bot, fbId) {
     })
   }
 
-  // start conversation using above parts
-  // use a fakeMessage to initiate the conversation with the correct user
-  var fakeMessage = {
-    'channel': fbId,
-    'user': fbId
+  const facebookGraphRequestOptions = {
+    uri: `https://graph.facebook.com/${fbId}`,
+    qs: { access_token: process.env.FACEBOOK_PAGE_TOKEN },
+    json: true
   }
-  bot.startConversation(fakeMessage, askForAddress)
+
+  rp(facebookGraphRequestOptions)
+    .then(function(fbUserData) {
+      User.findOrCreate({ fbId: fbId }, { firstName: fbUserData.first_name, lastName: fbUserData.last_name }, function(err) {
+        if (err) { throw err }
+
+        // start conversation using above parts
+        // use a fakeMessage to initiate the conversation with the correct user
+        const fakeMessage = {
+          channel: fbId,
+          user: fbId
+        }
+        bot.startConversation(fakeMessage, askForAddress)
+      })
+    })
+    .catch(err => console.log(err))
 }
 
 module.exports = {
