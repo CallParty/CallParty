@@ -1,3 +1,5 @@
+const { stripIndent } = require('common-tags')
+
 function startCallToActionConversation(bot, fbId, params) {
   const {
     firstName,
@@ -16,22 +18,22 @@ function startCallToActionConversation(bot, fbId, params) {
   function callToActionPart1(response, convo) {
     convo.say(`Hi ${firstName}. We've got an issue to call about.`)
     convo.say(`${issueMessage}. You can find out more about the issue here ${issueLink}.`)
-    convo.say(
-      `You'll be calling ${repType} ${repName}. When you call you'll talk to a staff member, or you'll leave a voicemail.
+    convo.say(stripIndent`
+      You'll be calling ${repType} ${repName}. When you call you'll talk to a staff member, or you'll leave a voicemail.
       Let them know:
       *  You're a constituent calling about ${issueSubject}.
       *  The call to action: "I'd like ${repType} ${repName} to ${issueAction}."
       *  Share any personal feelings or stories.
       *  If taking the wrong stance on this issue would endanger your vote, let them know.
-      *  Answer any questions the staffer has, and be friendly!`
-    )
-    convo.say(
-      `Rep card
+      *  Answer any questions the staffer has, and be friendly!
+    `)
+    convo.say(stripIndent`
+      Rep card
       ${repImage}
       ${repName}
       * ${repPhoneNumber} ⇢
-      * ${repWebsite} ⇢`
-    )
+      * ${repWebsite} ⇢
+    `)
     convo.ask('Give me a thumbs up once you’ve tried to call!', function(response, convo) {
       callToActionPart2(response, convo)
       convo.next()
