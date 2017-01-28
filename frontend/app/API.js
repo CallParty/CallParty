@@ -3,12 +3,12 @@ const parse = {
   action: function(a) {
     return {
       id: a._id,
-      subject: a.campaignaction_title,
-      message: a.campaignaction_message,
-      cta: a.campaignaction_cta,
-      users: a.campaignaction_users,
+      subject: a.title,
+      message: a.message,
+      cta: a.cta,
+      users: a.users,
       active: a.active,
-      type: a.campaignaction_type
+      type: a.type
     };
   },
 
@@ -18,14 +18,12 @@ const parse = {
   },
 
   campaign: function(c) {
-    var c = {
+    return {
       id: c._id,
       actions: c.campaignActions.map(parse.action),
-      description: c.campaign_description,
-      title: c.campaign_title,
-      userActions: c.userActions.map(parse.userAction)
+      description: c.description,
+      title: c.title
     };
-    return c;
   }
 }
 

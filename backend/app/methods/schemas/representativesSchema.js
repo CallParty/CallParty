@@ -11,7 +11,6 @@ var repTerms = new Schema({
 })
 
 var representativesSchema = new Schema({
-  name: String,
   id: String,
   full_name: String,
   name: {

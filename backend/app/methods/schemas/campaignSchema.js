@@ -1,25 +1,31 @@
-var mongoose = require('mongoose')
-var Schema = mongoose.Schema
+const mongoose = require('mongoose')
+const Schema = mongoose.Schema
 
-var campaignActionsSchema = new Schema({
-	campaignaction_title: String,
-	campaignaction_message: String,
-	campaignaction_cta: String,
-	campaignaction_users: Array,
-	active: Boolean,
-	campaignaction_type: String
+const campaignActionsSchema = new Schema({
+  title: String,
+  message: String,
+  cta: String,
+  active: Boolean,
+  type: String,
 })
 
-var campaignSchema = new Schema({
-	campaign_title: String,
-	campaign_description: String,
-	active: Boolean,
-	campaign_link: String,
-	userActions: [{
-		userActionRef: String
-	}],
-	campaignActions: [campaignActionsSchema]
+campaignActionsSchema.methods.getUsers = function () {
+  return this.model('UserAction').find({ _campaignAction: this._id }).exec()
+    .then(userActions => {
+      const userIds = userActions.map(userAction => userAction._id)
+
+      return this.model('User').find({
+        _id: { $in: userIds }
+      }).exec()
+    })
+}
+
+const campaignSchema = new Schema({
+  title: String,
+  description: String,
+  active: Boolean,
+  link: String,
+  campaignActions: [campaignActionsSchema]
 })
 
-var Campaign = mongoose.model('Campaign', campaignSchema)
-module.exports = Campaign
+module.exports = mongoose.model('Campaign', campaignSchema)

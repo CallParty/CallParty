@@ -1,15 +1,16 @@
-var mongoose = require('mongoose')
-var Schema = mongoose.Schema
+const moment = require('moment')
+const mongoose = require('mongoose')
+const Schema = mongoose.Schema
 
-var UserActionsArchiveSchema = new Schema({
-	_id: String,
-	active: Boolean,
-	user_id: String,
-	target_name: Boolean,
-	action_type: String,
-	date_prompted: String,
-	date_completed: String,
-	actionStatus: String
+const UserActionsArchiveSchema = new Schema({
+  active: Boolean,
+  _user: { type: Schema.Types.ObjectId, ref: 'User' },
+  _campaignAction: { type: Schema.Types.ObjectId, ref: 'CampaignAction' },
+  targetName: Boolean,
+  actionType: String,
+  datePrompted:  { type: Date, default: () => moment.utc().toDate() },
+  dateCompleted: Date,
+  actionStatus: String
 })
 
 module.exports = UserActionsArchiveSchema

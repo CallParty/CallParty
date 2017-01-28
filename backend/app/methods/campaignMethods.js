@@ -1,11 +1,11 @@
-var Campaign = require('./schemas/campaignSchema.js'),
-    mongoose = require('mongoose')
+const Campaign = require('./schemas/campaignSchema.js')
+const mongoose = require('mongoose')
 
 exports.newCampaign = function(req, res) {
-  var data = req.body
-  var campaign = new Campaign({
-    campaign_title: data.title,
-    campaign_description: data.description
+  const data = req.body
+  const campaign = new Campaign({
+    title: data.title,
+    description: data.description
   })
   campaign.save(function (err) {
     if (err) return res.send(err)
@@ -16,10 +16,10 @@ exports.newCampaign = function(req, res) {
 exports.modifyCampaign = function(req, res) {
   Campaign.update({
     _id: req._id,
-    campaign_title: req.campaign_title,
-    campaign_description: req.campaign_description,
+    title: req.campaign_title,
+    description: req.campaign_description,
     active: req.active,
-    campaign_link: req.campaign_link,
+    link: req.campaign_link,
   }, function(err, campaign) {
     if (err) return res.send(err)
     console.log(campaign)
@@ -27,7 +27,7 @@ exports.modifyCampaign = function(req, res) {
 }
 
 exports.getCampaign = function(req, res) {
-  Campaign.findOne({_id: req.params.id}, function(err, campaign) {
+  Campaign.findOne({ _id: req.params.id }, function(err, campaign) {
     if (err) return res.send(err)
     res.json(campaign)
   })
@@ -41,19 +41,22 @@ exports.getCampaigns = function(req, res) {
 }
 
 exports.newCampaignAction = function(req, res) {
-  var data = req.body;
+  const data = req.body
   Campaign.findOne({_id: req.params.id}, function(err, campaign) {
     if (err) return res.send(err)
+
     campaign.campaignActions.push({
-      campaignaction_title: data.subject,
-      campaignaction_message: data.message,
-      campaignaction_cta: data.cta,
-      campaignaction_users: [],
+      title: data.subject,
+      message: data.message,
+      cta: data.cta,
       active: false,
-      campaignaction_type: data.type
+      type: data.type
     })
     campaign.save(function (err) {
       if (err) return res.send(err)
+
+      // TODO: send new campaign
+
       res.json(campaign)
     })
   })

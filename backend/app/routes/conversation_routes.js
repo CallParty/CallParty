@@ -15,7 +15,7 @@ module.exports = function(app) {
 
   app.post('/api/start/calltoaction', function(req, res) {
     const fbId = req.body.fbId
-    const userPromise = User.findOne({fbId: fbId}).exec()
+    const userPromise = User.findOne({ fbId: fbId }).exec()
     const campaignPromise = Campaign.findById(req.body.campaignId).exec() // TODO: figure out what conditions we use to look up campaign
     const repPromise = Reps.findById(req.body.repId).exec() // TODO: figure out what conditions we use to look up rep
 
@@ -25,9 +25,9 @@ module.exports = function(app) {
 
         startCallToActionConversation(bot, fbId, {
           firstName: user.firstName,
-          issueMessage: campaign.campaign_description,
-          issueLink: campaign.campaign_link,
-          issueSubject: campaign.campaign_title,
+          issueMessage: campaign.description,
+          issueLink: campaign.link,
+          issueSubject: campaign.title,
           issueAction: campaignAction.cta,
           repType: rep.legislator_type,
           repName: rep.name.official_full,
