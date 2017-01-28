@@ -1,21 +1,51 @@
 # webhooks, testing
 
-for local development,
-install local tunnel with:
-`npm install -g localtunnel`
-and then run
-````
-lt --subdomain callingtest2 --port 8081, and message https://www.facebook.com/CallingTest2-1284903778233560/
-lt --subdomain callingtest3 --port 8081, and message https://www.facebook.com/pg/CallingTest3-394972167517670/
-lt --subdomain callingtest4 --port 8081, and message https://www.facebook.com/pg/CallingTest4-1292845147475522/
-lt --subdomain callingtest5 --port 8081, and message https://www.facebook.com/CallingTest5-2060548600838593/
-````
+# Setup
+
+```bash
+git clone git@github.com:mhfowler/CallParty.git
+cd backend; npm install; npm install -g localtunnel; cd ..
+cd frontend; npm install; cd ..
+```
+
+Message one of the project maintainers for a `.env` file to run the server and
+make sure your facebook bot has you set as an admin. Once you are set, there is
+a several minute delay for Facebook to propagate the changes.
+
+# Run
+
+## Backend
+
+```bash
+cd backend; ./bash/local_tunnel.sh <bot_number> &; ./bash/run.sh
+```
+
+Visit the webpage of your bot:
+
+```bash
+https://www.facebook.com/CallingTest2-1284903778233560/ # josh
+https://www.facebook.com/pg/CallingTest3-394972167517670/
+https://www.facebook.com/pg/CallingTest4-1292845147475522/
+https://www.facebook.com/CallingTest5-2060548600838593/
+```
+
+And send the message `hello` to make sure everything is working.
 
 for staging, message:
 https://www.facebook.com/Callingteststaging-392499054435475/
 
 for production, message:
 https://www.facebook.com/CallParty-243195752776526/
+
+## Frontend
+
+After installing the frontend dependencies, to start the server run:
+
+```bash
+npm start
+```
+
+And navigate to `locahost:8082` to verify the page is working.
 
 # todo
 
@@ -43,7 +73,7 @@ https://github.com/mvaragnat/botkit-messenger-express-demo
 3. install certbot-auto on server (https://certbot.eff.org/#ubuntutrusty-nginx)
 4. `certbot-auto --nginx` # follow instructions
 5. 
-`````
+```
 this will produce the certs needed in: /etc/letsencrypt/live/memoryprosthetics.com/fullchain.pem
 sudo chown ubuntu -R /etc/letsencrypt
 scp -r -i secret_files/google_rsa ubuntu@104.198.233.193:/etc/letsencrypt/live/callparty.org/ secret_files/certs 
@@ -51,12 +81,7 @@ privkey.pem == nginx:ssl_certificate_key
 fullchain.pem == nginx:ssl_certificate
 cp secret_files/certs/privkey.pem secret_files/nginx.key
 cp secret_files/certs/fullchain.pem secret_files/nginx.crt
-`````
+```
 
 git command to use rebase and avoid merge commits: `git config branch.master.rebase true`
-
-
-
-
-
 
