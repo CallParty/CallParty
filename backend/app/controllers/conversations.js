@@ -1,6 +1,5 @@
 var startSignupConversation = require('../conversations/signup').startSignupConversation
 const { User } = require('../models.js')
-const Promise = require('es6-promise')
 
 /*
  *
