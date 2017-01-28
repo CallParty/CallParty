@@ -1,6 +1,6 @@
 .env
 .envrc
-/node_modules
+*node_modules*
 .idea/
 *.swp
 secret_files*
