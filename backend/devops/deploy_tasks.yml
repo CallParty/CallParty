@@ -18,8 +18,14 @@
     tags:
       quick
 
-  - name: npm install package.json
-    npm: path={{backend_dir}}
+  - name: npm install backend/package.json
+    npm: path={{backend_dir}} executable=/usr/local/bin/npm
+
+  - name: npm install frontend/package.json
+    npm: path={{frontend_dir}} executable=/usr/local/bin/npm
+
+  - name: build frontend
+    command: /usr/local/bin/npm run build chdir={{frontend_dir}}
 
   - name: create nginx site config
     action: template src=templates/nginx_site.conf dest=/etc/nginx/sites-available/{{app_name}}.conf

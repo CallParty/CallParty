@@ -5,3 +5,4 @@
 *.swp
 secret_files*
 *.DS_Store
+*.retry

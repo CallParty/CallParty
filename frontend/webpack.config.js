@@ -1,10 +1,14 @@
-var path = require('path');
-var ExtractTextPlugin = require("extract-text-webpack-plugin");
+var path = require('path')
+var ExtractTextPlugin = require('extract-text-webpack-plugin')
+
+var BUILD_DIR = path.resolve(__dirname, 'build')
 
 module.exports = {
   entry: './main',
   output: {
-    filename: 'bundle.js'
+    path: BUILD_DIR,
+    filename: 'bundle.js',
+    publicPath: 'build'
   },
   devtool: 'source-map',
   module: {
@@ -37,4 +41,4 @@ module.exports = {
   devServer: {
     historyApiFallback: true
   }
-};
+}
