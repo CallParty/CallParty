@@ -63,7 +63,20 @@ cd frontend; npm start
 And navigate to [http://localhost:8082](http://localhost:8082) to verify the page is working.
 
 
-# notes
+# Deployment
+
+## staging
+```bash
+./backend/staging_deploy.sh
+```
+
+## production
+```bash
+./backend/prod_deploy.sh
+```
+
+
+# Notes
 
 example app backend was based off of: 
 https://github.com/mvaragnat/botkit-messenger-express-demo
