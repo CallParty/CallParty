@@ -12,7 +12,7 @@ git clone git@github.com:mhfowler/CallParty.git
 cd backend; npm install; npm install -g localtunnel; cd ..
 cd frontend; npm install; cd ..
 ```
-### Configure `backend/.env`
+### Configure backend/.env
  
 [Message](mailto:hi@callparty.org) one of the project maintainers for
 a `backend/.env` file to connect to the staging database.
