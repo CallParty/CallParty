@@ -4,6 +4,7 @@ repo_remote: origin
 repo_branch: master
 src_dir: /srv/hello_webapp
 backend_dir: /srv/hello_webapp/backend
+frontend_dir: /srv/hello_webapp/frontend
 log_dir: /srv/log
 aws_key_name: maxhfowler_dec8
 aws_security_group: citigroup_apps
