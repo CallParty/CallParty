@@ -12,9 +12,9 @@ module.exports = function (config) {
     throw new Error('Need to provide mongo address.')
   }
 
-  var Teams = db(config.mongoUri).get('teams')
-  var Users = db(config.mongoUri).get('users')
-  var Channels = db(config.mongoUri).get('channels')
+  var Teams = db(config.mongoUri).get('botkit_teams')
+  var Users = db(config.mongoUri).get('botkit_users')
+  var Channels = db(config.mongoUri).get('botkit_channels')
 
   var unwrapFromList = function (cb) {
     return function (err, data) {

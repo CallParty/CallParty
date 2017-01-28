@@ -15,7 +15,7 @@ module.exports = function(app) {
 
   app.post('/api/start/calltoaction', function(req, res) {
     const fbId = req.body.fbId
-    const userPromise = User.findOne({id: fbId}).exec()
+    const userPromise = User.findOne({fbId: fbId}).exec()
     const campaignPromise = Campaign.findById(req.body.campaignId).exec() // TODO: figure out what conditions we use to look up campaign
     const repPromise = Reps.findById(req.body.repId).exec() // TODO: figure out what conditions we use to look up rep
 
