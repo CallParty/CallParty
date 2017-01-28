@@ -37,6 +37,12 @@
     - name: set default node version to 7.4.0
       command: sudo -iu ubuntu nvm alias default v7.4.0
 
+    - name: create symlink from nvm node to /usr/local/bin/node
+      file: src=/home/ubuntu/.nvm/versions/node/v7.4.0/bin/{{item}} dest=/usr/local/bin/{{item}} state=link
+      with_items:
+        - node
+        - npm
+
     - name: remove default nginx site
       action: file path=/etc/nginx/sites-enabled/default state=absent
 
