@@ -14,7 +14,6 @@
     git: repo={{repo_url}} dest={{src_dir}} remote={{repo_remote}} version={{repo_branch}} accept_hostkey=yes force=yes
     notify:
       - restart nginx
-      - restart webapp
     tags:
       quick
 
