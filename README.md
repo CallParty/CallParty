@@ -7,7 +7,6 @@ To learn more about contributing to CallParty check out the [contributing guide]
 # Setup
 
 1. Install Dependencies
-
 ```bash
 git clone git@github.com:mhfowler/CallParty.git
 cd backend; npm install; npm install -g localtunnel; cd ..
@@ -16,13 +15,13 @@ cd frontend; npm install; cd ..
 
 2. Configure `backend/.env`
  
- [Message](mailto:hi@callparty.org) one of the project maintainers for
- a `backend/.env` file to connect to the staging database.
+[Message](mailto:hi@callparty.org) one of the project maintainers for
+a `backend/.env` file to connect to the staging database.
  
- You will also need a facebook bot to test with. 
- You can follow instructions for making a testbot here. Once you have a testbot you 
- also need to set yourself as an admin for the bot for it to send you messages 
- (note that there is a several minute delay for Facebook to propagate the changes once you set the admin)
+You will also need a facebook bot to test with. 
+You can follow instructions for making a testbot here. Once you have a testbot you 
+also need to set yourself as an admin for the bot for it to send you messages 
+(note that there is a several minute delay for Facebook to propagate the changes once you set the admin)
 
 Alternatively, if you are forking your own version
 of CallParty then you will need to create your own database and use `backend/.env-demo` as an example
