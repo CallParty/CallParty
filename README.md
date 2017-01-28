@@ -2,7 +2,7 @@
 
 You can sign up for CallParty here [https://www.facebook.com/CallPartyOrg/](https://www.facebook.com/CallPartyOrg/).
 
-To learn more about contributing to CallParty check out the [contributing guide](http://github.com/mhfowler/CallParty/). 
+To learn more about contributing to CallParty check out the [contributing guide](https://github.com/mhfowler/CallParty/blob/contributing.md/CONTRIBUTING.md). 
 
 # Setup
 

@@ -2,6 +2,7 @@
 👍🎉 
 :+1::tada: First off, thanks for taking the time to contribute! :tada::+1:
 🎉👍
+
 The following is a set of guidelines for contributing to CallParty. In short we use Github Issues to keep track of bugs and features and accept Pull Requests from anyone who would like to contribute. 
 
 ## Submitting Issues
