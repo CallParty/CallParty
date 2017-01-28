@@ -3,7 +3,6 @@
 You can sign up for CallParty here [https://www.facebook.com/CallPartyOrg/](https://www.facebook.com/CallPartyOrg/).
 
 To learn more about contributing to CallParty check out the [contributing guide](http://github.com/mhfowler/CallParty/). 
-Participation and contribution from all who would like to help is welcome.
 
 # Setup
 
