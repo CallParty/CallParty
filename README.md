@@ -34,7 +34,7 @@ to create a `backend/.env`.
 
 You can run and test the backend (botkit server) and the frontend (admin portal) independently.
 
-## Backend
+## Backend (Botkit Server)
 
 ```bash
 cd backend; ./bash/local_tunnel.sh <bot_number> &; ./bash/run.sh
@@ -54,7 +54,7 @@ https://www.facebook.com/Callingteststaging-392499054435475/
 for production, message:
 https://www.facebook.com/CallParty-243195752776526/
 
-## Frontend
+## Frontend (Admin Portal)
 
 ```bash
 cd frontend; npm start
