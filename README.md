@@ -64,12 +64,12 @@ And navigate to [http://localhost:8082](http://localhost:8082) to verify the pag
 
 ## staging
 ```bash
-./backend/staging_deploy.sh
+./backend/bash/staging_deploy.sh
 ```
 
 ## production
 ```bash
-./backend/prod_deploy.sh
+./backend/bash/prod_deploy.sh
 ```
 
 
