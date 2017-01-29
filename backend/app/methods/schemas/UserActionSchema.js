@@ -4,8 +4,8 @@ const Schema = mongoose.Schema
 
 const userActionsSchema = new Schema({
   active: Boolean,
-  _user: { type: Schema.Types.ObjectId, ref: 'User' },
-  _campaignAction: { type: Schema.Types.ObjectId, ref: 'CampaignAction' },
+  user: { type: Schema.Types.ObjectId, ref: 'User' },
+  campaignAction: { type: Schema.Types.ObjectId, ref: 'CampaignAction' },
   targetName: Boolean,
   actionType: String,
   datePrompted:  { type: Date, default: () => moment.utc().toDate() },

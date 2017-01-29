@@ -1,5 +1,8 @@
 const Campaign = require('./schemas/campaignSchema.js')
+const CampaignAction = require('./schemas/campaignActionSchema.js')
 const mongoose = require('mongoose')
+
+const ObjectId = mongoose.Types.ObjectId
 
 exports.newCampaign = function(req, res) {
   const data = req.body
@@ -27,39 +30,61 @@ exports.modifyCampaign = function(req, res) {
 }
 
 exports.getCampaign = function(req, res) {
-  Campaign.findOne({ _id: req.params.id }, function(err, campaign) {
-    if (err) return res.send(err)
-    res.json(campaign)
-  })
+  Campaign
+    .findOne({ _id: req.params.id })
+    .populate({
+      path: 'campaignActions',
+      populate: {
+        path: 'userActions'
+      }
+    })
+    .exec(function(err, campaign) {
+      if (err) return res.send(err)
+      res.json(campaign)
+    })
 }
 
 exports.getCampaigns = function(req, res) {
-  Campaign.find({}, function(err, campaigns) {
-    if (err) return res.send(err)
-    res.json(campaigns)
-  })
+  Campaign
+    .find({})
+    .populate({
+      path: 'campaignActions',
+      populate: {
+        path: 'userActions'
+      }
+    })
+    .exec(function(err, campaigns) {
+      if (err) return res.send(err)
+      res.json(campaigns)
+    })
 }
 
 exports.newCampaignAction = function(req, res) {
   const data = req.body
-  Campaign.findOne({_id: req.params.id}, function(err, campaign) {
-    if (err) return res.send(err)
+  const campaignAction = new CampaignAction({
+    title: data.subject,
+    message: data.message,
+    cta: data.cta,
+    active: false,
+    type: data.type,
+    campaign: ObjectId(req.params.id)
+  })
 
-    campaign.campaignActions.push({
-      title: data.subject,
-      message: data.message,
-      cta: data.cta,
-      active: false,
-      type: data.type
+  campaignAction.save()
+    .then(() => {
+      return Campaign
+        .findOne({ _id: req.params.id })
+        .populate({
+          path: 'campaignActions',
+          populate: {
+            path: 'userActions'
+          }
+        }).exec()
     })
-    campaign.save(function (err) {
-      if (err) return res.send(err)
-
-      // TODO: send new campaign
-
+    .then(campaign => {
       res.json(campaign)
     })
-  })
+    .catch(err => res.send(err))
 }
 
 exports.createUserAction = function(req, res) {

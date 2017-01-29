@@ -14,10 +14,18 @@ const userSchema = new Schema({
   fbData: {
     unknown: String
   },
-  userActions: [{ type: Schema.Types.ObjectId, ref: 'UserAction' }],
   active: { type: Boolean, default: false }, // set to true after the user provides their address
   unsubscribed: { type: Boolean, default: false }, // set to true when the user account is archived/deleted
   firstCTA: { type: Boolean, default: false }
+}, {
+  toObject: { virtuals: true },
+  toJSON: { virtuals: true }
+})
+
+userSchema.virtual('userActions', {
+  ref: 'UserAction',
+  localField: '_id',
+  foreignField: 'user'
 })
 
 userSchema.plugin(findOrCreate)
