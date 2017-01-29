@@ -2,9 +2,7 @@ var startSignupConversation = require('../conversations/signup').startSignupConv
 const { User } = require('../models.js')
 const { unsubscribeAndAnonymizeUser } = require('../utilities/unsubscribe')
 
-/*
- *
- */
+
 module.exports = function (controller) {
   // this is triggered when a user clicks the send-to-messenger plugin
   controller.on('facebook_optin', function (bot, message) {
