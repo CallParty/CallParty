@@ -66,6 +66,9 @@ exports.newCampaignAction = function(req, res) {
     cta: data.cta,
     active: false,
     type: data.type,
+    memberType: data.memberType,
+    party: data.party,
+    committee: data.committee,
     campaign: ObjectId(req.params.id)
   })
 

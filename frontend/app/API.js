@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:8081';
+const API_URL = 'http://localhost:8081'
 const parse = {
   action: function(a) {
     return {
@@ -6,15 +6,18 @@ const parse = {
       subject: a.title,
       message: a.message,
       cta: a.cta,
-      users: a.users,
+      userActions: a.userActions.map(parse.userAction),
       active: a.active,
-      type: a.type
-    };
+      type: a.type,
+      memberType: a.memberType,
+      party: a.party,
+      committee: a.committee
+    }
   },
 
   userAction: function(a) {
     // TODO
-    return a;
+    return a
   },
 
   campaign: function(c) {
@@ -23,7 +26,7 @@ const parse = {
       actions: c.campaignActions.map(parse.action),
       description: c.description,
       title: c.title
-    };
+    }
   }
 }
 
@@ -31,7 +34,7 @@ function get(endpoint, cb, onErr) {
   fetch(`${API_URL}${endpoint}`)
     .then(resp => resp.json())
     .then(cb)
-    .catch(onErr);
+    .catch(onErr)
 }
 
 function post(endpoint, data, cb, onErr) {
@@ -45,31 +48,31 @@ function post(endpoint, data, cb, onErr) {
     })
     .then(resp => resp.json())
     .then(cb)
-    .catch(onErr);
+    .catch(onErr)
 }
 
 export default {
   campaigns: function(cb) {
     get('/campaigns', data => {
-      cb(data.map(parse.campaign));
-    });
+      cb(data.map(parse.campaign))
+    })
   },
 
   campaign: function(id, cb) {
     get(`/campaigns/${id}`, data => {
-      cb(parse.campaign(data));
-    });
+      cb(parse.campaign(data))
+    })
   },
 
   newCampaign: function(data, cb) {
     post('/campaigns', data, data => {
-      cb(parse.campaign(data));
-    });
+      cb(parse.campaign(data))
+    })
   },
 
   newCampaignAction: function(id, data, cb) {
     post(`/campaigns/${id}/action/new`, data, data => {
-      cb(parse.campaign(data));
-    });
+      cb(parse.campaign(data))
+    })
   }
-};
+}

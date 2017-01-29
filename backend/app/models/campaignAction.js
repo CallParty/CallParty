@@ -7,6 +7,9 @@ const campaignActionSchema = new Schema({
   cta: String,
   active: Boolean,
   type: String,
+  memberType: Array,
+  party: Array,
+  committee: Array,
   campaign: { type: Schema.Types.ObjectId, ref: 'Campaign' }
 }, {
   toObject: { virtuals: true },
