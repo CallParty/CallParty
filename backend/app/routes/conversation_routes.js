@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const Promise = require('es6-promise')
 
 const bot = require('../controllers/botkit').bot
-const { User, Campaign, Reps } = require('../models.js')
+const { User, Campaign, Reps } = require('../models')
 
 const startCallToActionConversation = require('../conversations/calltoaction').startCallToActionConversation
 const startUpdateConversation = require('../conversations/update').startUpdateConversation

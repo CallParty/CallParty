@@ -1,5 +1,5 @@
-var mongoose = require('mongoose')
-var User = require('./schemas/userSchema.js')
+const mongoose = require('mongoose')
+const { User } = require('../models')
 
 mongoose.Promise = require('es6-promise')
 

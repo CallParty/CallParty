@@ -1,5 +1,4 @@
-const Campaign = require('./schemas/campaignSchema.js')
-const CampaignAction = require('./schemas/campaignActionSchema.js')
+const { Campaign, CampaignAction } = require('../models')
 const mongoose = require('mongoose')
 
 const ObjectId = mongoose.Types.ObjectId

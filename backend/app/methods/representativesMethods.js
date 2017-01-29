@@ -1,5 +1,5 @@
-var Reps = require('./schemas/representativesSchema.js'),
-  mongoose = require('mongoose')
+const mongoose = require('mongoose')
+const { Reps } = require('../models')
 
 exports.insertReps = function(req, res) {
   Reps.count({}, function(err,count) {

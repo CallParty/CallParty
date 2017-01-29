@@ -1,6 +1,6 @@
 var startSignupConversation = require('../conversations/signup').startSignupConversation
 var startUnsubscribeConversation = require('../conversations/unsubscribe').startUnsubscribeConversation
-const { User } = require('../models.js')
+const { User } = require('../models')
 
 
 module.exports = function (controller) {
