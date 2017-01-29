@@ -4,7 +4,7 @@ module.exports = {
     "es6": true,
     "node": true
   },
-  "extends": "eslint:recommended",
+  "extends": ["eslint:recommended", "standard-react"],
   "parserOptions": {
     "ecmaFeatures": {
       "experimentalObjectRestSpread": true,
@@ -36,6 +36,7 @@ module.exports = {
     "quote-props": [
       "error",
       "as-needed"
-    ]
+    ],
+    "jsx-quotes": [2, "prefer-double"]
   }
 };
