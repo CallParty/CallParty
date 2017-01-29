@@ -1,7 +1,7 @@
-import API from './API';
-import React, {Component} from 'react';
-import Select from 'react-select';
-import {Link} from 'react-router';
+import API from './API'
+import React, { Component } from 'react'
+import Select from 'react-select'
+import { Link } from 'react-router'
 
 const ACTIONS = [{
   value: 'call',
@@ -86,23 +86,25 @@ const PARTIES = [{
 }, {
   value: 'i',
   label: 'Independent'
-}];
+}]
+
 const MEMBERS = [{
   value: 'r',
   label: 'Representative'
 }, {
   value: 's',
   label: 'Senator'
-}];
+}]
+
 // TODO these should may be fetched remotely?
 const COMMITTEES = [{
   value: 0,
   label: 'Jobs, Rural Economic Growth and Energy Innovation'
-}];
+}]
 
 class NewAction extends Component {
-  static contextTypes = {
-    notify: React.PropTypes.func.isRequired
+  static get contextTypes() {
+    return { notify: React.PropTypes.func.isRequired }
   }
 
   componentWillMount() {
@@ -125,9 +127,13 @@ class NewAction extends Component {
   }
 
   onSelectChange(key, val) {
-    var action = this.state.action;
-    action[key] = val.value;
-    this.setState({action: action});
+    const action = this.state.action
+    if (Array.isArray(val)) {
+      action[key] = val.map(v => v.value)
+    } else {
+      action[key] = val.value
+    }
+    this.setState({ action: action })
   }
 
   onInputChange(key, ev) {
@@ -140,7 +146,7 @@ class NewAction extends Component {
     ev.preventDefault();
     var action = this.state.action;
     for (var k of Object.keys(action)) {
-      if (!action[k]) {
+      if (action[k] === undefined || action[k] === null || action[k] === '') {
         this.context.notify({
           message: `${k} can't be blank`,
           level: 'error'
@@ -191,33 +197,43 @@ class NewAction extends Component {
           <fieldset>
             <label>Type</label>
             <Select
-                name="type"
-                placeholder="Action Type"
-                value={this.state.action.type}
-                options={ACTIONS}
-                onChange={this.onSelectChange.bind(this, 'type')} />
+              name="type"
+              placeholder="Action Type"
+              value={this.state.action.type}
+              options={ACTIONS}
+              onChange={this.onSelectChange.bind(this, 'type')}
+            />
           </fieldset>
           <fieldset>
             <label>Targeting</label>
             <div>
               <Select
-                  name="memberType"
-                  placeholder="Member Type"
-                  value={this.state.action.memberType}
-                  options={MEMBERS}
-                  onChange={this.onSelectChange.bind(this, 'memberType')} />
+                name="memberType"
+                placeholder="Member Type"
+                value={this.state.action.memberType}
+                options={MEMBERS}
+                onChange={this.onSelectChange.bind(this, 'memberType')}
+                multi={true}
+                clearable={false}
+              />
               <Select
-                  name="party"
-                  placeholder="Party"
-                  value={this.state.action.party}
-                  options={PARTIES}
-                  onChange={this.onSelectChange.bind(this, 'party')} />
+                name="party"
+                placeholder="Party"
+                value={this.state.action.party}
+                options={PARTIES}
+                onChange={this.onSelectChange.bind(this, 'party')}
+                multi={true}
+                clearable={false}
+              />
               <Select
-                  name="committee"
-                  placeholder="Committee"
-                  value={this.state.action.committee}
-                  options={COMMITTEES}
-                  onChange={this.onSelectChange.bind(this, 'committee')} />
+                name="committee"
+                placeholder="Committee"
+                value={this.state.action.committee}
+                options={COMMITTEES}
+                onChange={this.onSelectChange.bind(this, 'committee')}
+                multi={true}
+                clearable={false}
+              />
             </div>
           </fieldset>
           <fieldset>
@@ -267,4 +283,4 @@ class NewAction extends Component {
   }
 }
 
-export {NewUpdate, NewAction};
+export { NewUpdate, NewAction };

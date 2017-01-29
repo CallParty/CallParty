@@ -1,17 +1,20 @@
-import API from './API';
-import React, {Component} from 'react';
-import {Link} from 'react-router';
+import API from './API'
+import React, {Component} from 'react'
+import { Link } from 'react-router'
 
 class Campaigns extends Component {
-  componentWillMount() {
-    this.setState({
+  constructor(props) {
+    super(props)
+    this.state = {
       campaigns: []
-    });
+    }
+  }
+  componentWillMount() {
     API.campaigns(data => {
       this.setState({
         campaigns: data
-      });
-    });
+      })
+    })
   }
 
   render() {
@@ -34,17 +37,17 @@ class Campaigns extends Component {
           </tbody>
         </table>
       </div>
-    );
+    )
   }
 
   viewCampaign(campaign) {
-    this.props.router.push(`/${campaign.id}`);
+    this.props.router.push(`/${campaign.id}`)
   }
 }
 
 class CampaignItem extends Component {
-  static propTypes = {
-    onClick: React.PropTypes.func.isRequired
+  static get propTypes() {
+    return { onClick: React.PropTypes.func.isRequired }
   }
 
   render() {
@@ -110,8 +113,8 @@ class ConversationItem extends Component {
 }
 
 class NewCampaign extends Component {
-  static contextTypes = {
-    notify: React.PropTypes.func.isRequired
+  static get contextTypes() {
+    return { notify: React.PropTypes.func.isRequired }
   }
 
   componentWillMount() {
@@ -136,9 +139,9 @@ class NewCampaign extends Component {
   }
 
   onInputChange(key, ev) {
-    var update = {};
-    update[key] = ev.target.value;
-    this.setState(update);
+    var update = {}
+    update[key] = ev.target.value
+    this.setState(update)
   }
 
   render() {
@@ -160,8 +163,12 @@ class NewCampaign extends Component {
           </fieldset>
           <input type="submit" value="Create" />
         </form>
-    </div>;
+    </div>
   }
 }
 
-export {Campaigns, Campaign, NewCampaign};
+export {
+  Campaigns,
+  Campaign,
+  NewCampaign
+}

@@ -16,8 +16,8 @@ const Container = (props) => {
 const NotFound = () => <h1>404.. This page is not found!</h1>;
 
 class App extends Component {
-  static childContextTypes = {
-    notify: React.PropTypes.func,
+  static get childContextTypes() {
+    return { notify: React.PropTypes.func }
   }
 
   getChildContext() {
