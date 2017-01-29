@@ -9,7 +9,7 @@ function unsubscribeAndAnonymizeUser(user) {
    * and a new row in Users table will be created for them.
    *
    * We keep this anonymized user around so as not to break other tables
-   * which may have a foreign key to user (which will no be anonymized).
+   * which may have a foreign key to user (which will now be anonymized).
    */
   var userId = user._id
   console.log('++ unsubscribing and anonymizing user: ' + userId)
