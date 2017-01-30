@@ -78,21 +78,21 @@ class NewUpdate extends Component {
 }
 
 const PARTIES = [{
-  value: 'd',
+  value: 'Democrat',
   label: 'Democratic'
 }, {
-  value: 'r',
+  value: 'Republican',
   label: 'Republican'
 }, {
-  value: 'i',
+  value: 'Independent',
   label: 'Independent'
 }]
 
 const MEMBERS = [{
-  value: 'r',
+  value: 'rep',
   label: 'Representative'
 }, {
-  value: 's',
+  value: 'sen',
   label: 'Senator'
 }]
 
