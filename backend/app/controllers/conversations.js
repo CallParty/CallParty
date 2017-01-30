@@ -1,9 +1,8 @@
 var startSignupConversation = require('../conversations/signup').startSignupConversation
+var startUnsubscribeConversation = require('../conversations/unsubscribe').startUnsubscribeConversation
 const { User } = require('../models.js')
 
-/*
- *
- */
+
 module.exports = function (controller) {
   // this is triggered when a user clicks the send-to-messenger plugin
   controller.on('facebook_optin', function (bot, message) {
@@ -15,6 +14,11 @@ module.exports = function (controller) {
     bot.reply(message, 'Hey there.')
   })
 
+  // user says unsubscribe/stop
+  controller.hears(['Unsubscribe', 'Stop'], 'message_received', function (bot, message) {
+    startUnsubscribeConversation(bot, message)
+  })
+
   // user says anything else
   controller.hears('(.*)', 'message_received', function (bot, message) {
     User.findOne({fbId: message.user}).exec().then(function(user) {
@@ -22,9 +26,9 @@ module.exports = function (controller) {
       if (!user) {
         startSignupConversation(bot, message.user)
       }
-      // otherwise reply to them with what they said (TODO: reply to them with something nicer)
+      // otherwise, send them a message telling them bot is confused
       else {
-        bot.reply(message, 'you said ' + message.match[1])
+        bot.reply(message, 'Oh gosh, you said ' + message.match[1] + '. Send an email to hi@callparty.org to talk to a person')
       }
     })
   })
