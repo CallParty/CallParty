@@ -1,8 +1,8 @@
-import React, {Component} from 'react';
-import {Campaigns, Campaign, NewCampaign} from './Campaign';
-import {NewUpdate, NewAction} from './Conversation';
-import {Router, Route, Link, IndexRoute, browserHistory} from 'react-router';
-import NotificationSystem from 'react-notification-system';
+import React, { Component } from 'react'
+import { Campaigns, Campaign, NewCampaign } from './Campaign'
+import { NewUpdate, NewAction } from './Conversation'
+import { Router, Route, Link, IndexRoute, browserHistory } from 'react-router'
+import NotificationSystem from 'react-notification-system'
 
 const Container = (props) => {
   return <div>
@@ -10,10 +10,10 @@ const Container = (props) => {
       <Link to="/">CallParty</Link>
     </header>
     {props.children}
-  </div>;
-};
+  </div>
+}
 
-const NotFound = () => <h1>404.. This page is not found!</h1>;
+const NotFound = () => <h1>404.. This page is not found!</h1>
 
 class App extends Component {
   static get childContextTypes() {
@@ -27,25 +27,25 @@ class App extends Component {
   }
 
   notify(notification) {
-    this.notifications.addNotification(notification);
+    this.notifications.addNotification(notification)
   }
 
   componentDidMount() {
-    this.notifications = this.refs.notifications;
+    this.notifications = this.refs.notifications
   }
 
   render() {
     return (
       <main>
         <Router history={browserHistory}>
-          <Route path='/' component={Container}>
+          <Route path="/" component={Container}>
             <IndexRoute component={Campaigns} />
-            <Route path='new' component={NewCampaign} />
-            <Route path=':id' component={Campaign} />
-            <Route path=':id/action/new' component={NewAction} />
-            <Route path=':id/update/new' component={NewUpdate} />
+            <Route path="new" component={NewCampaign} />
+            <Route path=":id" component={Campaign} />
+            <Route path=":id/action/new" component={NewAction} />
+            <Route path=":id/update/new" component={NewUpdate} />
           </Route>
-          <Route path='*' component={NotFound} />
+          <Route path="*" component={NotFound} />
         </Router>
         <NotificationSystem ref="notifications" style={false} />
       </main>
@@ -53,4 +53,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default App
