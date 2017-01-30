@@ -17,4 +17,10 @@ campaignSchema.virtual('campaignActions', {
   foreignField: 'campaign'
 })
 
+campaignSchema.virtual('campaignUpdates', {
+  ref: 'CampaignUpdate',
+  localField: '_id',
+  foreignField: 'campaign'
+})
+
 module.exports = mongoose.model('Campaign', campaignSchema)
