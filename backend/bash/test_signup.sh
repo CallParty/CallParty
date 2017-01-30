@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-curl -X POST -H 'content-type:application/json' -d '{"fbId": "1222225531148037"}' http://localhost:8081/api/start/signup
+curl -X POST -H 'content-type:application/json' -d '{"userAddress":{"id":"mid.1485753877155:bdd8f6eb57","channelId":"facebook","user":{"id":"1260551614030071","name":"Max Fowler"},"conversation":{"isGroup":false,"id":"1260551614030071-394972167517670"},"bot":{"id":"394972167517670","name":"callparty1"},"serviceUrl":"https://facebook.botframework.com","useAuth":true}}' http://localhost:8081/api/start/signup
