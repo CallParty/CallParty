@@ -74,5 +74,11 @@ export default {
     post(`/campaigns/${id}/action/new`, data, data => {
       cb(parse.campaign(data))
     })
+  },
+
+  newCampaignUpdate: function(id, data, cb) {
+    post(`/campaigns/${id}/update/new`, data, data => {
+      cb(parse.campaign(data))
+    })
   }
 }

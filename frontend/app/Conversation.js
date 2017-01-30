@@ -4,6 +4,26 @@ import Select from 'react-select'
 import { Link } from 'react-router'
 import Modal from 'react-modal'
 
+// used in both the NewUpdate and NewAction components
+const CONFIRMATION_MODAL_STYLE = {
+  content: {
+    top: '50%',
+    left: '50%',
+    right: '',
+    bottom: '',
+    transform: 'translate(-50%, -50%)',
+    width: '100%',
+    maxWidth: '300px',
+    height: '100%',
+    maxHeight: '135px',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center'
+  }
+}
+
+
 const ACTIONS = [{
   value: 'call',
   label: 'Call'
@@ -13,11 +33,29 @@ const ACTIONS = [{
 }]
 
 class NewUpdate extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      campaign: { actions: [] },
+      update: {
+        message: 'Hello! This is an update.',
+        campaignAction: null
+      },
+      confirmationModalIsOpen: false
+    }
+
+    this.onSubmit = this.onSubmit.bind(this)
+    this.onSelectChange = this.onSelectChange.bind(this)
+    this.onMessageChange = this.onMessageChange.bind(this)
+    this.createUpdate = this.createUpdate.bind(this)
+    this.closeConfirmationModal = this.closeConfirmationModal.bind(this)
+  }
+
+  static get contextTypes() {
+    return { notify: React.PropTypes.func.isRequired }
+  }
+
   componentWillMount() {
-    this.setState({
-      campaign: {actions:[]},
-      message: 'Hello! This is an update.'
-    })
     API.campaign(this.props.params.id, data => {
       this.setState({
         campaign: data
@@ -27,56 +65,117 @@ class NewUpdate extends Component {
 
   onSubmit(ev) {
     ev.preventDefault()
+
+    const update = this.state.update
+    const validationLabels = {
+      message: 'Message',
+      campaignAction: 'Action Reference'
+    }
+
+    for (let k of Object.keys(update)) {
+      if (update[k] === undefined || update[k] === null || update[k] === '') {
+        this.context.notify({
+          message: `${validationLabels[k]} can't be blank`,
+          level: 'error'
+        })
+        return
+      }
+    }
+
+    this.setState({ confirmationModalIsOpen: true })
   }
 
-  render() {
-    var options = this.state.campaign.actions.map(a => ({
-      value: a.id,
-      label: a.subject
-    }))
-    if (options.length === 0) {
-      return null
-    }
-    return <div>
-      <div className="meta">
-        <h1>New Update</h1>
-        <h3>Campaign: <Link to={`/${this.state.campaign.id}`}>{this.state.campaign.title}</Link></h3>
-      </div>
-      <form onSubmit={this.onSubmit.bind(this)}>
-        <fieldset>
-          <label htmlFor="actionReference">Action Reference</label>
-          <Select
-              name="actionReference"
-              value={options[0].value}
-              options={options}
-              onChange={this.onSelectChange.bind(this)}
-          />
-        </fieldset>
-        <fieldset>
-          <label htmlFor="message">Message</label>
-          <textarea id="message" value={this.state.message} onChange={this.onMessageChange.bind(this)} />
-        </fieldset>
-        <input type="submit" value="Send" />
-      </form>
-      <div className="preview">
-        <h4>Preview</h4>
-        <div className="preview-message">{this.state.message}</div>
-      </div>
-    </div>;
+  createUpdate() {
+    this.closeConfirmationModal()
+
+    API.newCampaignUpdate(
+      this.state.campaign.id,
+      this.state.update,
+      () => {
+        this.context.notify({
+          message: 'Update created',
+          level: 'success',
+          autoDismiss: 1,
+          onRemove: () => {
+            this.props.router.push(`/${this.state.campaign.id}`)
+          }
+        })
+      }
+    )
+  }
+
+  closeConfirmationModal() {
+    this.setState({ confirmationModalIsOpen: false })
   }
 
   onSelectChange(val) {
+    const update = this.state.update
+    update.campaignAction = val
     this.setState({
-      actionRef: val
+      update: update
     })
   }
 
   onMessageChange(ev) {
+    const update = this.state.update
+    update.message = ev.target.value
     this.setState({
-      message: ev.target.value
+      update: update
     })
   }
+
+  render() {
+    const options = this.state.campaign.actions.map(a => ({
+      value: a.id,
+      label: a.subject
+    }))
+
+    if (options.length === 0) {
+      return null
+    }
+
+    return (
+      <div>
+        <div className="meta">
+          <h1>New Update</h1>
+          <h3>Campaign: <Link to={`/${this.state.campaign.id}`}>{this.state.campaign.title}</Link></h3>
+        </div>
+        <form onSubmit={this.onSubmit}>
+          <fieldset>
+            <label htmlFor="actionReference">Action Reference</label>
+            <Select
+              name="actionReference"
+              value={this.state.update.campaignAction}
+              options={options}
+              onChange={this.onSelectChange}
+            />
+          </fieldset>
+          <fieldset>
+            <label htmlFor="message">Message</label>
+            <textarea id="message" value={this.state.update.message} onChange={this.onMessageChange} />
+          </fieldset>
+          <input type="submit" value="Send" />
+        </form>
+        <div className="preview">
+          <h4>Preview</h4>
+          <div className="preview-message">{this.state.update.message}</div>
+        </div>
+        <Modal
+          isOpen={this.state.confirmationModalIsOpen}
+          style={CONFIRMATION_MODAL_STYLE}
+          contentLabel="Confirm"
+        >
+          <p style={{ marginBottom: '10px' }}>Are you sure?</p>
+          <div>
+            <button onClick={this.createUpdate} style={{ marginRight: '10px' }}>Yes</button>
+            <button onClick={this.closeConfirmationModal}>No</button>
+          </div>
+        </Modal>
+      </div>
+    )
+  }
 }
+
 
 const PARTIES = [{
   value: 'Democrat',
@@ -118,9 +217,11 @@ class NewAction extends Component {
       confirmationModalIsOpen: false
     }
 
+    this.onSubmit = this.onSubmit.bind(this)
     this.closeConfirmationModal = this.closeConfirmationModal.bind(this)
     this.createAction = this.createAction.bind(this)
   }
+
   static get contextTypes() {
     return { notify: React.PropTypes.func.isRequired }
   }
@@ -207,24 +308,6 @@ class NewAction extends Component {
   }
 
   render() {
-    const confirmationModalStyle = {
-      content: {
-        top: '50%',
-        left: '50%',
-        right: '',
-        bottom: '',
-        transform: 'translate(-50%, -50%)',
-        width: '100%',
-        maxWidth: '300px',
-        height: '100%',
-        maxHeight: '135px',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center'
-      }
-    }
-
     return (
       <div>
         <div className="meta">
@@ -318,7 +401,7 @@ class NewAction extends Component {
         </div>
         <Modal
           isOpen={this.state.confirmationModalIsOpen}
-          style={confirmationModalStyle}
+          style={CONFIRMATION_MODAL_STYLE}
           contentLabel="Confirm"
         >
           <p style={{ marginBottom: '10px' }}>Are you sure?</p>
