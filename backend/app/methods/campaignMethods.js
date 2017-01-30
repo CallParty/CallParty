@@ -1,11 +1,13 @@
-var Campaign = require('./schemas/campaignSchema.js'),
-    mongoose = require('mongoose')
+const { Campaign, CampaignAction } = require('../models')
+const mongoose = require('mongoose')
+
+const ObjectId = mongoose.Types.ObjectId
 
 exports.newCampaign = function(req, res) {
-  var data = req.body
-  var campaign = new Campaign({
-    campaign_title: data.title,
-    campaign_description: data.description
+  const data = req.body
+  const campaign = new Campaign({
+    title: data.title,
+    description: data.description
   })
   campaign.save(function (err) {
     if (err) return res.send(err)
@@ -16,10 +18,10 @@ exports.newCampaign = function(req, res) {
 exports.modifyCampaign = function(req, res) {
   Campaign.update({
     _id: req._id,
-    campaign_title: req.campaign_title,
-    campaign_description: req.campaign_description,
+    title: req.campaign_title,
+    description: req.campaign_description,
     active: req.active,
-    campaign_link: req.campaign_link,
+    link: req.campaign_link,
   }, function(err, campaign) {
     if (err) return res.send(err)
     console.log(campaign)
@@ -27,36 +29,64 @@ exports.modifyCampaign = function(req, res) {
 }
 
 exports.getCampaign = function(req, res) {
-  Campaign.findOne({_id: req.params.id}, function(err, campaign) {
-    if (err) return res.send(err)
-    res.json(campaign)
-  })
-}
-
-exports.getCampaigns = function(req, res) {
-  Campaign.find({}, function(err, campaigns) {
-    if (err) return res.send(err)
-    res.json(campaigns)
-  })
-}
-
-exports.newCampaignAction = function(req, res) {
-  var data = req.body;
-  Campaign.findOne({_id: req.params.id}, function(err, campaign) {
-    if (err) return res.send(err)
-    campaign.campaignActions.push({
-      campaignaction_title: data.subject,
-      campaignaction_message: data.message,
-      campaignaction_cta: data.cta,
-      campaignaction_users: [],
-      active: false,
-      campaignaction_type: data.type
+  Campaign
+    .findOne({ _id: req.params.id })
+    .populate({
+      path: 'campaignActions',
+      populate: {
+        path: 'userActions'
+      }
     })
-    campaign.save(function (err) {
+    .exec(function(err, campaign) {
       if (err) return res.send(err)
       res.json(campaign)
     })
+}
+
+exports.getCampaigns = function(req, res) {
+  Campaign
+    .find({})
+    .populate({
+      path: 'campaignActions',
+      populate: {
+        path: 'userActions'
+      }
+    })
+    .exec(function(err, campaigns) {
+      if (err) return res.send(err)
+      res.json(campaigns)
+    })
+}
+
+exports.newCampaignAction = function(req, res) {
+  const data = req.body
+  const campaignAction = new CampaignAction({
+    title: data.subject,
+    message: data.message,
+    cta: data.cta,
+    active: false,
+    type: data.type,
+    memberType: data.memberType,
+    party: data.party,
+    committee: data.committee,
+    campaign: ObjectId(req.params.id)
   })
+
+  campaignAction.save()
+    .then(() => {
+      return Campaign
+        .findOne({ _id: req.params.id })
+        .populate({
+          path: 'campaignActions',
+          populate: {
+            path: 'userActions'
+          }
+        }).exec()
+    })
+    .then(campaign => {
+      res.json(campaign)
+    })
+    .catch(err => res.send(err))
 }
 
 exports.createUserAction = function(req, res) {
