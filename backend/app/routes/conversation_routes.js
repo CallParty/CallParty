@@ -37,6 +37,6 @@ module.exports = function(app) {
 
         res.send('ok')
       })
-      .catch(err => console.log(err))
+      .catch(function(err) {console.log(err)})
   })
 }

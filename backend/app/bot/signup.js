@@ -39,8 +39,7 @@ function registerSignupDialogs(bot) {
               next()
             })
           })
-          .catch(err => console.log(err)
-        )
+          .catch(function(err) {console.log(err)})
       },
       // then start a conversation with the user
       function (session) {
@@ -92,10 +91,11 @@ function registerSignupDialogs(bot) {
           .catch(function (err) {
             // TODO: slack log exception somehow
             console.log('++ failed to geocode address: ' + err.stack)
-            builder.Prompts.text(session,
-              'Hm, something isn’t right. Make sure to include your street address, city, state, and zip code like this: ' +
-              '123 Party Street, Brooklyn, NY 11206'
-            )
+            session.endDialog()
+            // builder.Prompts.text(session,
+            //   'Hm, something isn’t right. Make sure to include your street address, city, state, and zip code like this: ' +
+            //   '123 Party Street, Brooklyn, NY 11206'
+            // )
           })
       },
       function (session, results) {

@@ -21,7 +21,7 @@ function unsubscribeAndAnonymizeUser(user) {
   user.unsubscribed = true
 
   return user.save()
-      .catch(err => console.log(err))
+      .catch(function(err) { console.log(err) })
 }
 
 
