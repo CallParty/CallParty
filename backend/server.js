@@ -5,7 +5,9 @@ var express = require('express'),    // framework d'appli
     http = require('http').Server(app),      // préparer le serveur web
     dotenv = require('dotenv'),
     path = require('path'),
+    builder = require('botbuilder')
     mongoose = require('mongoose')
+
 
 // configuration ===========================================
 // load environment variables,
@@ -13,11 +15,16 @@ var express = require('express'),    // framework d'appli
 // heroku environment in production, etc...
 dotenv.load()
 
+// microsoft bot framework
+var connector = require('./app/bot/setup').connector
+app.post('/api/messages', connector.listen())
+
+
 // Handle CORS
 app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
+  res.header("Access-Control-Allow-Origin", "*")
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
+  next()
 })
 
 // parsing
@@ -33,6 +40,7 @@ app.set('view engine', 'ejs')
 require('./app/routes/routes')(app)
 require('./app/routes/conversation_routes')(app)
 require('./app/routes/admin_API')(app)
+
 
 // port
 // app.set('port', (process.env.PORT || 5000))
