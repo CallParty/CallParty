@@ -1,4 +1,4 @@
-const { Campaign, CampaignAction } = require('../models')
+const { Campaign, CampaignAction, CampaignUpdate } = require('../models')
 const mongoose = require('mongoose')
 
 const ObjectId = mongoose.Types.ObjectId
@@ -31,6 +31,7 @@ exports.modifyCampaign = function(req, res) {
 exports.getCampaign = function(req, res) {
   Campaign
     .findOne({ _id: req.params.id })
+    .populate('campaignUpdates')
     .populate({
       path: 'campaignActions',
       populate: {
@@ -46,6 +47,7 @@ exports.getCampaign = function(req, res) {
 exports.getCampaigns = function(req, res) {
   Campaign
     .find({})
+    .populate('campaignUpdates')
     .populate({
       path: 'campaignActions',
       populate: {
@@ -76,6 +78,33 @@ exports.newCampaignAction = function(req, res) {
     .then(() => {
       return Campaign
         .findOne({ _id: req.params.id })
+        .populate('campaignUpdates')
+        .populate({
+          path: 'campaignActions',
+          populate: {
+            path: 'userActions'
+          }
+        }).exec()
+    })
+    .then(campaign => {
+      res.json(campaign)
+    })
+    .catch(err => res.send(err))
+}
+
+exports.newCampaignUpdate = function(req, res) {
+  const data = req.body
+  const campaignUpdate = new CampaignUpdate({
+    message: data.message,
+    campaignAction: ObjectId(data.campaignActionId),
+    campaign: ObjectId(req.params.id)
+  })
+
+  campaignUpdate.save()
+    .then(() => {
+      return Campaign
+        .findOne({ _id: req.params.id })
+        .populate('campaignUpdates')
         .populate({
           path: 'campaignActions',
           populate: {
