@@ -1,4 +1,4 @@
-const { User } = require('../models.js')
+const { User } = require('../models')
 const { unsubscribeAndAnonymizeUser } = require('../utilities/unsubscribe')
 
 var startUnsubscribeConversation = function(bot, message) {
