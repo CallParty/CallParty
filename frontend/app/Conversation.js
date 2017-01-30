@@ -2,6 +2,7 @@ import API from './API'
 import React, { Component } from 'react'
 import Select from 'react-select'
 import { Link } from 'react-router'
+import Modal from 'react-modal'
 
 const ACTIONS = [{
   value: 'call',
@@ -9,7 +10,7 @@ const ACTIONS = [{
 }, {
   value: 'vote',
   label: 'Vote'
-}];
+}]
 
 class NewUpdate extends Component {
   componentWillMount() {
@@ -20,21 +21,21 @@ class NewUpdate extends Component {
     API.campaign(this.props.params.id, data => {
       this.setState({
         campaign: data
-      });
-    });
+      })
+    })
   }
 
   onSubmit(ev) {
-    ev.preventDefault();
+    ev.preventDefault()
   }
 
   render() {
     var options = this.state.campaign.actions.map(a => ({
       value: a.id,
       label: a.subject
-    }));
+    }))
     if (options.length === 0) {
-      return null;
+      return null
     }
     return <div>
       <div className="meta">
@@ -67,13 +68,13 @@ class NewUpdate extends Component {
   onSelectChange(val) {
     this.setState({
       actionRef: val
-    });
+    })
   }
 
   onMessageChange(ev) {
     this.setState({
       message: ev.target.value
-    });
+    })
   }
 }
 
@@ -103,12 +104,9 @@ const COMMITTEES = [{
 }]
 
 class NewAction extends Component {
-  static get contextTypes() {
-    return { notify: React.PropTypes.func.isRequired }
-  }
-
-  componentWillMount() {
-    this.setState({
+  constructor(props) {
+    super(props)
+    this.state = {
       campaign: {},
       action: {
         message: '',
@@ -116,14 +114,24 @@ class NewAction extends Component {
         subject: '',
         task: '',
         type: 'call'
-      }
-    })
+      },
+      confirmationModalIsOpen: false
+    }
+
+    this.closeConfirmationModal = this.closeConfirmationModal.bind(this)
+    this.createAction = this.createAction.bind(this)
+  }
+  static get contextTypes() {
+    return { notify: React.PropTypes.func.isRequired }
+  }
+
+  componentWillMount() {
     API.campaign(this.props.params.id, data => {
       this.setState({
         campaign: data
-      });
-    });
-    this.inputs = {};
+      })
+    })
+    this.inputs = {}
   }
 
   onSelectChange(key, val) {
@@ -137,40 +145,52 @@ class NewAction extends Component {
   }
 
   onInputChange(key, ev) {
-    var action = this.state.action;
-    action[key] = ev.target.value;
-    this.setState({action: action});
+    var action = this.state.action
+    action[key] = ev.target.value
+    this.setState({ action: action })
   }
 
   onSubmit(ev) {
-    ev.preventDefault();
-    var action = this.state.action;
-    for (var k of Object.keys(action)) {
+    ev.preventDefault()
+
+    const action = this.state.action
+    for (let k of Object.keys(action)) {
       if (action[k] === undefined || action[k] === null || action[k] === '') {
         this.context.notify({
           message: `${k} can't be blank`,
           level: 'error'
-        });
-        return;
+        })
+        return
       }
     }
+
+    this.setState({ confirmationModalIsOpen: true })
+  }
+
+  closeConfirmationModal() {
+    this.setState({ confirmationModalIsOpen: false })
+  }
+
+  createAction() {
+    this.closeConfirmationModal()
+
     API.newCampaignAction(
       this.state.campaign.id,
-      action,
+      this.state.action,
       () => {
         this.context.notify({
           message: 'Action created',
           level: 'success',
           autoDismiss: 1,
           onRemove: () => {
-            this.props.router.push(`/${this.state.campaign.id}`);
+            this.props.router.push(`/${this.state.campaign.id}`)
           }
-        });
-      });
+        })
+      })
   }
 
   focusInput(input) {
-    this.inputs[input].focus();
+    this.inputs[input].focus()
   }
 
   previewTemplate(action) {
@@ -183,10 +203,28 @@ class NewAction extends Component {
       <p>* Share any personal feelings or stories</p>
       <p>* If taking the wrong stance on this issue would endanger your vote, let them know.</p>
       <p>* Answer any questions the staffer has, and be friendly!</p>
-    </div>;
+    </div>
   }
 
   render() {
+    const confirmationModalStyle = {
+      content: {
+        top: '50%',
+        left: '50%',
+        right: '',
+        bottom: '',
+        transform: 'translate(-50%, -50%)',
+        width: '100%',
+        maxWidth: '300px',
+        height: '100%',
+        maxHeight: '135px',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }
+    }
+
     return (
       <div>
         <div className="meta">
@@ -241,7 +279,7 @@ class NewAction extends Component {
             <textarea
               value={this.state.action.message}
               onChange={this.onInputChange.bind(this, 'message')}
-              ref={(input) => { this.inputs.message = input; }} />
+              ref={(input) => { this.inputs.message = input }} />
           </fieldset>
           <fieldset>
             <label>Link</label>
@@ -249,7 +287,7 @@ class NewAction extends Component {
               type="text"
               value={this.state.action.link}
               onChange={this.onInputChange.bind(this, 'link')}
-              ref={(input) => { this.inputs.link = input; }} />
+              ref={(input) => { this.inputs.link = input }} />
           </fieldset>
           <fieldset>
             <label>Subject</label>
@@ -257,7 +295,7 @@ class NewAction extends Component {
               type="text"
               value={this.state.action.subject}
               onChange={this.onInputChange.bind(this, 'subject')}
-              ref={(input) => { this.inputs.subject = input; }} />
+              ref={(input) => { this.inputs.subject = input }} />
           </fieldset>
           <fieldset>
             <label>Task</label>
@@ -265,7 +303,7 @@ class NewAction extends Component {
               type="text"
               value={this.state.action.task}
               onChange={this.onInputChange.bind(this, 'task')}
-              ref={(input) => { this.inputs.task = input; }} />
+              ref={(input) => { this.inputs.task = input }} />
           </fieldset>
           <input type="submit" value="Send" />
         </form>
@@ -278,9 +316,20 @@ class NewAction extends Component {
             task: this.state.action.task
           })}</div>
         </div>
+        <Modal
+          isOpen={this.state.confirmationModalIsOpen}
+          style={confirmationModalStyle}
+          contentLabel="Confirm"
+        >
+          <p style={{ marginBottom: '10px' }}>Are you sure?</p>
+          <div>
+            <button onClick={this.createAction} style={{ marginRight: '10px' }}>Yes</button>
+            <button onClick={this.closeConfirmationModal}>No</button>
+          </div>
+        </Modal>
       </div>
-    );
+    )
   }
 }
 
-export { NewUpdate, NewAction };
+export { NewUpdate, NewAction }
