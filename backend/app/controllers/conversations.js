@@ -1,5 +1,6 @@
 var startSignupConversation = require('../conversations/signup').startSignupConversation
 var startUnsubscribeConversation = require('../conversations/unsubscribe').startUnsubscribeConversation
+var callbackRoutes = require('../conversations/callback_routes').callbackRoutes
 const { User } = require('../models')
 
 
@@ -26,9 +27,21 @@ module.exports = function (controller) {
       if (!user) {
         startSignupConversation(bot, message.user)
       }
-      // otherwise, send them a message telling them bot is confused
+      // if they do exist, then call the correct next callback
       else {
-        bot.reply(message, 'Oh gosh, you said ' + message.match[1] + '. Send an email to hi@callparty.org to talk to a person')
+        var callbackPath = user.callbackPath
+        // this is the default callback if none is set
+        if (!callbackPath) {
+            callbackPath = '/test1'
+        }
+        // call the callback convoFun
+        const cb = callbackRoutes[callbackPath]
+        if (cb) {
+          cb(bot, user, message)
+        }
+        else {
+          throw new Error('Invalid callback route supplied')
+        }
       }
     })
   })
