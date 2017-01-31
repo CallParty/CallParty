@@ -39,6 +39,12 @@ module.exports = {
     modulesDirectories: ['node_modules']
   },
   devServer: {
-    historyApiFallback: true
+    historyApiFallback: true,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8081',
+        secure: false
+      }
+    }
   }
 }
