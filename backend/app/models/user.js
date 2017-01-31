@@ -16,7 +16,9 @@ const userSchema = new Schema({
   },
   active: { type: Boolean, default: false }, // set to true after the user provides their address
   unsubscribed: { type: Boolean, default: false }, // set to true when the user account is archived/deleted
-  firstCTA: { type: Boolean, default: false }
+  firstCTA: { type: Boolean, default: false },
+  callbackPath: String, // controls which convoFunction will be called in response to next message
+  convoData: Schema.Types.Mixed,  // the data which teh next convoFunction will have access to
 }, {
   toObject: { virtuals: true },
   toJSON: { virtuals: true }

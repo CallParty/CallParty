@@ -23,7 +23,7 @@ var bot = controller.spawn({})
 require('./facebook_setup')(controller)
 
 // Conversation logic
-require('./conversations')(controller)
+require('./listener')(controller)
 
 // this function processes the POST request to the webhook
 function handler(obj) {

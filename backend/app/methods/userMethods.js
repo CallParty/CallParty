@@ -10,12 +10,11 @@ exports.createUser = function createUser(req) {
     congressionalDistrict: req.congressionalDistrict,
     firstName: req.firstName,
     lastName: req.lastName,
-    callbackPath: null,
   })
 
   return user.save()
-    .then(user => user)
-    .catch(err => console.log(err))
+    .then(function(user) { user })
+    .catch(function(err) { throw err })
 }
 
 exports.lookupDistrict = function(req, res) {
