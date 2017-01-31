@@ -8,9 +8,10 @@ const parse = {
       userActions: a.userActions.map(parse.userAction),
       active: a.active,
       type: a.type,
-      memberType: a.memberType,
-      party: a.party,
-      committee: a.committee
+      memberTypes: a.memberTypes,
+      parties: a.parties,
+      committees: a.committees,
+      createdAt: a.createdAt
     }
   },
 
@@ -24,7 +25,8 @@ const parse = {
       id: c._id,
       actions: c.campaignActions.map(parse.action),
       description: c.description,
-      title: c.title
+      title: c.title,
+      createdAt: c.createdAt
     }
   }
 }

@@ -212,7 +212,10 @@ class NewAction extends Component {
         link: '',
         subject: '',
         task: '',
-        type: 'call'
+        type: 'call',
+        memberTypes: [],
+        parties: [],
+        committees: []
       },
       confirmationModalIsOpen: false
     }
@@ -329,31 +332,31 @@ class NewAction extends Component {
             <label>Targeting</label>
             <div>
               <Select
-                name="memberType"
+                name="memberTypes"
                 placeholder="Member Type"
-                value={this.state.action.memberType}
+                value={this.state.action.memberTypes}
                 options={MEMBERS}
-                onChange={this.onSelectChange.bind(this, 'memberType')}
-                multi={true}
+                onChange={this.onSelectChange.bind(this, 'memberTypes')}
                 clearable={false}
+                multi
               />
               <Select
-                name="party"
+                name="parties"
                 placeholder="Party"
-                value={this.state.action.party}
+                value={this.state.action.parties}
                 options={PARTIES}
-                onChange={this.onSelectChange.bind(this, 'party')}
-                multi={true}
+                onChange={this.onSelectChange.bind(this, 'parties')}
                 clearable={false}
+                multi
               />
               <Select
-                name="committee"
+                name="committees"
                 placeholder="Committee"
-                value={this.state.action.committee}
+                value={this.state.action.committees}
                 options={COMMITTEES}
-                onChange={this.onSelectChange.bind(this, 'committee')}
-                multi={true}
+                onChange={this.onSelectChange.bind(this, 'committees')}
                 clearable={false}
+                multi
               />
             </div>
           </fieldset>

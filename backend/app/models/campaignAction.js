@@ -8,9 +8,9 @@ const campaignActionSchema = new Schema({
   cta: String,
   active: Boolean,
   type: String,
-  memberType: Array,
-  party: Array,
-  committee: Array,
+  memberTypes: Array,
+  parties: Array,
+  committees: Array,
   createdAt: { type: Date, default: () => moment.utc().toDate() },
   campaign: { type: Schema.Types.ObjectId, ref: 'Campaign' }
 }, {
