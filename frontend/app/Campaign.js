@@ -1,6 +1,7 @@
-import API from './API'
 import React, {Component} from 'react'
 import { Link } from 'react-router'
+import moment from 'moment'
+import API from './API'
 
 class Campaigns extends Component {
   constructor(props) {
@@ -9,6 +10,7 @@ class Campaigns extends Component {
       campaigns: []
     }
   }
+
   componentWillMount() {
     API.campaigns(data => {
       this.setState({
@@ -51,32 +53,37 @@ class CampaignItem extends Component {
   }
 
   render() {
+    const createdAt = moment.utc(this.props.createdAt).local().format('h:mma on M/DD/YYYY')
     return <tr onClick={() => this.props.onClick(this.props)}>
       <td>{this.props.id}</td>
       <td>{this.props.title}</td>
       <td>{this.props.description}</td>
-      <td>{this.props.date_created}</td>
-    </tr>;
+      <td>{createdAt}</td>
+    </tr>
   }
 }
 
 class Campaign extends Component {
-  componentWillMount() {
-    this.setState({
+  constructor(props) {
+    super(props)
+    this.state = {
       actions: []
-    });
+    }
+  }
+  componentWillMount() {
     API.campaign(this.props.params.id, data => {
-      this.setState(data);
-    });
+      this.setState(data)
+    })
   }
 
   render() {
+    const createdAt = moment.utc(this.state.createdAt).local().format('h:mma on M/DD/YYYY')
     return (
       <div className="campaign">
         <div className="meta">
           <h1>{this.state.title}</h1>
           <h2>{this.state.description}</h2>
-          <h4>Created on {this.state.date_created}</h4>
+          <h4>Created at {createdAt}</h4>
         </div>
         <div className="table">
           <header>
@@ -97,18 +104,20 @@ class Campaign extends Component {
             </tbody>
           </table>
         </div>
-      </div>);
+      </div>)
   }
 }
 
 class ConversationItem extends Component {
   render() {
+    const createdAt = moment.utc(this.props.createdAt).local().format('h:mma on M/DD/YYYY')
+
     return <tr>
       <td>{this.props.num}</td>
       <td>{this.props.type}</td>
       <td>{this.props.subject}</td>
-      <td>{this.props.date_created}</td>
-    </tr>;
+      <td>{createdAt}</td>
+    </tr>
   }
 }
 
@@ -121,7 +130,7 @@ class NewCampaign extends Component {
     this.setState({
       title: '',
       description: ''
-    });
+    })
   }
 
   onSubmit(ev) {
@@ -134,8 +143,8 @@ class NewCampaign extends Component {
         onRemove: () => {
           this.props.router.push(`/${campaign.id}`);
         }
-      });
-    });
+      })
+    })
   }
 
   onInputChange(key, ev) {
