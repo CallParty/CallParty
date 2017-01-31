@@ -10,9 +10,9 @@ const startSignupConversation = require('../conversations/signup').startSignupCo
 
 mongoose.Promise = Promise
 
-module.exports = function(app) {
+module.exports = function(apiRouter) {
 
-  app.post('/api/start/calltoaction', function(req, res) {
+  apiRouter.post('/start/calltoaction', function(req, res) {
     const fbId = req.body.fbId
     const userPromise = User.findOne({ fbId: fbId }).exec()
     const campaignPromise = Campaign.findById(req.body.campaignId).exec() // TODO: figure out what conditions we use to look up campaign
@@ -41,13 +41,13 @@ module.exports = function(app) {
       .catch(function(err) { throw err })
   })
 
-  app.post('/api/start/update', function(req, res) {
+  apiRouter.post('/start/update', function(req, res) {
     const fbId = req.body.fbId
     startUpdateConversation(bot, fbId)
     res.send('ok')
   })
 
-  app.post('/api/start/signup', function(req, res) {
+  apiRouter.post('/start/signup', function(req, res) {
     const fbId = req.body.fbId
     startSignupConversation(bot, fbId)
     res.send('ok')

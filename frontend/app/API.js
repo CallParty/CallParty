@@ -1,4 +1,3 @@
-const API_URL = 'http://localhost:8081'
 const parse = {
   action: function(a) {
     return {
@@ -9,9 +8,10 @@ const parse = {
       userActions: a.userActions.map(parse.userAction),
       active: a.active,
       type: a.type,
-      memberType: a.memberType,
-      party: a.party,
-      committee: a.committee
+      memberTypes: a.memberTypes,
+      parties: a.parties,
+      committees: a.committees,
+      createdAt: a.createdAt
     }
   },
 
@@ -25,20 +25,21 @@ const parse = {
       id: c._id,
       actions: c.campaignActions.map(parse.action),
       description: c.description,
-      title: c.title
+      title: c.title,
+      createdAt: c.createdAt
     }
   }
 }
 
 function get(endpoint, cb, onErr) {
-  fetch(`${API_URL}${endpoint}`)
+  fetch(endpoint)
     .then(resp => resp.json())
     .then(cb)
     .catch(onErr)
 }
 
 function post(endpoint, data, cb, onErr) {
-  fetch(`${API_URL}${endpoint}`, {
+  fetch(endpoint, {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
@@ -53,31 +54,31 @@ function post(endpoint, data, cb, onErr) {
 
 export default {
   campaigns: function(cb) {
-    get('/campaigns', data => {
+    get('/api/campaigns', data => {
       cb(data.map(parse.campaign))
     })
   },
 
   campaign: function(id, cb) {
-    get(`/campaigns/${id}`, data => {
+    get(`/api/campaigns/${id}`, data => {
       cb(parse.campaign(data))
     })
   },
 
   newCampaign: function(data, cb) {
-    post('/campaigns', data, data => {
+    post('/api/campaigns', data, data => {
       cb(parse.campaign(data))
     })
   },
 
   newCampaignAction: function(id, data, cb) {
-    post(`/campaigns/${id}/action/new`, data, data => {
+    post(`/api/campaigns/${id}/action/new`, data, data => {
       cb(parse.campaign(data))
     })
   },
 
   newCampaignUpdate: function(id, data, cb) {
-    post(`/campaigns/${id}/update/new`, data, data => {
+    post(`/api/campaigns/${id}/update/new`, data, data => {
       cb(parse.campaign(data))
     })
   }
