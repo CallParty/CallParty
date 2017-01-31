@@ -51,9 +51,8 @@ function askForAddressConvo(bot, user, message) {
 }
 
 function handleAddressResponseConvo(bot, user, message) {
-  const geocodingPromise = geocoding.getStateAndCongressionalDistrictFromAddress(message.text)
-  Promise.all([geocodingPromise])
-    .then(function([geocodingResult]) {
+  geocoding.getStateAndCongressionalDistrictFromAddress(message.text)
+    .then(function(geocodingResult) {
       if (!geocodingResult) {
         throw new Error('++ failed to find district from address: ' + message.text)
       }
@@ -61,9 +60,9 @@ function handleAddressResponseConvo(bot, user, message) {
       user.state = geocodingResult.state
       user.congressionalDistrict = geocodingResult.congressional_district.district_number
       user.active = true
-      user.save()
-        .catch(function(err) { throw err })
-      finishSignup1Convo(bot, user, message)
+      user.save().then(function(user) {
+        finishSignup1Convo(bot, user, message)
+      })
     })
     .catch(function(err) {
       // log this exception somehow

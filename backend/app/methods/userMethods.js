@@ -30,7 +30,7 @@ exports.findUser = function(req, res) {
 
 exports.setUserCallback = function(user, callbackPath) {
   user.callbackPath = callbackPath
-  user.save().catch(function(err) { throw err })
+  return user.save()
 }
 
 //--- Using methods in application:

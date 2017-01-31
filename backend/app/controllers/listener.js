@@ -1,7 +1,7 @@
 var startSignupConversation = require('./../conversations/signup').startSignupConversation
 var unsubscribeConvo = require('./../conversations/unsubscribe').unsubscribeConvo
 var runCallback = require('./../conversations/callbackRouter').runCallback
-const { User } = require('../models/index')
+const { User } = require('../models')
 
 
 function handleMessage(bot, message) {
