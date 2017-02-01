@@ -1,5 +1,3 @@
-
-
 function syncBotReply(bot, message, text) {
   return new Promise(function(resolve, reject) {
     bot.reply(message, text, function(err, response) {
