@@ -87,12 +87,11 @@ function callToActionPart2Convo(bot, user, message) {
 // part 3
 function callToActionPart3Convo(bot, user, message) {
   if (['I left a voicemail', 'I talk to a staffer'].indexOf(message.text) >= 0) {
-    // TODO: replace with real gif
     return botReply(bot, message, {
       attachment: {
         type: 'image',
         payload: {
-          url: 'https://storage.googleapis.com/callparty/bummer.gif'
+          url: 'https://storage.googleapis.com/callparty/success.gif'
         }
       }
     }).then(function() {
@@ -106,7 +105,6 @@ function callToActionPart3Convo(bot, user, message) {
     })
   }
   else if (message.text === 'Something went wrong') {
-    // TODO: replace with real gif
     return botReply(bot, message, {
       attachment: {
         type: 'image',
