@@ -7,7 +7,6 @@ const { User, Campaign, Reps } = require('../models')
 const startCallToActionConversation = require('../conversations/calltoaction').startCallToActionConversation
 const startUpdateConversation = require('../conversations/update').startUpdateConversation
 const startSignupConversation = require('../conversations/signup').startSignupConversation
-const startTestConversation1 = require('../conversations/testaction').startTestConversation1
 
 mongoose.Promise = Promise
 
@@ -21,14 +20,15 @@ module.exports = function(apiRouter) {
 
     Promise.all([userPromise, campaignPromise, repPromise])
       .then(function([user, campaign, rep]) {
-        const campaignAction = campaign.campaignActions.id(req.body.campaignActionId)
+        // const campaignAction = campaign.campaignActions.id(req.body.campaignActionId)
 
         startCallToActionConversation(bot, fbId, {
           firstName: user.firstName,
           issueMessage: campaign.description,
           issueLink: campaign.link,
           issueSubject: campaign.title,
-          issueAction: campaignAction.cta,
+          // issueAction: campaignAction.cta,
+          issueAction: 'test',
           repType: rep.legislator_type,
           repName: rep.name.official_full,
           repImage: rep.image_url,
@@ -38,7 +38,7 @@ module.exports = function(apiRouter) {
 
         res.send('ok')
       })
-      .catch(err => console.log(err))
+      .catch(function(err) { throw err })
   })
 
   apiRouter.post('/start/update', function(req, res) {
@@ -50,12 +50,6 @@ module.exports = function(apiRouter) {
   apiRouter.post('/start/signup', function(req, res) {
     const fbId = req.body.fbId
     startSignupConversation(bot, fbId)
-    res.send('ok')
-  })
-
-  apiRouter.post('/start/testaction', function(req, res) {
-    const fbId = req.body.fbId
-    startTestConversation1(bot, fbId)
     res.send('ok')
   })
 

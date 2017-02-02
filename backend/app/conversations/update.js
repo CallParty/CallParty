@@ -1,17 +1,18 @@
+const { User } = require('../models')
+
+
 var startUpdateConversation = function(bot, fbId) {
+  User.findOne({fbId: fbId}).exec().then(function (user) {
+    const fakeMessage = {
+      channel: fbId,
+      user: fbId
+    }
+    updateConvo1(bot, user, fakeMessage)
+  })
+}
 
-  // part 1
-  var updatePart1 = function(response, convo) {
-    convo.say('update message')
-  }
-
-  // start conversation using above parts
-  // use a fakeMessage to initiate the conversation with the correct user
-  var fakeMessage = {
-    'channel': fbId,
-    'user': fbId
-  }
-  bot.startConversation(fakeMessage, updatePart1)
+function updateConvo1(bot, user, message) {
+  bot.reply(message, 'Update convo')
 }
 
 module.exports = {

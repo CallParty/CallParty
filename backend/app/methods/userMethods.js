@@ -9,12 +9,12 @@ exports.createUser = function createUser(req) {
     state: req.state,
     congressionalDistrict: req.congressionalDistrict,
     firstName: req.firstName,
-    lastName: req.lastName
+    lastName: req.lastName,
   })
 
   return user.save()
-    .then(user => user)
-    .catch(err => console.log(err))
+    .then(function(user) { user })
+    .catch(function(err) { throw err })
 }
 
 exports.lookupDistrict = function(req, res) {
@@ -26,6 +26,11 @@ exports.findUser = function(req, res) {
     if (err) return res.send(err)
     console.log(user)
   })
+}
+
+exports.setUserCallback = function(user, callbackPath) {
+  user.callbackPath = callbackPath
+  return user.save()
 }
 
 //--- Using methods in application:
