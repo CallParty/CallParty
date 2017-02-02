@@ -3,7 +3,7 @@ const Promise = require('any-promise')
 const rp = require('request-promise-any')
 const mongoose = require('mongoose')
 const geocoding = require('../utilities/geocoding')
-const syncBotReply = require('../utilities/botkit').syncBotReply
+const botReply = require('../utilities/botkit').botReply
 const { User } = require('../models')
 const { setUserCallback } = require('../methods/userMethods')
 
@@ -38,13 +38,13 @@ function startSignupConversation(bot, fbId) {
 
 function askForAddressConvo(bot, user, message) {
   const organization = 'CallParty' // this should be looked up from the db eventually
-  return syncBotReply(bot, message,
+  return botReply(bot, message,
     `Hi there! Nice to meet you. ` +
     `I’m a bot made to send you calls to action from the people at ${organization}, ` +
     `because taking civic action is way more effective in large groups. ` +
     `You can unsubscribe any time by just saying ‘stop’ or ‘unsubscribe’.`
   ).then(function() {
-    return syncBotReply(bot, message,
+    return botReply(bot, message,
       'First thing’s first: What’s the address of your voting registration?' +
       'I’ll use this to identify who your reps are – don’t worry, I won’t be holding onto it.'
     )
@@ -57,7 +57,7 @@ function handleAddressResponseConvo(bot, user, message) {
       if (!geocodingResult) {
         throw new Error('++ failed to find district from address: ' + message.text)
       }
-      return Promise.all([geocodingResult, syncBotReply(bot, message, 'Great!')])
+      return Promise.all([geocodingResult, botReply(bot, message, 'Great!')])
     })
     .then(function([geocodingResult]) {
       user.state = geocodingResult.state
@@ -79,7 +79,7 @@ function handleAddressResponseConvo(bot, user, message) {
 }
 
 function finishSignup1Convo(bot, user, message) {
-  return syncBotReply(bot, message,
+  return botReply(bot, message,
     'Now that that’s sorted, we’ll reach out when there’s an issue that you can take an action about, ' +
     'including the rep for you to call and how to talk to them. ' +
     'We’ll also send updates and outcomes on the issues we send. Sound fun?'
@@ -88,7 +88,7 @@ function finishSignup1Convo(bot, user, message) {
 }
 
 function finishSignup2Convo(bot, user, message) {
-  return syncBotReply(bot, message, 'Excellent. Have a nice day, and talk soon!')
+  return botReply(bot, message, 'Excellent. Have a nice day, and talk soon!')
     .then(() => setUserCallback(user, null))
 }
 

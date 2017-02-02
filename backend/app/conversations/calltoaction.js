@@ -1,7 +1,7 @@
 const { stripIndent } = require('common-tags')
 const { User } = require('../models')
 const { setUserCallback } = require('../methods/userMethods')
-const { syncBotReply } = require('../utilities/botkit')
+const { botReply } = require('../utilities/botkit')
 
 function startCallToActionConversation(bot, fbId, convoData) {
   return User.findOne({fbId: fbId}).exec().then(function (user) {
@@ -20,15 +20,15 @@ function startCallToActionConversation(bot, fbId, convoData) {
 
 // part 1
 function callToActionPart1Convo(bot, user, message) {
-  return syncBotReply(bot, message,
+  return botReply(bot, message,
     `Hi ${user.convoData.firstName}. We've got an issue to call about.`
   )
   .then(function() {
-    return syncBotReply(bot, message, `${user.convoData.issueMessage}. ` +
+    return botReply(bot, message, `${user.convoData.issueMessage}. ` +
       `You can find out more about the issue here ${user.convoData.issueLink}.`)
   })
   .then(function() {
-    return syncBotReply(bot, message, stripIndent`
+    return botReply(bot, message, stripIndent`
       You'll be calling ${user.convoData.repType} ${user.convoData.repName}. ` +
       `When you call you'll talk to a staff member, or you'll leave a voicemail.
       Let them know:
@@ -40,7 +40,7 @@ function callToActionPart1Convo(bot, user, message) {
     `)
   })
   .then(function() {
-    return syncBotReply(bot, message, stripIndent`
+    return botReply(bot, message, stripIndent`
       Rep card
       ${user.convoData.repImage}
       ${user.convoData.repName}
@@ -48,7 +48,7 @@ function callToActionPart1Convo(bot, user, message) {
       * ${user.convoData.repWebsite} ⇢
     `)
   })
-  .then(() => syncBotReply(bot, message, 'Give me a thumbs up once you’ve tried to call!'))
+  .then(() => botReply(bot, message, 'Give me a thumbs up once you’ve tried to call!'))
   .then(() => setUserCallback(user, '/calltoaction/part2'))
 }
 
@@ -80,7 +80,7 @@ function callToActionPart2Convo(bot, user, message) {
       }
     }
   }
-  return syncBotReply(bot, message, msg_attachment)
+  return botReply(bot, message, msg_attachment)
     .then(() => setUserCallback(user, '/calltoaction/part3'))
 }
 
@@ -88,7 +88,7 @@ function callToActionPart2Convo(bot, user, message) {
 function callToActionPart3Convo(bot, user, message) {
   if (['I left a voicemail', 'I talk to a staffer'].indexOf(message.text) >= 0) {
     // TODO: gifs are not sending
-    return syncBotReply(bot, message, {
+    return botReply(bot, message, {
       attachment: {
         type: 'video',
         payload: {
@@ -96,10 +96,10 @@ function callToActionPart3Convo(bot, user, message) {
         }
       }
     }).then(function() {
-      return syncBotReply(bot, message, 'Woo thanks for your work! We’ve had [callCount] calls so far. ' +
+      return botReply(bot, message, 'Woo thanks for your work! We’ve had [callCount] calls so far. ' +
         'We’ll reach out when we have updates and an outcome on the issue.')
     }).then(function() {
-      return syncBotReply(bot, message, 'Share this action with your friends to make it a party [link]')
+      return botReply(bot, message, 'Share this action with your friends to make it a party [link]')
     }).then(function() {
       // calltoaction is over
       return setUserCallback(user, null)
@@ -107,7 +107,7 @@ function callToActionPart3Convo(bot, user, message) {
   }
   else if (message.text === 'Something went wrong') {
     // TODO: gifs are not sending
-    return syncBotReply(bot, message, {
+    return botReply(bot, message, {
       attachment: {
         type: 'video',
         payload: {
@@ -116,7 +116,7 @@ function callToActionPart3Convo(bot, user, message) {
       }
     })
     .then(function() {
-      return syncBotReply(bot, message,
+      return botReply(bot, message,
         'We’re sorry to hear that, but good on you for trying! Want to tell us about it?'
       )
     }).then(() => setUserCallback(user, '/calltoaction/thanksforsharing'))
@@ -128,7 +128,7 @@ function callToActionPart3Convo(bot, user, message) {
 
 // thanks for sharing
 function thanksForSharingConvo(bot, user, message) {
-  return syncBotReply(bot, message, 'Thanks for sharing! We’ll reach back out if we can be helpful.')
+  return botReply(bot, message, 'Thanks for sharing! We’ll reach back out if we can be helpful.')
     .then(function() {
       // TODO: log response.text to slack so we can see the feedback
       return setUserCallback(user, null)
