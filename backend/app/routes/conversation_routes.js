@@ -7,6 +7,7 @@ const { User, Campaign, Reps } = require('../models')
 const startCallToActionConversation = require('../conversations/calltoaction').startCallToActionConversation
 const startUpdateConversation = require('../conversations/update').startUpdateConversation
 const startSignupConversation = require('../conversations/signup').startSignupConversation
+const startTestConversation = require('../conversations/test').startTestConversation
 
 mongoose.Promise = Promise
 
@@ -50,6 +51,12 @@ module.exports = function(apiRouter) {
   apiRouter.post('/start/signup', function(req, res) {
     const fbId = req.body.fbId
     startSignupConversation(bot, fbId)
+    res.send('ok')
+  })
+
+  apiRouter.post('/start/test', function(req, res) {
+    const fbId = req.body.fbId
+    startTestConversation(bot, fbId)
     res.send('ok')
   })
 

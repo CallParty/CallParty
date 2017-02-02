@@ -87,12 +87,12 @@ function callToActionPart2Convo(bot, user, message) {
 // part 3
 function callToActionPart3Convo(bot, user, message) {
   if (['I left a voicemail', 'I talk to a staffer'].indexOf(message.text) >= 0) {
-    // TODO: gifs are not sending
+    // TODO: replace with real gif
     return botReply(bot, message, {
       attachment: {
-        type: 'video',
+        type: 'image',
         payload: {
-          url: 'http://i.imgur.com/d3L1XIm.gif'
+          url: 'https://storage.googleapis.com/callparty/bummer.gif'
         }
       }
     }).then(function() {
@@ -106,12 +106,12 @@ function callToActionPart3Convo(bot, user, message) {
     })
   }
   else if (message.text === 'Something went wrong') {
-    // TODO: gifs are not sending
+    // TODO: replace with real gif
     return botReply(bot, message, {
       attachment: {
-        type: 'video',
+        type: 'image',
         payload: {
-          url: 'blob:http://imgur.com/586e2006-7a61-45c0-8e04-c492ad368456'
+          url: 'https://storage.googleapis.com/callparty/bummer.gif'
         }
       }
     })
