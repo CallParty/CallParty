@@ -1,4 +1,4 @@
-var facebook_handler = require('../botkit_controller/botkit_setup').handler
+var facebook_handler = require('../botkit_controller/botkitSetup').handler
 
 module.exports = function (apiRouter) {
   // public pages=============================================

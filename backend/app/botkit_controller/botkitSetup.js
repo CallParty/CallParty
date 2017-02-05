@@ -20,7 +20,7 @@ var controller = Botkit.facebookbot({
 var bot = controller.spawn({})
 
 // SETUP
-require('./facebook_setup')(controller)
+require('./facebookSetup')(controller)
 
 // Conversation logic
 require('./listener')(controller)
