@@ -3,6 +3,12 @@
   <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <script src="https://cdn.ravenjs.com/3.10.0/raven.min.js" crossorigin="anonymous"></script>
+    <script type="text/javacsript">
+      // TODO(joshblum): Make this a config var when open sourcing.
+      Raven.config('https://994a895dccec491d92bf5f99a9bd349f@sentry.io/135819').install()
+    </script>
+
     <title>CallParty</title>
     <link rel="stylesheet" type="text/css" href="/build/css/style.css">
   </head>
