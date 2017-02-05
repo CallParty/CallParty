@@ -1,4 +1,4 @@
-- hosts: stagingservers
+- hosts: tag_callparty-staging
   user: ubuntu
   sudo: True
 

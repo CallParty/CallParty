@@ -20,6 +20,7 @@
   - name: npm install backend/package.json
     npm: path={{backend_dir}} executable=/usr/local/bin/npm
 
+  # sometimes this command needs to be run twice, because warnings register as errors
   - name: npm install frontend/package.json
     npm: path={{frontend_dir}} executable=/usr/local/bin/npm
 

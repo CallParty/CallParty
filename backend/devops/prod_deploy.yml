@@ -1,4 +1,4 @@
-- hosts: prodservers
+- hosts: tag_callparty-prod
   user: ubuntu
   sudo: True
 
