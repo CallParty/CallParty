@@ -1,6 +1,13 @@
 // modules =================================================
 const express = require('express') // framework d'appli
 const app = express()
+const Raven = require('raven');
+// Must configure Raven before doing anything else with it
+Raven.config('__DSN__').install();
+// The request handler must be the first middleware on the app
+app.use(Raven.requestHandler());
+// The error handler must be before any other error middleware
+app.use(Raven.errorHandler());
 const apiRouter = express.Router()
 const bodyParser = require('body-parser') // BodyParser pour POST
 const http = require('http').Server(app) // préparer le serveur web

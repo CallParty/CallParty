@@ -3,6 +3,11 @@
   <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <script src="https://cdn.ravenjs.com/3.10.0/raven.min.js" crossorigin="anonymous"></script>
+    <script type="text/javacsript">
+      Raven.config('https://<key>@sentry.io/<project>').install()
+    </script>
+
     <title>CallParty</title>
     <link rel="stylesheet" type="text/css" href="/build/css/style.css">
   </head>
