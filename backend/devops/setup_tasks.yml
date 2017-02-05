@@ -1,0 +1,59 @@
+  - name: add nginx ppa
+    action: apt_repository repo=ppa:nginx/stable state=present
+
+  - name: Install Packages
+    apt: name={{ item }} update_cache=yes state=latest
+    with_items:
+      - build-essential
+      - npm
+      - nodejs-legacy
+      - git
+      - mcrypt
+      - nginx
+      - curl
+
+  - name: install nvm
+    git: repo=https://github.com/creationix/nvm.git dest=~/.nvm version=v0.32.1
+    become: yes
+    become_user: ubuntu
+
+  - name: source nvm in ~/.profile
+    lineinfile: dest=~/.profile line="source ~/.nvm/nvm.sh" create=yes
+    become: yes
+    become_user: ubuntu
+
+  - name: install node version 7.4.0
+    command: sudo -iu ubuntu nvm install v7.4.0
+
+  - name: set default node version to 7.4.0
+    command: sudo -iu ubuntu nvm alias default v7.4.0
+
+  - name: create symlink from nvm node to /usr/local/bin/node
+    file: src=/home/ubuntu/.nvm/versions/node/v7.4.0/bin/{{item}} dest=/usr/local/bin/{{item}} state=link
+    with_items:
+      - node
+      - npm
+
+  - name: remove default nginx site
+    action: file path=/etc/nginx/sites-enabled/default state=absent
+
+  - name: write nginx.conf
+    action: template src=templates/nginx.conf dest=/etc/nginx/nginx.conf
+
+  - name: Install pm2
+    npm: name=pm2 global=yes production=yes
+
+  - name: create webgroup if it doesn't exist
+    group: name=webgroup state=present
+
+  - name: ensure ubuntu belongs to webgroup
+    user: name=ubuntu groups=webgroup append=yes
+
+  - name: copy over ssh keys for deploy purposes
+    action: copy src={{item.from}} dest={{item.to}} mode={{item.mode}}
+    with_items:
+      - { from: 'secret_files/deploy_rsa.pub', to: '/root/.ssh/id_rsa.pub', mode: '0644' }
+      - { from: 'secret_files/deploy_rsa', to: '/root/.ssh/id_rsa', mode: '0600' }
+
+
+

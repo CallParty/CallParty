@@ -1,0 +1,9 @@
+- hosts: tag_callparty-staging
+  user: ubuntu
+  sudo: True
+
+  tasks:
+    - include_vars: vars.yml
+    - include_vars: staging_vars.yml
+    - include: setup_tasks.yml
+

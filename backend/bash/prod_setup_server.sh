@@ -2,4 +2,4 @@
 BASEDIR=$( cd $(dirname $(dirname $0)) ; pwd -P )
 cd $BASEDIR/devops
 export GCE_INI_PATH=$BASEDIR/devops/gce.ini
-ansible-playbook -i inventory prod_deploy.yml
+ansible-playbook -i inventory prod_setup_server.yml
