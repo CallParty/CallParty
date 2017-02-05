@@ -20,7 +20,7 @@ var controller = Botkit.facebookbot({
 var bot = controller.spawn({})
 
 // SETUP
-require('./facebook_setup')(controller)
+require('./facebookSetup')(controller)
 
 // Conversation logic
 require('./listener')(controller)
@@ -55,7 +55,7 @@ function handler(obj) {
         }
         // When a user clicks on "Send to Messenger"
         else if (facebook_message.optin ||
-                (facebook_message.postback && facebook_message.postback.payload === 'optin')) {
+          (facebook_message.postback && facebook_message.postback.payload === 'optin')) {
           message = {
             optin: facebook_message.optin,
             user: facebook_message.sender.id,
@@ -63,7 +63,7 @@ function handler(obj) {
             timestamp: facebook_message.timestamp
           }
 
-            // save if user comes from "Send to Messenger"
+          // save if user comes from "Send to Messenger"
           create_user_if_new(facebook_message.sender.id, facebook_message.timestamp)
 
           controller.trigger('facebook_optin', [bot, message])
