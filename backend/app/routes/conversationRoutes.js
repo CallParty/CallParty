@@ -44,7 +44,8 @@ module.exports = function(apiRouter) {
 
   apiRouter.post('/start/update', function(req, res) {
     const fbId = req.body.fbId
-    startUpdateConversation(bot, fbId)
+    const updateMessage = req.body.updateMessage
+    startUpdateConversation(bot, fbId, updateMessage)
     res.send('ok')
   })
 
