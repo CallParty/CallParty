@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const Promise = require('es6-promise')
 
-const bot = require('../botkit_controller/botkit').bot
+const bot = require('../botkit_controller/botkit_setup').bot
 const { User, Campaign, Reps } = require('../models')
 
 const startCallToActionConversation = require('../conversations/calltoaction').startCallToActionConversation
@@ -25,16 +25,16 @@ module.exports = function(apiRouter) {
 
         startCallToActionConversation(bot, fbId, {
           firstName: user.firstName,
-          issueMessage: campaign.description,
-          issueLink: campaign.link,
-          issueSubject: campaign.title,
+          issueMessage: 'test', //campaign.description,
+          issueLink: 'test', //campaign.link,
+          issueSubject: 'test', //campaign.title,
           // issueAction: campaignAction.cta,
           issueAction: 'test',
-          repType: rep.legislator_type,
-          repName: rep.name.official_full,
-          repImage: rep.image_url,
-          repPhoneNumber: rep.phone,
-          repWebsite: rep.url
+          repType: 'test', // rep.legislator_type,
+          repName: 'test', // rep.name.official_full,
+          repImage: 'test', // rep.image_url,
+          repPhoneNumber: 'test', // rep.phone,
+          repWebsite: 'test', //rep.url
         })
 
         res.send('ok')
