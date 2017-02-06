@@ -7,7 +7,7 @@ module.exports = function (apiRouter) {
     res.send('hello')
   })
 
-  apiRouter.get('/test3', function (req, res) {
+  apiRouter.get('/test', function (req, res) {
     res.json({ message: 'hello' })
   })
 
