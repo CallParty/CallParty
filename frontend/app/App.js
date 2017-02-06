@@ -1,8 +1,10 @@
 import React, { Component } from 'react'
-import { Campaigns, Campaign, NewCampaign } from './Campaign'
-import { NewUpdate, NewAction } from './Conversation'
 import { Router, Route, Link, IndexRoute, browserHistory } from 'react-router'
 import NotificationSystem from 'react-notification-system'
+import { Campaigns, Campaign, NewCampaign } from './Campaign'
+import { NewUpdate, NewAction } from './Conversation'
+import RequireAuthenticationContainer from './RequireAuthenticationContainer'
+import Login from './Login'
 
 const Container = (props) => {
   return <div>
@@ -39,11 +41,14 @@ class App extends Component {
       <main>
         <Router history={browserHistory}>
           <Route path="/" component={Container}>
-            <IndexRoute component={Campaigns} />
-            <Route path="new" component={NewCampaign} />
-            <Route path=":id" component={Campaign} />
-            <Route path=":id/action/new" component={NewAction} />
-            <Route path=":id/update/new" component={NewUpdate} />
+            <Route path="login" component={Login} />
+            <Route component={RequireAuthenticationContainer}>
+              <IndexRoute component={Campaigns} />
+              <Route path="new" component={NewCampaign} />
+              <Route path=":id" component={Campaign} />
+              <Route path=":id/action/new" component={NewAction} />
+              <Route path=":id/update/new" component={NewUpdate} />
+            </Route>
           </Route>
           <Route path="*" component={NotFound} />
         </Router>

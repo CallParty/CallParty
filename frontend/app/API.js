@@ -1,3 +1,5 @@
+import { browserHistory } from 'react-router'
+
 const parse = {
   action: function(a) {
     return {
@@ -32,24 +34,57 @@ const parse = {
 }
 
 function get(endpoint, cb, onErr) {
-  fetch(endpoint)
-    .then(resp => resp.json())
-    .then(cb)
-    .catch(onErr)
+  const sessionToken = window.localStorage.getItem('callparty_session_token')
+
+  fetch(endpoint, {
+    headers: {
+      Authorization: `Bearer ${sessionToken}`
+    }
+  })
+  .then(resp => {
+    if (resp.status === 401) {
+      throw new Error('unauthorized')
+    }
+    return resp
+  })
+  .then(resp => resp.json())
+  .then(cb)
+  .catch(err => {
+    if (err.message === 'unauthorized') {
+      browserHistory.push('/login')
+      return
+    }
+    onErr(err)
+  })
 }
 
 function post(endpoint, data, cb, onErr) {
+  const sessionToken = window.localStorage.getItem('callparty_session_token')
+
   fetch(endpoint, {
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      method: 'post',
-      body: JSON.stringify(data)
-    })
-    .then(resp => resp.json())
-    .then(cb)
-    .catch(onErr)
+    headers: {
+      Authorization: `Bearer ${sessionToken}`,
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
+    },
+    method: 'post',
+    body: JSON.stringify(data)
+  })
+  .then(resp => {
+    if (resp.status === 401) {
+      throw new Error('unauthorized')
+    }
+    return resp
+  })
+  .then(resp => resp.json())
+  .then(cb)
+  .catch(err => {
+    if (err.message === 'unauthorized') {
+      browserHistory.push('/login')
+      return
+    }
+    onErr(err)
+  })
 }
 
 export default {
