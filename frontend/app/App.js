@@ -6,10 +6,17 @@ import { NewUpdate, NewAction } from './Conversation'
 import RequireAuthenticationContainer from './RequireAuthenticationContainer'
 import Login from './Login'
 
+function logout() {
+  window.localStorage.removeItem('callparty_session_token')
+  browserHistory.push('/login')
+}
+
 const Container = (props) => {
+  const logoutButton = props.location.pathname !== '/login' ? <a onClick={logout} href="">Sign Out</a> : null
   return <div>
     <header className="main-header">
       <Link to="/">CallParty</Link>
+      {logoutButton}
     </header>
     {props.children}
   </div>
@@ -32,13 +39,10 @@ class App extends Component {
     this.notifications.addNotification(notification)
   }
 
-  componentDidMount() {
-    this.notifications = this.refs.notifications
-  }
-
   render() {
     return (
       <main>
+        <NotificationSystem ref={notifications => { this.notifications = notifications }} style={false} />
         <Router history={browserHistory}>
           <Route path="/" component={Container}>
             <Route path="login" component={Login} />
@@ -52,7 +56,6 @@ class App extends Component {
           </Route>
           <Route path="*" component={NotFound} />
         </Router>
-        <NotificationSystem ref="notifications" style={false} />
       </main>
     )
   }

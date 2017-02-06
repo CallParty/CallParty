@@ -19,7 +19,8 @@ export default class RequireAuthenticationContainer extends React.Component {
       browserHistory.push({
         pathname: '/login',
         state: {
-          redirectPath: this.props.location.pathname
+          redirectPath: this.props.location.pathname,
+          unauthorized: true
         }
       })
     }

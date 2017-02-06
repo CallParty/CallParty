@@ -33,13 +33,21 @@ const parse = {
   }
 }
 
+function redirectToLogin() {
+  window.localStorage.removeItem('callparty_session_token')
+  browserHistory.push({
+    pathname: '/login',
+    state: {
+      unauthorized: true
+    }
+  })
+}
+
 function get(endpoint, cb, onErr) {
   const sessionToken = window.localStorage.getItem('callparty_session_token')
 
   fetch(endpoint, {
-    headers: {
-      Authorization: `Bearer ${sessionToken}`
-    }
+    headers: { Authorization: `Bearer ${sessionToken}` }
   })
   .then(resp => {
     if (resp.status === 401) {
@@ -51,7 +59,7 @@ function get(endpoint, cb, onErr) {
   .then(cb)
   .catch(err => {
     if (err.message === 'unauthorized') {
-      browserHistory.push('/login')
+      redirectToLogin()
       return
     }
     onErr(err)
@@ -80,7 +88,7 @@ function post(endpoint, data, cb, onErr) {
   .then(cb)
   .catch(err => {
     if (err.message === 'unauthorized') {
-      browserHistory.push('/login')
+      redirectToLogin()
       return
     }
     onErr(err)
@@ -116,5 +124,16 @@ export default {
     post(`/api/campaigns/${id}/update/new`, data, data => {
       cb(parse.campaign(data))
     })
+  },
+
+  login: function(username, password, cb, onErr) {
+    const encodedCredentials = btoa(`${username}:${password}`)
+    fetch('/api/token', {
+      headers: { Authorization: `Basic ${encodedCredentials}` }
+    })
+    .then(resp => resp.json())
+    .then(({ token }) => window.localStorage.setItem('callparty_session_token', token))
+    .then(cb)
+    .catch(onErr)
   }
 }
