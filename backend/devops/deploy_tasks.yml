@@ -47,18 +47,8 @@
   - name: make log_dir writeable by webgroup
     action: file path={{log_dir}} mode=u=rwX,g=rwX,o=X recurse=yes group=webgroup owner=ubuntu
 
-  - name: Stop pm2
-    command: "{{node_bin}}/pm2 stop all"
-    ignore_errors: yes
-    become: true
-    become_user: ubuntu
-    tags:
-      - quick
-
-  - name: Start pm2
-    command: "{{node_bin}}/pm2 start server.js --name {{app_name}} chdir={{backend_dir}}"
-    become: true
-    become_user: ubuntu
+  - name: Start pm2 (auto-restarts if already started)
+    command: "{{node_bin}}/pm2 start {{config_dir}}/pm2.json"
     tags:
       - quick
 

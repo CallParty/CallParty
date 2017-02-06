@@ -44,6 +44,12 @@
     npm: name=pm2 global=yes production=yes
     sudo: yes
 
+  - name: ensure config directory
+    action: file dest={{config_dir}} state=directory
+
+  - name: Copy pm2.json file
+    action: template src=templates/pm2.json dest={{config_dir}}/pm2.json
+
   - name: create webgroup if it doesn't exist
     group: name=webgroup state=present
 

@@ -1,0 +1,9 @@
+{
+  "apps" : [
+    {
+      "name" : "hello_webapp",
+      "script" : "{{backend_dir}}/server.js",
+      "cwd" : "{{backend_dir}}"
+    }
+  ]
+}
