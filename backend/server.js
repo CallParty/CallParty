@@ -32,8 +32,8 @@ app.set('view engine', 'ejs')
 
 // routes
 require('./app/routes/routes')(apiRouter)
-require('./app/routes/conversation_routes')(apiRouter)
-require('./app/routes/admin_API')(apiRouter)
+require('./app/routes/conversationRoutes')(apiRouter)
+require('./app/routes/adminRoutes')(apiRouter)
 
 app.use('/api', apiRouter)
 
