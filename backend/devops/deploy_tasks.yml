@@ -49,6 +49,8 @@
 
   - name: Start pm2 (auto-restarts if already started)
     command: "{{node_bin}}/pm2 start {{config_dir}}/pm2.json"
+    become: true
+    become_user: ubuntu
     tags:
       - quick
 
