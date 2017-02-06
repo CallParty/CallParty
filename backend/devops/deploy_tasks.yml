@@ -48,18 +48,15 @@
     action: file path={{log_dir}} mode=u=rwX,g=rwX,o=X recurse=yes group=webgroup owner=ubuntu
 
   - name: Stop pm2
-    sudo_user: ubuntu
-    command: pm2 stop all
+    command: "{{node_bin}}/pm2 stop all"
     ignore_errors: yes
     tags:
-      quick
+      - quick
 
   - name: Start pm2
-    sudo_user: ubuntu
-    command: pm2 start server.js --name {{app_name}} chdir={{backend_dir}}
-    ignore_errors: yes
+    command: "{{node_bin}}/pm2 start server.js --name {{app_name}} chdir={{backend_dir}}"
     tags:
-      quick
+      - quick
 
   - name: restart nginx
     command: /bin/true

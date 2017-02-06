@@ -1,11 +1,19 @@
 - hosts: tag_callparty-prod
   user: ubuntu
-  sudo: True
+  sudo: true
 
   tasks:
+
     - include_vars: vars.yml
+      tags:
+        - quick
+
     - include_vars: prod_vars.yml
+      tags:
+        - quick
+
     - include: deploy_tasks.yml
+
 
   handlers:
 

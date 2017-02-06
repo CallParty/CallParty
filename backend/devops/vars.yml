@@ -20,3 +20,4 @@ google_key_location: /Users/maxfowler/Dropbox/base/projects/callparty/callparty/
 google_project_id: neat-bongo-155416
 nginx_crt: secret_files/memoryprosthetics_nginx.crt
 nginx_key: secret_files/memoryprosthetics_nginx.key
+node_bin: /home/ubuntu/.nvm/versions/node/v7.4.0/bin
