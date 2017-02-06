@@ -50,11 +50,15 @@
   - name: Stop pm2
     command: "{{node_bin}}/pm2 stop all"
     ignore_errors: yes
+    become: true
+    become_user: ubuntu
     tags:
       - quick
 
   - name: Start pm2
     command: "{{node_bin}}/pm2 start server.js --name {{app_name}} chdir={{backend_dir}}"
+    become: true
+    become_user: ubuntu
     tags:
       - quick
 
