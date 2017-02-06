@@ -1,23 +1,12 @@
 var mongoose = require('mongoose'),
-  Schema = mongoose.Schema
-
-var repTerms = new Schema({
-  type: String,
-  start: String,
-  end: String,
-  state: String,
-  district: String,
-  party: String
-})
+    Schema = mongoose.Schema
 
 var representativesSchema = new Schema({
   id: String,
   full_name: String,
-  name: {
-    first: String,
-    last: String,
-    official_full: String
-  },
+  first_name: String,
+  last_name: String,
+  official_full: String,
   gender: String,
   state: String,
   legislator_type: String,
@@ -28,7 +17,7 @@ var representativesSchema = new Schema({
   phone: String,
   contact_form: String,
   state_rank: String,
-  terms: [repTerms],
+  district: String,
   bioguide: String,
   govtrack: String,
   wikipedia: String,
