@@ -41,8 +41,21 @@ function downloadCommitteeMembershipYamlFile() {
 function loadCommitteesFromFiles() {
   console.log('Adding committees to the db...')
 
+  if (!fs.existsSync(COMMITTEE_FILE_NAME) || !fs.existsSync(COMMITTEE_MEMBERSHIP_FILE_NAME)) {
+    throw new Error('Missing committee data YAML files!')
+  }
+
+  return updateCommitteesFromYaml()
+    .then(committees => Promise.all([
+      mapCommitteesByThomasId(committees),
+      mapSubcommitteesByThomasId(),
+      mapRepsByBioguide()
+    ]))
+    .then(associateRepsWithCommittees)
+}
+
+function updateCommitteesFromYaml() {
   const committeesFromYaml = yaml.safeLoad(fs.readFileSync(COMMITTEE_FILE_NAME))
-  const committeeMemberships = yaml.safeLoad(fs.readFileSync(COMMITTEE_MEMBERSHIP_FILE_NAME))
 
   return Promise.all(committeesFromYaml.map(function(committeeFromYaml) {
     return Committee.findOneAndUpdate(
@@ -79,71 +92,78 @@ function loadCommitteesFromFiles() {
       .then(() => committee)
     })
   }))
-  .then(function(committees) {
-    return committees.reduce(function(committeesByThomasId, committee) {
-      committeesByThomasId[committee.thomasId] = committee
-      return committeesByThomasId
-    }, {})
-  })
-  .then(function(committeesByThomasId) {
-    return Subcommittee.find({}).populate('committee').exec()
-      .then(subcommittees => subcommittees.reduce(function(subcommitteesByThomasId, subcommittee) {
-        const jointThomasId = subcommittee.committee.thomasId + subcommittee.thomasId
-        subcommitteesByThomasId[jointThomasId] = subcommittee
-        return subcommitteesByThomasId
-      }, {}))
-      .then(subcommitteesByThomasId => [committeesByThomasId, subcommitteesByThomasId])
-  })
-  .then(function([committeesByThomasId, subcommitteesByThomasId]) {
-    return Reps.find({}).select('_id bioguide').exec()
-      .then(reps => reps.reduce(function(repIdsByBioguide, rep) {
-        repIdsByBioguide[rep.bioguide] = rep._id
-        return repIdsByBioguide
-      }, {}))
-      .then(repIdsByBioguide => [committeesByThomasId, subcommitteesByThomasId, repIdsByBioguide])
-  })
-  .then(function([committeesByThomasId, subcommitteesByThomasId, repIdsByBioguide]) {
-    console.log('Associating committee members with committees...')
+}
 
-    return Promise.all(Object.entries(committeeMemberships).reduce(function(promises, [thomasId, committeeMembers]) {
-      const committee = committeesByThomasId[thomasId]
-      const subcommittee = subcommitteesByThomasId[thomasId]
+function mapCommitteesByThomasId(committees) {
+  return committees.reduce(function(committeesByThomasId, committee) {
+    committeesByThomasId[committee.thomasId] = committee
+    return committeesByThomasId
+  }, {})
+}
 
-      let Model = null
-      let foreignKey = null
-      let record = null
-      if (committee) {
-        Model = RepresentativeCommittee
-        foreignKey = 'committee'
-        record = committee
-      } else if (subcommittee) {
-        Model = RepresentativeSubcommittee
-        foreignKey = 'subcommittee'
-        record = subcommittee
-      }
+function mapSubcommitteesByThomasId() {
+  return Subcommittee.find({}).populate('committee').exec()
+    .then(subcommittees => subcommittees.reduce(function(subcommitteesByThomasId, subcommittee) {
+      // the commmittee membership YAML file contains some subcommittees identified by the concatenation
+      // of the thomas_id of the parent committee and the thomas_id of the subcommittee
+      // see https://github.com/unitedstates/congress-legislators#committee-membership-data-dictionary
+      const jointThomasId = subcommittee.committee.thomasId + subcommittee.thomasId
+      subcommitteesByThomasId[jointThomasId] = subcommittee
+      return subcommitteesByThomasId
+    }, {}))
+}
 
-      if (Model) {
-        promises.concat(committeeMembers.reduce(function(repAssociationPromises, committeeMember) {
-          const repId = repIdsByBioguide[committeeMember.bioguide]
-          if (repId) {
-            const repAssociationPromise = Model.findOneAndUpdate(
-              { representative: repId, [foreignKey]: record._id },
-              {},
-              { upsert: true, new: true, setDefaultsOnInsert: true }
-            ).exec()
-            repAssociationPromises.push(repAssociationPromise)
-          } else {
-            console.log(`Could not find a Representative in the db with the bioguide id: ${committeeMember.bioguide}`)
-          }
-          return repAssociationPromises
-        }, []))
-      } else {
-        console.log(`Could not find a committee or subcommittee in the db with the THOMAS id: ${thomasId}`)
-      }
+function mapRepsByBioguide() {
+  return Reps.find({}).select('_id bioguide').exec()
+    .then(reps => reps.reduce(function(repIdsByBioguide, rep) {
+      repIdsByBioguide[rep.bioguide] = rep._id
+      return repIdsByBioguide
+    }, {}))
+}
 
-      return promises
-    }, []))
-  })
+function associateRepsWithCommittees([committeesByThomasId, subcommitteesByThomasId, repIdsByBioguide]) {
+  console.log('Associating committee members with committees...')
+
+  const committeeMemberships = yaml.safeLoad(fs.readFileSync(COMMITTEE_MEMBERSHIP_FILE_NAME))
+
+  return Promise.all(Object.entries(committeeMemberships).reduce(function(promises, [thomasId, committeeMembers]) {
+    const committee = committeesByThomasId[thomasId]
+    const subcommittee = subcommitteesByThomasId[thomasId]
+
+    let Model = null
+    let foreignKey = null
+    let record = null
+    if (committee) {
+      Model = RepresentativeCommittee
+      foreignKey = 'committee'
+      record = committee
+    } else if (subcommittee) {
+      Model = RepresentativeSubcommittee
+      foreignKey = 'subcommittee'
+      record = subcommittee
+    }
+
+    if (Model) {
+      promises.concat(committeeMembers.reduce(function(repAssociationPromises, committeeMember) {
+        const repId = repIdsByBioguide[committeeMember.bioguide]
+        if (repId) {
+          const repAssociationPromise = Model.findOneAndUpdate(
+            { representative: repId, [foreignKey]: record._id },
+            {},
+            { upsert: true, new: true, setDefaultsOnInsert: true }
+          ).exec()
+          repAssociationPromises.push(repAssociationPromise)
+        } else {
+          console.log(`Could not find a Representative in the db with the bioguide id: ${committeeMember.bioguide}`)
+        }
+        return repAssociationPromises
+      }, []))
+    } else {
+      console.log(`Could not find a committee or subcommittee in the db with the THOMAS id: ${thomasId}`)
+    }
+
+    return promises
+  }, []))
 }
 
 module.exports = {
