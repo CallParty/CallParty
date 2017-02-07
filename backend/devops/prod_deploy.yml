@@ -1,13 +1,22 @@
-- hosts: prodservers
-  user: ubuntu
-  sudo: True
+- hosts: tag_callparty-prod
+  become: yes
+  become_user: root
 
   tasks:
+
     - include_vars: vars.yml
+      tags:
+        - quick
+
     - include_vars: prod_vars.yml
+      tags:
+        - quick
+
     - include: deploy_tasks.yml
+
 
   handlers:
 
     - name: restart nginx
       action: service name=nginx state=restarted
+      sudo: true

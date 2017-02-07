@@ -1,0 +1,9 @@
+- hosts: tag_callparty-prod
+  become: yes
+  become_user: root
+
+  tasks:
+    - include_vars: vars.yml
+    - include_vars: prod_vars.yml
+    - include: setup_tasks.yml
+

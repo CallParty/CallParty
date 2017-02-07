@@ -20,6 +20,7 @@
   - name: npm install backend/package.json
     npm: path={{backend_dir}} executable=/usr/local/bin/npm
 
+  # sometimes this command needs to be run twice, because warnings register as errors
   - name: npm install frontend/package.json
     npm: path={{frontend_dir}} executable=/usr/local/bin/npm
 
@@ -46,19 +47,12 @@
   - name: make log_dir writeable by webgroup
     action: file path={{log_dir}} mode=u=rwX,g=rwX,o=X recurse=yes group=webgroup owner=ubuntu
 
-  - name: Stop pm2
-    sudo_user: ubuntu
-    command: pm2 stop all
-    ignore_errors: yes
+  - name: Start pm2 (auto-restarts if already started)
+    command: "{{node_bin}}/pm2 start {{config_dir}}/pm2.json"
+    become: true
+    become_user: ubuntu
     tags:
-      quick
-
-  - name: Start pm2
-    sudo_user: ubuntu
-    command: pm2 start server.js --name {{app_name}} chdir={{backend_dir}}
-    ignore_errors: yes
-    tags:
-      quick
+      - quick
 
   - name: restart nginx
     command: /bin/true

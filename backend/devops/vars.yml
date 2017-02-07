@@ -2,7 +2,9 @@ app_name: hello_webapp
 repo_url: git@github.com:mhfowler/CallParty.git
 repo_remote: origin
 repo_branch: master
+srv_dir: /srv
 src_dir: /srv/hello_webapp
+config_dir: /srv/config
 backend_dir: /srv/hello_webapp/backend
 frontend_dir: /srv/hello_webapp/frontend
 log_dir: /srv/log
@@ -20,3 +22,4 @@ google_key_location: /Users/maxfowler/Dropbox/base/projects/callparty/callparty/
 google_project_id: neat-bongo-155416
 nginx_crt: secret_files/memoryprosthetics_nginx.crt
 nginx_key: secret_files/memoryprosthetics_nginx.key
+node_bin: /home/ubuntu/.nvm/versions/node/v7.4.0/bin

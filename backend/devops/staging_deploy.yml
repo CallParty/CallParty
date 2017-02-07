@@ -1,11 +1,19 @@
-- hosts: stagingservers
-  user: ubuntu
-  sudo: True
+- hosts: tag_callparty-staging
+  become: yes
+  become_user: root
 
   tasks:
+
     - include_vars: vars.yml
+      tags:
+        - quick
+
     - include_vars: staging_vars.yml
+      tags:
+        - quick
+
     - include: deploy_tasks.yml
+
 
   handlers:
 
