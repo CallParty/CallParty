@@ -2,30 +2,40 @@
 
 You can sign up for CallParty here [https://www.facebook.com/CallPartyOrg/](https://www.facebook.com/CallPartyOrg/).
 
-To learn more about contributing to CallParty check out the [contributing guide](https://github.com/mhfowler/CallParty/blob/contributing.md/CONTRIBUTING.md). 
+To learn more about contributing to CallParty check out the [contributing guide](https://github.com/mhfowler/CallParty/blob/contributing.md/CONTRIBUTING.md).
 
 # Setup
 
-### Install Dependencies 
+### Install Dependencies
 ```bash
 git clone git@github.com:mhfowler/CallParty.git
 cd backend; npm install; npm install -g localtunnel; cd ..
 cd frontend; npm install; cd ..
 ```
 ### Configure backend/.env
- 
+
 [Message](mailto:hi@callparty.org) one of the project maintainers for
 a `backend/.env` file to connect to the staging database.
- 
-You will also need a facebook bot to test with. 
-You can follow instructions for making a testbot here. Once you have a testbot you 
-also need to set yourself as an admin for the bot for it to send you messages 
+
+You will also need a facebook bot to test with.
+You can follow instructions for making a testbot here. Once you have a testbot you
+also need to set yourself as an admin for the bot for it to send you messages
 (note that there is a several minute delay for Facebook to propagate the changes once you set the admin)
 
 Alternatively, if you are forking your own version
 of CallParty then you will need to create your own database and use `backend/.env-demo` as an example
 to create a `backend/.env`.
- 
+
+### Environment Variables
+
+#### JWT_SECRET
+
+The `JWT_SECRET` environment variable is meant to be a secret cryptographic key used in generating and verifying JSON Web Tokens. `JWT_SECRET` should be set to a secret key produced according to [these instructions](https://github.com/dwyl/learn-json-web-tokens#how-to-generate-secret-key), using the following command:
+
+```
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'));"
+```
+
 
 # Run
 
@@ -75,5 +85,5 @@ And navigate to [http://localhost:8082](http://localhost:8082) to verify the pag
 
 # Notes
 
-example app backend was based off of: 
+example app backend was based off of:
 https://github.com/mvaragnat/botkit-messenger-express-demo
