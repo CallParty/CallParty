@@ -1,21 +1,23 @@
 // modules =================================================
 const express = require('express') // framework d'appli
 const app = express()
-const Raven = require('raven');
+const Raven = require('raven')
 // Must configure Raven before doing anything else with it
 // TODO(joshblum): This the private DSN key, _must_ be removed before open
 // sourcing.
-Raven.config('https://19d1de037dd74a459b5eccc120a8495a:d3d991faa8bb44e59289b97eda1a712a@sentry.io/135820').install();
+Raven.config('https://19d1de037dd74a459b5eccc120a8495a:d3d991faa8bb44e59289b97eda1a712a@sentry.io/135820').install()
 // The request handler must be the first middleware on the app
-app.use(Raven.requestHandler());
+app.use(Raven.requestHandler())
 // The error handler must be before any other error middleware
-app.use(Raven.errorHandler());
+app.use(Raven.errorHandler())
+
 const apiRouter = express.Router()
 const bodyParser = require('body-parser') // BodyParser pour POST
 const http = require('http').Server(app) // préparer le serveur web
 const dotenv = require('dotenv')
 const path = require('path')
 const mongoose = require('mongoose')
+const jwt = require('express-jwt')
 
 // configuration ===========================================
 // load environment variables,
@@ -39,6 +41,18 @@ app.use(express.static(path.join(__dirname, '/public')))
 // view engine ejs
 app.set('view engine', 'ejs')
 
+// set up JWT authentication and whitelist API routes that don't require JWT auth
+// this has to go before we define the API routes
+app.use(jwt({ secret: process.env.JWT_SECRET }).unless({
+  path: [
+    '/api/token',
+    '/api/home',
+    '/api/test',
+    '/api/webhook',
+    new RegExp('/api/start/.*', 'i')
+  ]
+}))
+
 // routes
 require('./app/routes/routes')(apiRouter)
 require('./app/routes/conversationRoutes')(apiRouter)
@@ -55,6 +69,14 @@ app.use(function(req, res, next) {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST')
   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, Authorization')
   next()
+})
+
+// handle JWT authorization failure
+app.use(function(err, req, res, next) {
+  if (err.name !== 'UnauthorizedError') {
+    return next(err)
+  }
+  return res.sendStatus(401)
 })
 
 // mongodb
