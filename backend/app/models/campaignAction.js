@@ -30,7 +30,7 @@ campaignActionSchema.virtual('campaignUpdates', {
   foreignField: 'campaignAction'
 })
 
-campaignActionSchema.methods.getRepresentatives = function() {
+campaignActionSchema.methods.getMatchingRepresentatives = function() {
   return this.model('Reps')
     .aggregate()
     .lookup({ from: 'representativecommittees', localField: '_id', foreignField: 'representative', as: 'representativeCommittees' })
@@ -52,6 +52,29 @@ campaignActionSchema.methods.getRepresentatives = function() {
       'committees._id': { $in: this.committees }
     })
     .exec()
+}
+
+campaignActionSchema.methods.getMatchingUsers = function () {
+  return Promise.all([
+    this.getMatchingRepresentatives(),
+    this.model('User').find({ active: true, unsubscribed: false }).exec(),
+  ])
+  .then(function([matchingRepresentatives, users]) {
+    return users.filter(function(user) {
+      for (let rep of matchingRepresentatives) {
+        const matchesSenator = (rep.legislator_type === 'sen' && rep.state === user.state)
+        const matchesHouseRep = (
+          rep.legislator_type === 'rep' &&
+          rep.state === user.state &&
+          rep.district === user.congressionalDistrict
+        )
+        if (matchesSenator || matchesHouseRep) {
+          return true
+        }
+      }
+      return false
+    })
+  })
 }
 
 module.exports = mongoose.model('CampaignAction', campaignActionSchema)

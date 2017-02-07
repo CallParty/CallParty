@@ -7,7 +7,7 @@ const userSchema = new Schema({
   userId: String,
   fbId: String,
   state: String,
-  congressionalDistrict: Number,
+  congressionalDistrict: String,
   createdAt: { type: Date, default: function() { moment.utc().toDate() }},
   firstName: String,
   lastName: String,
