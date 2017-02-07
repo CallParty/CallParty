@@ -25,11 +25,6 @@ module.exports = function (controller) {
     startSignupConversation(bot, message.user)
   })
 
-  // user said hello
-  controller.hears(['hello'], 'message_received', function (bot, message) {
-    bot.reply(message, 'Hey there.')
-  })
-
   // user says unsubscribe/stop
   controller.hears(['Unsubscribe', 'Stop'], 'message_received', function (bot, message) {
     unsubscribeConvo(bot, message)
