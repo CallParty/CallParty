@@ -80,15 +80,16 @@ app.use(function(err, req, res, next) {
 })
 
 // mongodb
-var dburi = process.env.MONGODB_URI || ''
+const dbUri = process.env.MONGODB_URI || ''
 
-mongoose.connect(dburi)
-var db = mongoose.connection
-var Rep = require('./app/methods/representativesMethods.js')
+mongoose.connect(dbUri)
+const db = mongoose.connection
+const { insertReps } = require('./app/methods/representativesMethods')
+const { insertCommittees } = require('./app/methods/committeeMethods')
 
 db.on('error', console.error.bind(console, 'connection error: '))
 db.once('open', function() {
-  Rep.insertReps()
+  insertReps().then(insertCommittees)
 })
 
 console.log('***-----MongoDB Connected-----***')

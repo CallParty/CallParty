@@ -1,4 +1,9 @@
 const { Committee } = require('../models')
+const {
+  downloadCommitteeYamlFile,
+  downloadCommitteeMembershipYamlFile,
+  loadCommitteesFromFiles
+} = require('../utilities/committees')
 
 function getCommittees(req, res) {
   return Committee
@@ -15,6 +20,21 @@ function getCommittees(req, res) {
     .catch(err => res.send(err))
 }
 
+function insertCommittees() {
+  return Committee.count({}).exec()
+    .then(function(count) {
+      if (count !== 0) {
+        return null
+      }
+
+      return Promise.all([
+        downloadCommitteeYamlFile(), downloadCommitteeMembershipYamlFile()
+      ])
+      .then(loadCommitteesFromFiles)
+    })
+}
+
 module.exports = {
-  getCommittees
+  getCommittees,
+  insertCommittees
 }
