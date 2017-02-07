@@ -4,6 +4,10 @@ const Campaign = require('./campaign')
 const CampaignAction = require('./campaignAction')
 const CampaignUpdate = require('./campaignUpdate')
 const Reps = require('./representative')
+const Committee = require('./committee')
+const Subcommittee = require('./subcommittee')
+const RepresentativeCommittee = require('./representativeCommittee')
+const RepresentativeSubcommittee = require('./representativeSubcommittee')
 
 module.exports = {
   User,
@@ -11,5 +15,9 @@ module.exports = {
   Campaign,
   CampaignAction,
   CampaignUpdate,
-  Reps
+  Reps,
+  Committee,
+  Subcommittee,
+  RepresentativeCommittee,
+  RepresentativeSubcommittee
 }

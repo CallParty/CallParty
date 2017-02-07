@@ -30,7 +30,9 @@ const parse = {
       title: c.title,
       createdAt: c.createdAt
     }
-  }
+  },
+
+  committee: c => c
 }
 
 function redirectToLogin() {
@@ -123,6 +125,12 @@ export default {
   newCampaignUpdate: function(id, data, cb) {
     post(`/api/campaigns/${id}/update/new`, data, data => {
       cb(parse.campaign(data))
+    })
+  },
+
+  committees: function(cb) {
+    get('/api/committees', data => {
+      cb(parse.committee(data))
     })
   },
 
