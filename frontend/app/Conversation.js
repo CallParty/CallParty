@@ -196,17 +196,12 @@ const MEMBERS = [{
   label: 'Senator'
 }]
 
-// TODO these should may be fetched remotely?
-const COMMITTEES = [{
-  value: 0,
-  label: 'Jobs, Rural Economic Growth and Energy Innovation'
-}]
-
 class NewAction extends Component {
   constructor(props) {
     super(props)
     this.state = {
       campaign: {},
+      committees: [],
       action: {
         message: '',
         link: '',
@@ -235,6 +230,7 @@ class NewAction extends Component {
         campaign: data
       })
     })
+    API.committees(data => this.setState({ committees: data }))
     this.inputs = {}
   }
 
@@ -311,6 +307,8 @@ class NewAction extends Component {
   }
 
   render() {
+    const committeeOptions = this.state.committees.map(c => ({ value: c._id, label: c.name }))
+
     return (
       <div>
         <div className="meta">
@@ -353,7 +351,7 @@ class NewAction extends Component {
                 name="committees"
                 placeholder="Committee"
                 value={this.state.action.committees}
-                options={COMMITTEES}
+                options={committeeOptions}
                 onChange={this.onSelectChange.bind(this, 'committees')}
                 clearable={false}
                 multi
