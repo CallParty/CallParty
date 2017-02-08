@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 BASEDIR=$( cd $(dirname $(dirname $0)) ; pwd -P )
 cd $BASEDIR/devops
 $BASEDIR/bash/test.sh
