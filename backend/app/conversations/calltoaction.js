@@ -3,7 +3,7 @@ const { User } = require('../models')
 const { setUserCallback } = require('../methods/userMethods')
 const { botReply } = require('../utilities/botkit')
 
-function startCallToActionConversation(bot, fbId, convoData) {
+function startCallToActionConversation(fbId, convoData) {
   return User.findOne({fbId: fbId}).exec().then(function (user) {
     // save params as convoData
     user.convoData = convoData
@@ -13,22 +13,22 @@ function startCallToActionConversation(bot, fbId, convoData) {
         channel: fbId,
         user: fbId
       }
-      callToActionPart1Convo(bot, user, fakeMessage)
+      callToActionPart1Convo(user, fakeMessage)
     })
   })
 }
 
 // part 1
-function callToActionPart1Convo(bot, user, message) {
-  return botReply(bot, message,
+function callToActionPart1Convo(user, message) {
+  return botReply(message,
     `Hi ${user.convoData.firstName}. We've got an issue to call about.`
   )
   .then(function() {
-    return botReply(bot, message, `${user.convoData.issueMessage}. ` +
+    return botReply(message, `${user.convoData.issueMessage}. ` +
       `You can find out more about the issue here ${user.convoData.issueLink}.`)
   })
   .then(function() {
-    return botReply(bot, message, stripIndent`
+    return botReply(message, stripIndent`
       You'll be calling ${user.convoData.repType} ${user.convoData.repName}. ` +
       `When you call you'll talk to a staff member, or you'll leave a voicemail.
       Let them know:
@@ -40,7 +40,7 @@ function callToActionPart1Convo(bot, user, message) {
     `)
   })
   .then(function() {
-    return botReply(bot, message, stripIndent`
+    return botReply(message, stripIndent`
       Rep card
       ${user.convoData.repImage}
       ${user.convoData.repName}
@@ -48,12 +48,12 @@ function callToActionPart1Convo(bot, user, message) {
       * ${user.convoData.repWebsite} ⇢
     `)
   })
-  .then(() => botReply(bot, message, 'Give me a thumbs up once you’ve tried to call!'))
+  .then(() => botReply(message, 'Give me a thumbs up once you’ve tried to call!'))
   .then(() => setUserCallback(user, '/calltoaction/part2'))
 }
 
 // part 2
-function callToActionPart2Convo(bot, user, message) {
+function callToActionPart2Convo(user, message) {
   const msg_attachment = {
     attachment: {
       type: 'template',
@@ -80,14 +80,14 @@ function callToActionPart2Convo(bot, user, message) {
       }
     }
   }
-  return botReply(bot, message, msg_attachment)
+  return botReply(message, msg_attachment)
     .then(() => setUserCallback(user, '/calltoaction/part3'))
 }
 
 // part 3
-function callToActionPart3Convo(bot, user, message) {
+function callToActionPart3Convo(user, message) {
   if (['I left a voicemail', 'I talk to a staffer'].indexOf(message.text) >= 0) {
-    return botReply(bot, message, {
+    return botReply(message, {
       attachment: {
         type: 'image',
         payload: {
@@ -95,17 +95,17 @@ function callToActionPart3Convo(bot, user, message) {
         }
       }
     }).then(function() {
-      return botReply(bot, message, 'Woo thanks for your work! We’ve had [callCount] calls so far. ' +
+      return botReply(message, 'Woo thanks for your work! We’ve had [callCount] calls so far. ' +
         'We’ll reach out when we have updates and an outcome on the issue.')
     }).then(function() {
-      return botReply(bot, message, 'Share this action with your friends to make it a party [link]')
+      return botReply(message, 'Share this action with your friends to make it a party [link]')
     }).then(function() {
       // calltoaction is over
       return setUserCallback(user, null)
     })
   }
   else if (message.text === 'Something went wrong') {
-    return botReply(bot, message, {
+    return botReply(message, {
       attachment: {
         type: 'image',
         payload: {
@@ -114,7 +114,7 @@ function callToActionPart3Convo(bot, user, message) {
       }
     })
     .then(function() {
-      return botReply(bot, message,
+      return botReply(message,
         'We’re sorry to hear that, but good on you for trying! Want to tell us about it?'
       )
     }).then(() => setUserCallback(user, '/calltoaction/thanksforsharing'))
@@ -125,8 +125,8 @@ function callToActionPart3Convo(bot, user, message) {
 }
 
 // thanks for sharing
-function thanksForSharingConvo(bot, user, message) {
-  return botReply(bot, message, 'Thanks for sharing! We’ll reach back out if we can be helpful.')
+function thanksForSharingConvo(user, message) {
+  return botReply(message, 'Thanks for sharing! We’ll reach back out if we can be helpful.')
     .then(function() {
       // TODO: log response.text to slack so we can see the feedback
       return setUserCallback(user, null)

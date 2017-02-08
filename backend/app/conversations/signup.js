@@ -10,7 +10,7 @@ const { setUserCallback } = require('../methods/userMethods')
 mongoose.Promise = Promise
 
 
-function startSignupConversation(bot, fbId) {
+function startSignupConversation(fbId) {
 
   const facebookGraphRequestOptions = {
     uri: `https://graph.facebook.com/${fbId}`,
@@ -29,35 +29,35 @@ function startSignupConversation(bot, fbId) {
             channel: fbId,
             user: fbId
           }
-          askForAddressConvo(bot, user, fakeMessage)
+          askForAddressConvo(user, fakeMessage)
         })
     })
     .catch(function(err) { throw new Error(err) })
 }
 
 
-function askForAddressConvo(bot, user, message) {
+function askForAddressConvo(user, message) {
   const organization = 'CallParty' // this should be looked up from the db eventually
-  return botReply(bot, message,
+  return botReply(message,
     `Hi there! Nice to meet you. ` +
     `I’m a bot made to send you calls to action from the people at ${organization}, ` +
     `because taking civic action is way more effective in large groups. ` +
     `You can unsubscribe any time by just saying ‘stop’ or ‘unsubscribe’.`
   ).then(function() {
-    return botReply(bot, message,
+    return botReply(message,
       'First thing’s first: What’s the address of your voting registration?' +
       'I’ll use this to identify who your reps are – don’t worry, I won’t be holding onto it.'
     )
   }).then(() => setUserCallback(user, '/signup/handleAddressResponse'))
 }
 
-function handleAddressResponseConvo(bot, user, message) {
+function handleAddressResponseConvo(user, message) {
   return geocoding.getStateAndCongressionalDistrictFromAddress(message.text)
     .then(function(geocodingResult) {
       if (!geocodingResult) {
         throw new Error('++ failed to find district from address: ' + message.text)
       }
-      return Promise.all([geocodingResult, botReply(bot, message, 'Great!')])
+      return Promise.all([geocodingResult, botReply(message, 'Great!')])
     })
     .then(function([geocodingResult]) {
       user.state = geocodingResult.state
@@ -66,7 +66,7 @@ function handleAddressResponseConvo(bot, user, message) {
       return user.save()
     })
     .then(function(user) {
-      finishSignup1Convo(bot, user, message)
+      finishSignup1Convo(user, message)
     })
     .catch(function() {
       // log this exception somehow
@@ -78,8 +78,8 @@ function handleAddressResponseConvo(bot, user, message) {
     })
 }
 
-function finishSignup1Convo(bot, user, message) {
-  return botReply(bot, message,
+function finishSignup1Convo(user, message) {
+  return botReply(message,
     'Now that that’s sorted, we’ll reach out when there’s an issue that you can take an action about, ' +
     'including the rep for you to call and how to talk to them. ' +
     'We’ll also send updates and outcomes on the issues we send. Sound fun?'
@@ -87,8 +87,8 @@ function finishSignup1Convo(bot, user, message) {
   .then(() => setUserCallback(user, '/signup/finishSignup2'))
 }
 
-function finishSignup2Convo(bot, user, message) {
-  return botReply(bot, message, 'Excellent. Have a nice day, and talk soon!')
+function finishSignup2Convo(user, message) {
+  return botReply(message, 'Excellent. Have a nice day, and talk soon!')
     .then(() => setUserCallback(user, null))
 }
 

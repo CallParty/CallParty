@@ -1,7 +1,6 @@
 const mongoose = require('mongoose')
 const Promise = require('es6-promise')
 
-const bot = require('../botkit_controller/botkitSetup').bot
 const { User, Campaign, Reps } = require('../models')
 
 const startCallToActionConversation = require('../conversations/calltoaction').startCallToActionConversation
@@ -23,7 +22,7 @@ module.exports = function(apiRouter) {
       .then(function([user, campaign, rep]) {
         // const campaignAction = campaign.campaignActions.id(req.body.campaignActionId)
 
-        startCallToActionConversation(bot, fbId, {
+        startCallToActionConversation(fbId, {
           firstName: user.firstName,
           issueMessage: 'test', //campaign.description,
           issueLink: 'test', //campaign.link,
@@ -45,19 +44,19 @@ module.exports = function(apiRouter) {
   apiRouter.post('/start/update', function(req, res) {
     const fbId = req.body.fbId
     const updateMessage = req.body.updateMessage
-    startUpdateConversation(bot, fbId, updateMessage)
+    startUpdateConversation(fbId, updateMessage)
     res.send('ok')
   })
 
   apiRouter.post('/start/signup', function(req, res) {
     const fbId = req.body.fbId
-    startSignupConversation(bot, fbId)
+    startSignupConversation(fbId)
     res.send('ok')
   })
 
   apiRouter.post('/start/test', function(req, res) {
     const fbId = req.body.fbId
-    startTestConversation(bot, fbId)
+    startTestConversation(fbId)
     res.send('ok')
   })
 
