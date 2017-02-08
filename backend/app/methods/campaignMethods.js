@@ -83,7 +83,11 @@ exports.newCampaignAction = function(req, res) {
       // send the users a call to action
       console.log(matchingUsersWithRepresentatives.length)
       for (let { user, representatives } of matchingUsersWithRepresentatives) {
-        const job = queue.create('callToAction', { user, representatives, campaignAction: savedCampaignAction })
+        const job = queue.create('callToAction', {
+          userId: user._id.toString(),
+          representativeIds: representatives.map(r => r._id.toString()),
+          campaignActionId: savedCampaignAction._id.toString()
+        })
         job.save(function(err) {
           if (err) { throw err }
         })
