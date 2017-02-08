@@ -75,6 +75,11 @@ exports.newCampaignAction = function(req, res) {
   })
 
   campaignAction.save()
+    .then(savedCampaignAction => savedCampaignAction.getMatchingUsers())
+    .then(matchingUsers => {
+      // send the users a call to action
+      return null
+    })
     .then(() => {
       return Campaign
         .findOne({ _id: req.params.id })
