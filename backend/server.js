@@ -1,5 +1,7 @@
 // modules =================================================
 const express = require('express') // framework d'appli
+const kue = require('kue')
+const basicAuth = require('basic-auth-connect')
 const app = express()
 const Raven = require('raven')
 // Must configure Raven before doing anything else with it
@@ -49,6 +51,7 @@ app.use(jwt({ secret: process.env.JWT_SECRET }).unless({
     '/api/home',
     '/api/test',
     '/api/webhook',
+    new RegExp('/kue/.*', 'i'),
     new RegExp('/api/start/.*', 'i')
   ]
 }))
@@ -78,6 +81,15 @@ app.use(function(err, req, res, next) {
   }
   return res.sendStatus(401)
 })
+
+// kue viewer
+const createQueue = require('./app/utilities/createQueue')
+const queue = createQueue()
+var kueApp = express()
+// add authentication
+kueApp.use(basicAuth(process.env.ADMIN_USERNAME, process.env.ADMIN_PASSWORD))
+kueApp.use(kue.app)
+app.use('/kue', kueApp)
 
 // mongodb
 const dbUri = process.env.MONGODB_URI || ''
