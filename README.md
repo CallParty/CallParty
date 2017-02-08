@@ -6,7 +6,18 @@ To learn more about contributing to CallParty check out the [contributing guide]
 
 # Setup
 
-### Install Dependencies
+### Install System Dependencies
+
+#### OS X
+```bash
+brew install mongodb redis
+curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.0/install.sh | bash # install nvm
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm
+nvm install 7.4.0
+```
+
+### Install App Dependencies
 ```bash
 git clone git@github.com:mhfowler/CallParty.git
 cd backend; npm install; npm install -g localtunnel; cd ..
