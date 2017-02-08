@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const Promise = require('es6-promise')
 
-const { User, Campaign, Reps } = require('../models')
+const { User, CampaignAction, Reps } = require('../models')
 
 const startCallToActionConversation = require('../conversations/calltoaction').startCallToActionConversation
 const startUpdateConversation = require('../conversations/update').startUpdateConversation
@@ -15,26 +15,14 @@ module.exports = function(apiRouter) {
   apiRouter.post('/start/calltoaction', function(req, res) {
     const fbId = req.body.fbId
     const userPromise = User.findOne({ fbId: fbId }).exec()
-    const campaignPromise = Campaign.findById(req.body.campaignId).exec() // TODO: figure out what conditions we use to look up campaign
-    const repPromise = Reps.findById(req.body.repId).exec() // TODO: figure out what conditions we use to look up rep
+    const campaignActionPromise = CampaignAction.findById(req.body.campaignActionId).populate('campaign').exec()
+    const repsPromise = Reps.find({ _id: { $in: req.body.repIds } }).exec()
 
-    Promise.all([userPromise, campaignPromise, repPromise])
-      .then(function([user, campaign, rep]) {
+    Promise.all([userPromise, campaignActionPromise, repsPromise])
+      .then(function([user, campaignAction, representatives]) {
         // const campaignAction = campaign.campaignActions.id(req.body.campaignActionId)
 
-        startCallToActionConversation(fbId, {
-          firstName: user.firstName,
-          issueMessage: 'test', //campaign.description,
-          issueLink: 'test', //campaign.link,
-          issueSubject: 'test', //campaign.title,
-          // issueAction: campaignAction.cta,
-          issueAction: 'test',
-          repType: 'test', // rep.legislator_type,
-          repName: 'test', // rep.name.official_full,
-          repImage: 'test', // rep.image_url,
-          repPhoneNumber: 'test', // rep.phone,
-          repWebsite: 'test', //rep.url
-        })
+        startCallToActionConversation(user, representatives, campaignAction, campaignAction.campaign)
 
         res.send('ok')
       })

@@ -163,7 +163,7 @@ describe('CampaignAction', function() {
     })
   })
 
-  describe('.getMatchingUsers()', function() {
+  describe('.getMatchingUsersWithRepresentatives()', function() {
     let committees = null
     let representatives = null
     let users = null
@@ -207,110 +207,129 @@ describe('CampaignAction', function() {
     })
 
     describe('when there are matching users', function() {
-      let matchingUsers = null
-      let expectedUsers = null
+      let matchingUsersWithRepresentatives = null
+      let expectedUsersWithRepresentatives = null
 
       beforeEach(function() {
         // we should get the user who lives in Ohio and the user who lives in Wisconsin's 1st district
-        expectedUsers = [users[0], users[2]]
+        expectedUsersWithRepresentatives = [
+          { user: users[0], representatives: [representatives[0]] },
+          { user: users[2], representatives: [representatives[2]] }
+        ]
 
         return CampaignAction.create({
           memberTypes: ['rep', 'sen'],
           parties: ['Democrat', 'Republican'],
           committees: committees.map(c => c._id)
         })
-        .then(campaignAction => campaignAction.getMatchingUsers())
-        .then(matchingTestUsers => matchingUsers = matchingTestUsers)
+        .then(campaignAction => campaignAction.getMatchingUsersWithRepresentatives())
+        .then(matchingTestUsers => matchingUsersWithRepresentatives = matchingTestUsers)
       })
 
       it('should return the correct users', function() {
-        const matchingUserIds = matchingUsers.map(u => u._id.toString()).sort()
-        const expectedUserIds = expectedUsers.map(u => u._id.toString()).sort()
+        const idComparator = (a, b) => {
+          const idA = a.user._id.toString()
+          const idB = b.user._id.toString()
+
+          if (idA < idB) {
+            return -1
+          } else if (idA > idB) {
+            return 1
+          }
+          return 0
+        }
+        const sortedMatchingUsersWithRepresentatives = matchingUsersWithRepresentatives.sort(idComparator)
+        const sortedExpectedUsersWithRepresentatives = expectedUsersWithRepresentatives.sort(idComparator)
+        const matchingUserIds = sortedMatchingUsersWithRepresentatives.map(u => u.user._id.toString())
+        const expectedUserIds = sortedExpectedUsersWithRepresentatives.map(u => u.user._id.toString())
+        const matchingRepresentativeIds = sortedMatchingUsersWithRepresentatives.map(u => u.representatives.map(r => r._id.toString()))
+        const expectedRepresentativeIds = sortedExpectedUsersWithRepresentatives.map(u => u.representatives.map(r => r._id.toString()))
 
         expect(matchingUserIds).to.deep.equal(expectedUserIds)
+        expect(matchingRepresentativeIds).to.deep.equal(expectedRepresentativeIds)
       })
 
       afterEach(function() {
-        matchingUsers = null
-        expectedUsers = null
+        matchingUsersWithRepresentatives = null
+        expectedUsersWithRepresentatives = null
       })
     })
 
     describe('when the CampaignAction has no memberTypes', function() {
-      let matchingUsers = null
-      let expectedUsers = null
+      let matchingUsersWithRepresentatives = null
+      let expectedUsersWithRepresentatives = null
 
       beforeEach(function() {
-        expectedUsers = []
+        expectedUsersWithRepresentatives = []
 
         return CampaignAction.create({
           memberTypes: [],
           parties: ['Democrat', 'Republican'],
           committees: committees.map(c => c._id)
         })
-        .then(campaignAction => campaignAction.getMatchingUsers())
-        .then(matchingTestUsers => matchingUsers = matchingTestUsers)
+        .then(campaignAction => campaignAction.getMatchingUsersWithRepresentatives())
+        .then(matchingTestUsers => matchingUsersWithRepresentatives = matchingTestUsers)
       })
 
       it('should return an empty array', function() {
-        expect(matchingUsers).to.deep.equal(expectedUsers)
+        expect(matchingUsersWithRepresentatives).to.deep.equal(expectedUsersWithRepresentatives)
       })
 
       afterEach(function() {
-        matchingUsers = null
-        expectedUsers = null
+        matchingUsersWithRepresentatives = null
+        expectedUsersWithRepresentatives = null
       })
     })
 
     describe('when the CampaignAction has no parties', function() {
-      let matchingUsers = null
-      let expectedUsers = null
+      let matchingUsersWithRepresentatives = null
+      let expectedUsersWithRepresentatives = null
 
       beforeEach(function() {
-        expectedUsers = []
+        expectedUsersWithRepresentatives = []
 
         return CampaignAction.create({
           memberTypes: ['rep', 'sen'],
           parties: [],
           committees: committees.map(c => c._id)
         })
-        .then(campaignAction => campaignAction.getMatchingUsers())
-        .then(matchingTestUsers => matchingUsers = matchingTestUsers)
+        .then(campaignAction => campaignAction.getMatchingUsersWithRepresentatives())
+        .then(matchingTestUsers => matchingUsersWithRepresentatives = matchingTestUsers)
       })
 
       it('should return an empty array', function() {
-        expect(matchingUsers).to.deep.equal(expectedUsers)
+        expect(matchingUsersWithRepresentatives).to.deep.equal(expectedUsersWithRepresentatives)
       })
 
       afterEach(function() {
-        matchingUsers = null
-        expectedUsers = null
+        matchingUsersWithRepresentatives = null
+        expectedUsersWithRepresentatives = null
       })
     })
 
     describe('when the CampaignAction has no committees', function() {
-      let matchingUsers = null
-      let expectedUsers = null
+      let matchingUsersWithRepresentatives = null
+      let expectedUsersWithRepresentatives = null
 
       beforeEach(function() {
-        expectedUsers = []
+        expectedUsersWithRepresentatives = []
 
         return CampaignAction.create({
           memberTypes: [],
           parties: ['Democrat', 'Republican'],
           committees: []
         })
-        .then(campaignAction => campaignAction.getMatchingUsers())
-        .then(matchingTestUsers => matchingUsers = matchingTestUsers)
+        .then(campaignAction => campaignAction.getMatchingUsersWithRepresentatives())
+        .then(matchingTestUsers => matchingUsersWithRepresentatives = matchingTestUsers)
       })
 
       it('should return an empty array', function() {
-        expect(matchingUsers).to.deep.equal(expectedUsers)
+        expect(matchingUsersWithRepresentatives).to.deep.equal(expectedUsersWithRepresentatives)
       })
 
       afterEach(function() {
-        matchingUsers = null
-        expectedUsers = null
+        matchingUsersWithRepresentatives = null
+        expectedUsersWithRepresentatives = null
       })
     })
   })
