@@ -88,7 +88,7 @@ const queue = createQueue()
 var kueApp = express()
 // add authentication
 kueApp.use(basicAuth(process.env.ADMIN_USERNAME, process.env.ADMIN_PASSWORD))
-kueApp.use('', kue.app)
+kueApp.use(kue.app)
 app.use('/kue', kueApp)
 
 // mongodb
