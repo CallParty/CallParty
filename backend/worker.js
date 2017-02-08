@@ -1,3 +1,4 @@
+const kue = require('kue')
 const mongoose = require('mongoose')
 const dotenv = require('dotenv')
 
@@ -24,5 +25,23 @@ queue.on('error', function(err) {
   console.log(err)
   console.log(err.stack)
 })
+
+queue.on('job enqueue', function(id, type) {
+  console.log( 'Job %s got queued of type %s', id, type )
+})
+
+queue.on('job complete', function(id) {
+  kue.Job.get(id, function(err, job) {
+    if (err) { return }
+    job.remove(function(err) {
+      if (err) {
+        console.error(err)
+        return
+      }
+      console.log('removed completed job #%d', job.id)
+    })
+  })
+})
+
 
 queue.process('callToAction', require('./jobs/callToAction'))
