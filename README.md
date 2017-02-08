@@ -61,6 +61,11 @@ https://www.facebook.com/Callingteststaging-392499054435475/
 for production, message:
 https://www.facebook.com/CallParty-243195752776526/
 
+To run the tests:
+```bash
+cd backend; npm test
+```
+
 ## Frontend (Admin Portal)
 
 ```bash
