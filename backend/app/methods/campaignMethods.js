@@ -78,12 +78,12 @@ exports.newCampaignAction = function(req, res) {
   })
 
   campaignAction.save()
-    .then(savedCampaignAction => Promise.all([savedCampaignAction, savedCampaignAction.getMatchingUsers()]))
-    .then(([savedCampaignAction, matchingUsers]) => {
+    .then(savedCampaignAction => Promise.all([savedCampaignAction, savedCampaignAction.getMatchingUsersWithRepresentatives()]))
+    .then(([savedCampaignAction, matchingUsersWithRepresentatives]) => {
       // send the users a call to action
-      console.log(matchingUsers.length)
-      for (let user of matchingUsers) {
-        const job = queue.create('callToAction', { user, campaignAction: savedCampaignAction })
+      console.log(matchingUsersWithRepresentatives.length)
+      for (let { user, representatives } of matchingUsersWithRepresentatives) {
+        const job = queue.create('callToAction', { user, representatives, campaignAction: savedCampaignAction })
         job.save(function(err) {
           if (err) { throw err }
         })

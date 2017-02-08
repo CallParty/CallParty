@@ -56,13 +56,13 @@ campaignActionSchema.methods.getMatchingRepresentatives = function() {
     .exec()
 }
 
-campaignActionSchema.methods.getMatchingUsers = function () {
+campaignActionSchema.methods.getMatchingUsersWithRepresentatives = function () {
   return Promise.all([
     this.getMatchingRepresentatives(),
     this.model('User').find({ active: true, unsubscribed: false }).exec(),
   ])
   .then(function([matchingRepresentatives, users]) {
-    return users.filter(function(user) {
+    const repsByUser = users.reduce(function(repsByUser, user) {
       for (let rep of matchingRepresentatives) {
         const matchesSenator = (rep.legislator_type === 'sen' && rep.state === user.state)
         const matchesHouseRep = (
@@ -71,11 +71,14 @@ campaignActionSchema.methods.getMatchingUsers = function () {
           rep.district === user.congressionalDistrict
         )
         if (matchesSenator || matchesHouseRep) {
-          return true
+          repsByUser[user._id] = repsByUser[user._id] || { user, representatives: [] }
+          repsByUser[user._id].representatives.push(rep)
         }
       }
-      return false
-    })
+      return repsByUser
+    }, {})
+
+    return Object.values(repsByUser)
   })
 }
 
