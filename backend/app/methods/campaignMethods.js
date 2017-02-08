@@ -1,7 +1,10 @@
-const { Campaign, CampaignAction, CampaignUpdate } = require('../models')
 const mongoose = require('mongoose')
+const { Campaign, CampaignAction, CampaignUpdate } = require('../models')
+const { createCallToActionJob } = require('../../jobs/callToAction')
+const createQueue = require('../utilities/createQueue')
 
 const ObjectId = mongoose.Types.ObjectId
+const queue = createQueue()
 
 exports.newCampaign = function(req, res) {
   const data = req.body
@@ -75,9 +78,17 @@ exports.newCampaignAction = function(req, res) {
   })
 
   campaignAction.save()
-    .then(savedCampaignAction => savedCampaignAction.getMatchingUsers())
-    .then(matchingUsers => {
+    .then(savedCampaignAction => Promise.all([savedCampaignAction, savedCampaignAction.getMatchingUsers()]))
+    .then(([savedCampaignAction, matchingUsers]) => {
       // send the users a call to action
+      console.log(matchingUsers.length)
+      for (let user of matchingUsers) {
+        const job = queue.create('callToAction', { user, campaignAction: savedCampaignAction })
+        job.save(function(err) {
+          if (err) { throw err }
+        })
+      }
+
       return null
     })
     .then(() => {

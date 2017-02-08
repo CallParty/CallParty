@@ -1,7 +1,6 @@
 const kue = require('kue')
 const dotenv = require('dotenv')
 
-
 dotenv.load()
 
 const redisConfig = {
@@ -26,8 +25,4 @@ queue.on('error', function(err) {
   console.log(err.stack)
 })
 
-const setupCallToActionJob = require('./jobs/callToAction')
-
-setupCallToActionJob(queue)
-
-module.exports = queue
+queue.process('callToAction', require('./jobs/callToAction'))
