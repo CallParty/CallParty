@@ -1,4 +1,3 @@
-const kue = require('kue')
 const mongoose = require('mongoose')
 const dotenv = require('dotenv')
 
@@ -12,21 +11,13 @@ db.on('error', console.error.bind(console, 'connection error: '))
 
 console.log('***-----MongoDB Connected-----***')
 
-const redisConfig = {
-  prefix: process.env.REDIS_PREFIX,
-  redis: {
-    port: process.env.REDIS_PORT,
-    host: process.env.REDIS_HOST,
-    auth: process.env.REDIS_PASSWORD
-  }
-}
-
-const queue = kue.createQueue(redisConfig)
+const createQueue = require('./app/utilities/createQueue')
+const queue = createQueue()
 
 queue.watchStuckJobs(1000)
 
 queue.on('ready', function() {
-  console.log(`Queue is ready, using Redis config: ${JSON.stringify(redisConfig.redis)}`)
+  console.log('Queue is running')
 })
 
 queue.on('error', function(err) {
