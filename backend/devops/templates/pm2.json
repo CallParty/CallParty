@@ -4,6 +4,11 @@
       "name" : "hello_webapp",
       "script" : "{{backend_dir}}/server.js",
       "cwd" : "{{backend_dir}}"
+    },
+    {
+      "name": "kue_worker",
+      "script": "{{backend_dir}}/worker.js",
+      "cwd": "{{backend_dir}}"
     }
   ]
 }

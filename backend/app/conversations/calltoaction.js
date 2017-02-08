@@ -1,20 +1,31 @@
 const { stripIndent } = require('common-tags')
-const { User } = require('../models')
 const { setUserCallback } = require('../methods/userMethods')
 const { botReply } = require('../utilities/botkit')
 
-function startCallToActionConversation(fbId, convoData) {
-  return User.findOne({fbId: fbId}).exec().then(function (user) {
-    // save params as convoData
-    user.convoData = convoData
-    user.save().then(function() {
-      // start the conversation
-      const fakeMessage = {
-        channel: fbId,
-        user: fbId
-      }
-      callToActionPart1Convo(user, fakeMessage)
-    })
+function startCallToActionConversation(user, representatives, campaignAction, campaign) {
+  const convoData = {
+    firstName: user.firstName,
+    issueMessage: campaign.description,
+    issueLink: campaign.link,
+    issueSubject: campaign.title,
+    issueAction: campaignAction.cta,
+    repType: representatives[0].legislator_type,
+    repName: representatives[0].official_full,
+    repImage: representatives[0].image_url,
+    repPhoneNumber: representatives[0].phone,
+    repWebsite: representatives[0].url
+  }
+
+  // save params as convoData
+  user.convoData = convoData
+
+  return user.save().then(function() {
+    // start the conversation
+    const fakeMessage = {
+      channel: user.fbId,
+      user: user.fbId
+    }
+    return callToActionPart1Convo(user, fakeMessage)
   })
 }
 
