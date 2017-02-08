@@ -1,7 +1,4 @@
-/* eslint-disable brace-style */
-/* eslint-disable camelcase */
 // CONFIG===============================================
-/* Uses the slack button feature to offer a real time bot to multiple teams */
 var Botkit = require('botkit')
 var mongoUri = process.env.MONGODB_URI || 'mongodb://localhost/botkit-demo'
 var db = require('../../config/db')({mongoUri: mongoUri})
@@ -14,10 +11,12 @@ var controller = Botkit.facebookbot({
   debug: DEBUG_TICK,
   access_token: process.env.FACEBOOK_PAGE_TOKEN,
   verify_token: process.env.FACEBOOK_VERIFY_TOKEN,
-  storage: db
+  storage: db,
 })
 
 var bot = controller.spawn({})
+// bot is exported here to avoid circular dependencies
+module.exports.bot = bot
 
 // SETUP
 require('./facebookSetup')(controller)
@@ -121,9 +120,7 @@ function create_user_if_new(id, ts) {
   })
 }
 
-module.exports = {
-  handler: handler,
-  bot: bot
-}
-/* eslint-enable brace-style */
-/* eslint-enable camelcase */
+// module.exports are added here, instead of replaced
+// so that module.exports.bot is not over-written above (for avoiding circular dependencies)
+module.exports.handler = handler
+

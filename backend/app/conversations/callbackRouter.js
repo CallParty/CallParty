@@ -18,10 +18,10 @@ const callbackRoutes = {
 
 }
 
-const runCallback = function(callbackPath, bot, user, message) {
+const runCallback = function(callbackPath, user, message) {
   const cb = callbackRoutes[callbackPath]
   if (cb) {
-    cb(bot, user, message)
+    cb(user, message)
   }
   else {
     throw new Error('Invalid callback route supplied')
@@ -30,5 +30,5 @@ const runCallback = function(callbackPath, bot, user, message) {
 
 module.exports = {
   callbackRoutes,
-  runCallback
+  runCallback,
 }

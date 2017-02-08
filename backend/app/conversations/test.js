@@ -2,20 +2,20 @@ const botReply = require('../utilities/botkit').botReply
 const { User } = require('../models')
 const { setUserCallback } = require('../methods/userMethods')
 
-function startTestConversation(bot, fbId) {
+function startTestConversation(fbId) {
   return User.findOne({fbId: fbId}).exec().then(function (user) {
     // start the conversation
     const fakeMessage = {
       channel: fbId,
       user: fbId
     }
-    testConvo(bot, user, fakeMessage)
+    testConvo(user, fakeMessage)
   })
 }
 
-function testConvo(bot, user, message) {
-  return botReply(bot, message, 'Start Test Conversation').then(function() {
-    return botReply(bot, message, {
+function testConvo(user, message) {
+  return botReply(message, 'Start Test Conversation').then(function() {
+    return botReply(message, {
       attachment: {
         type: 'image',
         payload: {
@@ -27,7 +27,7 @@ function testConvo(bot, user, message) {
       }
     })
   }).then(function() {
-    return botReply(bot, message, 'End Test Conversation')
+    return botReply(message, 'End Test Conversation')
   }).then(function() {
     setUserCallback(user, null)
   })

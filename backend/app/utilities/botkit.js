@@ -1,4 +1,7 @@
-function botReply(bot, message, text) {
+const { bot } = require('../botkit_controller/botkitSetup')
+
+
+function botReply(message, text) {
   // TODO: log error to slack somehow
   return new Promise(function(resolve, reject) {
     bot.reply(message, text, function(err, response) {

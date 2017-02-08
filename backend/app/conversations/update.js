@@ -1,18 +1,19 @@
 const { User } = require('../models')
+const botReply = require('../utilities/botkit').botReply
 
 
-var startUpdateConversation = function(bot, fbId, updateMessage) {
+var startUpdateConversation = function(fbId, updateMessage) {
   User.findOne({fbId: fbId}).exec().then(function (user) {
     const fakeMessage = {
       channel: fbId,
       user: fbId
     }
-    updateConvo1(bot, user, fakeMessage, updateMessage)
+    updateConvo1(user, fakeMessage, updateMessage)
   })
 }
 
-function updateConvo1(bot, user, message, updateMessage) {
-  bot.reply(message, updateMessage)
+function updateConvo1(user, message, updateMessage) {
+  botReply(message, updateMessage)
 }
 
 module.exports = {
