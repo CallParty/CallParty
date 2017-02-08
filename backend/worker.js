@@ -13,10 +13,11 @@ db.on('error', console.error.bind(console, 'connection error: '))
 console.log('***-----MongoDB Connected-----***')
 
 const redisConfig = {
+  prefix: process.env.REDIS_PREFIX,
   redis: {
     port: process.env.REDIS_PORT,
     host: process.env.REDIS_HOST,
-    auth: process.env.REDIS_PASS || ''
+    auth: process.env.REDIS_PASSWORD
   }
 }
 
