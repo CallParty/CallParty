@@ -2,6 +2,8 @@ const moment = require('moment')
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
+const ObjectId = mongoose.Types.ObjectId
+
 const campaignActionSchema = new Schema({
   title: String,
   message: String,
@@ -49,7 +51,7 @@ campaignActionSchema.methods.getMatchingRepresentatives = function() {
     .match({
       legislator_type: { $in: this.memberTypes },
       party: { $in: this.parties },
-      'committees._id': { $in: this.committees }
+      'committees._id': { $in: this.committees.map(ObjectId) }
     })
     .exec()
 }
