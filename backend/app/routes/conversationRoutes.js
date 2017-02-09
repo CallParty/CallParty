@@ -9,21 +9,20 @@ const startSignupConversation = require('../conversations/signup').startSignupCo
 const startTestConversation = require('../conversations/test').startTestConversation
 
 mongoose.Promise = Promise
+const ObjectId = mongoose.Types.ObjectId
 
 module.exports = function(apiRouter) {
 
   apiRouter.post('/start/calltoaction', function(req, res) {
     const fbId = req.body.fbId
+    const campaignActionId = req.body.campaignActionId
+    const repIds = req.body.repIds
     const userPromise = User.findOne({ fbId: fbId }).exec()
-    const campaignActionPromise = CampaignAction.findById(req.body.campaignActionId).populate('campaign').exec()
-    const repsPromise = Reps.find({ _id: { $in: req.body.repIds } }).exec()
-
+    const campaignActionPromise = CampaignAction.findOne({ _id: campaignActionId}).populate('campaign').exec()
+    const repsPromise = Reps.find({ _id: { $in: repIds.map(ObjectId) } }).exec()
     Promise.all([userPromise, campaignActionPromise, repsPromise])
       .then(function([user, campaignAction, representatives]) {
-        // const campaignAction = campaign.campaignActions.id(req.body.campaignActionId)
-
         startCallToActionConversation(user, representatives, campaignAction, campaignAction.campaign)
-
         res.send('ok')
       })
       .catch(function(err) { throw err })
