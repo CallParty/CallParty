@@ -50,7 +50,6 @@ app.use(jwt({ secret: process.env.JWT_SECRET }).unless({
     '/api/home',
     '/api/test',
     '/api/webhook',
-    new RegExp('/kue/.*', 'i'),
     new RegExp('/api/start/.*', 'i')
   ]
 }))

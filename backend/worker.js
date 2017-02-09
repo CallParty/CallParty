@@ -51,7 +51,7 @@ queue.process('callToAction', require('./jobs/callToAction'))
 // kue viewer
 const app = express()
 app.use(basicAuth(process.env.ADMIN_USERNAME, process.env.ADMIN_PASSWORD))
-app.use('/', kue.app)
+app.use('/kue', kue.app)
 const http = require('http').Server(app)
 http.listen(8083, function () {
   console.log('listening on port ' + app.get('port'))
