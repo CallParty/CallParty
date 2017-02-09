@@ -1,4 +1,6 @@
 const kue = require('kue')
+const express = require('express')
+const basicAuth = require('basic-auth-connect')
 const mongoose = require('mongoose')
 const dotenv = require('dotenv')
 
@@ -45,3 +47,12 @@ queue.on('job complete', function(id) {
 
 
 queue.process('callToAction', require('./jobs/callToAction'))
+
+// kue viewer
+const app = express()
+app.use(basicAuth(process.env.ADMIN_USERNAME, process.env.ADMIN_PASSWORD))
+app.use('/', kue.app)
+const http = require('http').Server(app)
+http.listen(8083, function () {
+  console.log('listening on port ' + app.get('port'))
+})
