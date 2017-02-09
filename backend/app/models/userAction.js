@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const userActionsSchema = new Schema({
-  active: Boolean,
+  active: { type: Boolean, default: false },
   user: { type: Schema.Types.ObjectId, ref: 'User' },
   campaignAction: { type: Schema.Types.ObjectId, ref: 'CampaignAction' },
   targetName: Boolean,
