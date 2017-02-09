@@ -32,7 +32,7 @@ queue.on('job enqueue', function(id, type) {
   console.log( 'Job %s got queued of type %s', id, type )
 })
 
-queue.process('callToAction', require('./jobs/callToAction'))
+queue.process('callToAction', require('./jobs/processCallToAction'))
 
 // kue viewer
 const app = express()
