@@ -14,9 +14,6 @@ module.exports = function processCallToActionJob(job, done) {
     UserAction.create({ user: ObjectId(userId), campaignAction: ObjectId(campaignActionId) })
   ])
   .then(function([user, representatives, campaignAction, userAction]) {
-    console.log(`Sending call to action to user with facebook ID: ${user.fbId}`)
-    console.log(`Call to action data: ${campaignAction}`)
-
     startCallToActionConversation(user, representatives, campaignAction, campaignAction.campaign, userAction)
   })
   .then(done)

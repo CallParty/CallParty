@@ -1,6 +1,5 @@
 const mongoose = require('mongoose')
 const { Campaign, CampaignAction, CampaignUpdate } = require('../models')
-const { createCallToActionJob } = require('../../jobs/callToAction')
 const createQueue = require('../utilities/createQueue')
 
 const ObjectId = mongoose.Types.ObjectId
@@ -81,7 +80,6 @@ exports.newCampaignAction = function(req, res) {
     .then(savedCampaignAction => Promise.all([savedCampaignAction, savedCampaignAction.getMatchingUsersWithRepresentatives()]))
     .then(([savedCampaignAction, matchingUsersWithRepresentatives]) => {
       // send the users a call to action
-      console.log(matchingUsersWithRepresentatives.length)
       for (let { user, representatives } of matchingUsersWithRepresentatives) {
         const job = queue.create('callToAction', {
           userId: user._id.toString(),
@@ -93,9 +91,6 @@ exports.newCampaignAction = function(req, res) {
         })
       }
 
-      return null
-    })
-    .then(() => {
       return Campaign
         .findOne({ _id: req.params.id })
         .populate('campaignUpdates')
@@ -120,8 +115,30 @@ exports.newCampaignUpdate = function(req, res) {
     campaign: ObjectId(req.params.id)
   })
 
-  campaignUpdate.save()
-    .then(() => {
+  const campaignUpdatePromise = campaignUpdate.save()
+  const campaignActionPromise = CampaignAction
+    .findById(ObjectId(data.campaignActionId))
+    .populate({ path: 'userActions', populate: { path: 'user' } })
+    .exec()
+
+  Promise.all([campaignUpdatePromise, campaignActionPromise])
+    .then(([savedCampaignUpdate, campaignAction]) => {
+      return Promise.all([
+        savedCampaignUpdate,
+        campaignAction.userActions.filter(ua => ua.active).map(ua => ua.user)
+      ])
+    })
+    .then(([savedCampaignUpdate, users]) => {
+      for (let user of users) {
+        const job = queue.create('update', {
+          userId: user._id,
+          campaignUpdateId: savedCampaignUpdate._id
+        })
+        job.save(function(err) {
+          if (err) { throw err }
+        })
+      }
+
       return Campaign
         .findOne({ _id: req.params.id })
         .populate('campaignUpdates')
