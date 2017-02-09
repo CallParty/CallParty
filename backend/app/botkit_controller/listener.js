@@ -30,8 +30,8 @@ module.exports = function (controller) {
     unsubscribeConvo(message)
   })
 
-  // user says anything else
-  controller.hears('(.*)', 'message_received', function (bot, message) {
+  // user says anything else (including like button)
+  controller.on('message_received', function (bot, message) {
     handleMessage(message)
   })
 
