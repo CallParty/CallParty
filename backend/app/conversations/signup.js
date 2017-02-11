@@ -46,7 +46,7 @@ function askForAddressConvo(user, message) {
     `You can unsubscribe any time by just saying ‘stop’ or ‘unsubscribe’.`
   ).then(function() {
     return botReply(message,
-      'First thing’s first: What’s the address of your voting registration?' +
+      'First thing’s first: What’s the address of your voting registration? ' +
       'I’ll use this to identify who your reps are – don’t worry, I won’t be holding onto it.'
     )
   }).then(() => setUserCallback(user, '/signup/handleAddressResponse'))

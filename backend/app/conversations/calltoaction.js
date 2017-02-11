@@ -22,27 +22,25 @@ function startCallToActionConversation(user, representatives, campaignCall, camp
   // save params as convoData
   user.convoData = convoData
 
-  return user.save().then(function () {
+  return user.save().then(() =>
     // start the conversation
     const fakeMessage = {
       channel: user.fbId,
       user: user.fbId
     }
     return callToActionPart1Convo(user, fakeMessage)
-  })
+  )
 }
 
 // part 1
 function callToActionPart1Convo(user, message) {
   return botReply(message,
-    `Hi ${user.convoData.firstName}. We've got an issue to call about.`
-  )
-    .then(function () {
-      return botReply(message, `${user.convoData.issueMessage}. ` +
-        `You can find out more about the issue here ${user.convoData.issueLink}.`)
-    })
-    .then(function () {
-      return botReply(message, stripIndent`
+      `Hi ${user.convoData.firstName}. We've got an issue to call about.`
+    )
+    .then(() => botReply(message, `${user.convoData.issueMessage}. ` +
+        `You can find out more about the issue here ${user.convoData.issueLink}.
+    `))
+    .then(() => botReply(message, stripIndent`
       You'll be calling ${user.convoData.repType} ${user.convoData.repName}. ` +
         `When you call you'll talk to a staff member, or you'll leave a voicemail.
       Let them know:
@@ -53,7 +51,7 @@ function callToActionPart1Convo(user, message) {
       *  Answer any questions the staffer has, and be friendly!
     `)
     })
-    .then(function () {
+    .then(() => {
       const msgAttachment = {
         attachment: {
           type: 'template',
@@ -136,15 +134,11 @@ function callToActionPart3Convo(user, message) {
           url: 'https://storage.googleapis.com/callparty/success.gif'
         }
       }
-    }).then(function () {
-      return botReply(message, 'Woo thanks for your work! We’ve had [callCount] calls so far. ' +
-        'We’ll reach out when we have updates and an outcome on the issue.')
-    }).then(function () {
-      return botReply(message, 'Share this action with your friends to make it a party [link]')
-    }).then(function () {
-      // calltoaction is over
-      return setUserCallback(user, null)
     })
+    .then(() => botReply(message, 'Woo thanks for your work! We’ve had [callCount] calls so far. ' +
+        'We’ll reach out when we have updates and an outcome on the issue.'))
+    .then(() => botReply(message, 'Share this action with your friends to make it a party [link].'))
+    .then(() => setUserCallback(user, null) // calltoaction is over)
   }
   else if (message.text === 'Something went wrong') {
     return botReply(message, {
@@ -155,11 +149,10 @@ function callToActionPart3Convo(user, message) {
         }
       }
     })
-      .then(function () {
-        return botReply(message,
+      .then(() => botReply(message,
           'We’re sorry to hear that, but good on you for trying! Want to tell us about it?'
-        )
-      }).then(() => setUserCallback(user, '/calltoaction/thanksforsharing'))
+      ))
+      .then(() => setUserCallback(user, '/calltoaction/thanksforsharing'))
   }
   else {
     throw new Error('Received unexpected message at path /calltoaction/part3: ' + message.text)
@@ -170,10 +163,6 @@ function callToActionPart3Convo(user, message) {
 function thanksForSharingConvo(user, message) {
   return UserConversation.update({ _id: user.convoData.userConversationId }, { dateCompleted: moment.utc().toDate() }).exec()
     .then(() => botReply(message, 'Thanks for sharing! We’ll reach back out if we can be helpful.'))
-    .then(function () {
-      // TODO: log response.text to slack so we can see the feedback
-      return setUserCallback(user, null)
-    })
 }
 
 
