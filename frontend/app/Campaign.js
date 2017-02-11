@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import { Link } from 'react-router'
 import moment from 'moment'
 import API from './API'
@@ -122,6 +122,11 @@ class ConversationItem extends Component {
 }
 
 class NewCampaign extends Component {
+  constructor(props) {
+    super(props)
+
+    this.onSubmit = this.onSubmit.bind(this)
+  }
   static get contextTypes() {
     return { notify: React.PropTypes.func.isRequired }
   }
@@ -134,14 +139,14 @@ class NewCampaign extends Component {
   }
 
   onSubmit(ev) {
-    ev.preventDefault();
+    ev.preventDefault()
     API.newCampaign(this.state, campaign => {
       this.context.notify({
         message: `Campaign created`,
         level: 'success',
         autoDismiss: 1,
         onRemove: () => {
-          this.props.router.push(`/${campaign.id}`);
+          this.props.router.push(`/${campaign.id}`)
         }
       })
     })
@@ -155,23 +160,23 @@ class NewCampaign extends Component {
 
   render() {
     return <div>
-        <form onSubmit={this.onSubmit.bind(this)}>
-          <fieldset>
-            <label>Title</label>
-            <input
-              type="text"
-              value={this.state.title}
-              onChange={this.onInputChange.bind(this, 'title')} />
-          </fieldset>
-          <fieldset>
-            <label>Description</label>
-            <input
-              type="text"
-              value={this.state.description}
-              onChange={this.onInputChange.bind(this, 'description')} />
-          </fieldset>
-          <input type="submit" value="Create" />
-        </form>
+      <form onSubmit={this.onSubmit}>
+        <fieldset>
+          <label>Title</label>
+          <input
+            type="text"
+            value={this.state.title}
+            onChange={this.onInputChange.bind(this, 'title')} />
+        </fieldset>
+        <fieldset>
+          <label>Description</label>
+          <input
+            type="text"
+            value={this.state.description}
+            onChange={this.onInputChange.bind(this, 'description')} />
+        </fieldset>
+        <input type="submit" value="Create" />
+      </form>
     </div>
   }
 }
