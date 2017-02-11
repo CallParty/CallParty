@@ -2,18 +2,32 @@ import { browserHistory } from 'react-router'
 
 const parse = {
   action: function(a) {
-    return {
-      id: a._id,
-      subject: a.title,
-      message: a.message,
-      cta: a.cta,
-      userActions: a.userActions.map(parse.userAction),
-      active: a.active,
-      type: a.type,
-      memberTypes: a.memberTypes,
-      parties: a.parties,
-      committees: a.committees,
-      createdAt: a.createdAt
+    if (a.type === 'call') {
+      return {
+        id: a._id,
+        subject: a.title,
+        message: a.message,
+        task: a.task,
+        link: a.link,
+        userActions: a.userActions.map(parse.userAction),
+        active: a.active,
+        type: a.type,
+        memberTypes: a.memberTypes,
+        parties: a.parties,
+        committees: a.committees,
+        createdAt: a.createdAt
+      }
+    }
+    // else it is an update
+    else {
+      return {
+        id: a._id,
+        message: a.message,
+        subject: a.title,
+        active: a.active,
+        type: a.type,
+        createdAt: a.createdAt
+      }
     }
   },
 
@@ -25,7 +39,7 @@ const parse = {
   campaign: function(c) {
     return {
       id: c._id,
-      actions: c.campaignActions.map(parse.action),
+      actions: c.campaignOps.map(parse.action),
       description: c.description,
       title: c.title,
       createdAt: c.createdAt
@@ -51,21 +65,21 @@ function get(endpoint, cb, onErr) {
   fetch(endpoint, {
     headers: { Authorization: `Bearer ${sessionToken}` }
   })
-  .then(resp => {
-    if (resp.status === 401) {
-      throw new Error('unauthorized')
-    }
-    return resp
-  })
-  .then(resp => resp.json())
-  .then(cb)
-  .catch(err => {
-    if (err.message === 'unauthorized') {
-      redirectToLogin()
-      return
-    }
-    onErr(err)
-  })
+    .then(resp => {
+      if (resp.status === 401) {
+        throw new Error('unauthorized')
+      }
+      return resp
+    })
+    .then(resp => resp.json())
+    .then(cb)
+    .catch(err => {
+      if (err.message === 'unauthorized') {
+        redirectToLogin()
+        return
+      }
+      throw err
+    })
 }
 
 function post(endpoint, data, cb, onErr) {
@@ -80,21 +94,21 @@ function post(endpoint, data, cb, onErr) {
     method: 'post',
     body: JSON.stringify(data)
   })
-  .then(resp => {
-    if (resp.status === 401) {
-      throw new Error('unauthorized')
-    }
-    return resp
-  })
-  .then(resp => resp.json())
-  .then(cb)
-  .catch(err => {
-    if (err.message === 'unauthorized') {
-      redirectToLogin()
-      return
-    }
-    onErr(err)
-  })
+    .then(resp => {
+      if (resp.status === 401) {
+        throw new Error('unauthorized')
+      }
+      return resp
+    })
+    .then(resp => resp.json())
+    .then(cb)
+    .catch(err => {
+      if (err.message === 'unauthorized') {
+        redirectToLogin()
+        return
+      }
+      onErr(err)
+    })
 }
 
 export default {
@@ -107,6 +121,12 @@ export default {
   campaign: function(id, cb) {
     get(`/api/campaigns/${id}`, data => {
       cb(parse.campaign(data))
+    })
+  },
+
+  campaignAction: function(id, cb) {
+    get(`/api/campaign_actions/${id}`, data => {
+      cb(parse.action(data))
     })
   },
 
@@ -139,9 +159,9 @@ export default {
     fetch('/api/token', {
       headers: { Authorization: `Basic ${encodedCredentials}` }
     })
-    .then(resp => resp.json())
-    .then(({ token }) => window.localStorage.setItem('callparty_session_token', token))
-    .then(cb)
-    .catch(onErr)
+      .then(resp => resp.json())
+      .then(({ token }) => window.localStorage.setItem('callparty_session_token', token))
+      .then(cb)
+      .catch(onErr)
   }
 }

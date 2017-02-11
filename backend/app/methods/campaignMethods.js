@@ -67,7 +67,8 @@ exports.newCampaignAction = function(req, res) {
   const campaignAction = new CampaignAction({
     title: data.subject,
     message: data.message,
-    cta: data.cta,
+    link: data.link,
+    task: data.task,
     active: false,
     type: data.type,
     memberTypes: data.memberTypes,
@@ -109,20 +110,21 @@ exports.newCampaignAction = function(req, res) {
 
 exports.newCampaignUpdate = function(req, res) {
   const data = req.body
-  const campaignUpdate = new CampaignUpdate({
-    message: data.message,
-    campaignAction: ObjectId(data.campaignActionId),
-    campaign: ObjectId(req.params.id)
-  })
+  const campaignActionId = data.campaignAction.value
 
-  const campaignUpdatePromise = campaignUpdate.save()
-  const campaignActionPromise = CampaignAction
-    .findById(ObjectId(data.campaignActionId))
+  CampaignAction
+    .findById(ObjectId(campaignActionId))
     .populate({ path: 'userActions', populate: { path: 'user' } })
-    .exec()
-
-  Promise.all([campaignUpdatePromise, campaignActionPromise])
-    .then(([savedCampaignUpdate, campaignAction]) => {
+    .exec().then(function(campaignAction) {
+      const campaignUpdate = new CampaignUpdate({
+        message: data.message,
+        campaignAction: ObjectId(campaignActionId),
+        campaign: ObjectId(req.params.id),
+        type:  'update',
+        title: `Update: ${campaignAction.title}`
+      })
+      return Promise.all([campaignUpdate.save(), campaignAction])
+    }).then(function([savedCampaignUpdate, campaignAction]) {
       return Promise.all([
         savedCampaignUpdate,
         campaignAction.userActions.filter(ua => ua.active).map(ua => ua.user)

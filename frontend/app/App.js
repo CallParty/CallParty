@@ -50,8 +50,8 @@ class App extends Component {
               <IndexRoute component={Campaigns} />
               <Route path="new" component={NewCampaign} />
               <Route path=":id" component={Campaign} />
-              <Route path=":id/action/new(/:duplicateId)" component={NewAction} />
-              <Route path=":id/update/new(/:duplicateId)" component={NewUpdate} />
+              <Route path=":id/action/new" component={NewAction} />
+              <Route path=":id/update/new" component={NewUpdate} />
             </Route>
           </Route>
           <Route path="*" component={NotFound} />

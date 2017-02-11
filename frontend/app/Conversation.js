@@ -233,10 +233,9 @@ class NewAction extends Component {
     API.committees(data => this.setState({ committees: data }))
     this.inputs = {}
 
-    // if a duplicateId param was passed, then pre-populate fields based on that campaignAction
-    if (this.props.params.duplicateId) {
-      alert('++ creating action from duplicate: ' + this.props.params.duplicateId)
-      API.action(this.props.params.duplicateId, data => {
+    // if a cloneId param was passed, then pre-populate fields based on that campaignAction
+    if (this.props.location && this.props.location.query && this.props.location.query.cloneId) {
+      API.campaignAction(this.props.location.query.cloneId, data => {
         this.setState({
           action: data
         })

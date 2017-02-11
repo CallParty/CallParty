@@ -98,6 +98,7 @@ class Campaign extends Component {
               <th>Type</th>
               <th>Subject</th>
               <th>Date Created</th>
+              <th>Clone</th>
             </tr>
             {this.state.actions.map((convo, i) =>
               <ConversationItem
@@ -121,7 +122,7 @@ class ConversationItem extends Component {
       'call': 'action',
       'update': 'update',
     }[this.props.type]
-    return `/${this.props.campaignId}/${actionType}/new/${this.props.campaignActionId}`
+    return `/${this.props.campaignId}/${actionType}/new?cloneId=${this.props.campaignActionId}`
   }
 
   render() {
@@ -132,7 +133,9 @@ class ConversationItem extends Component {
       <td>{this.props.type}</td>
       <td>{this.props.subject}</td>
       <td>{createdAt}</td>
-      <td><Link to={this.getCreateDuplicateUrl()}>Duplicate</Link></td>
+      {this.props.type === 'call'
+        ? <td><Link to={this.getCreateDuplicateUrl()}>Clone</Link></td>
+        : <td></td>}
     </tr>
   }
 }

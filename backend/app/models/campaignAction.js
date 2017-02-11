@@ -7,7 +7,8 @@ const ObjectId = mongoose.Types.ObjectId
 const campaignActionSchema = new Schema({
   title: String,
   message: String,
-  cta: String,
+  task: String,
+  link: String,
   active: Boolean,
   type: String,
   memberTypes: [{ type: String, enum: ['rep', 'sen'] }],
