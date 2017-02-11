@@ -94,9 +94,11 @@ function callToActionPart2Convo(user, message) {
       }
     }
   }
-  return UserAction.update({ _id: user.convoData.userActionId }, { active: true }).exec()
-    .then(() => botReply(message, msg_attachment))
-    .then(() => setUserCallback(user, '/calltoaction/part3'))
+  return Promise.all([
+    UserAction.update({ _id: user.convoData.userActionId }, { active: true }, { multi: false }).exec(),
+    botReply(message, msg_attachment)
+  ])
+  .then(() => setUserCallback(user, '/calltoaction/part3'))
 }
 
 // part 3

@@ -8,9 +8,9 @@ module.exports = function processCallToActionJob(job, done) {
   const { userId, representativeIds, campaignActionId } = job.data
 
   Promise.all([
-    User.findById(ObjectId(userId)).exec(),
+    User.findById(userId).exec(),
     Reps.find({ _id: { $in: [representativeIds.map(ObjectId)] } }).exec(),
-    CampaignAction.findById(ObjectId(campaignActionId)).populate('campaign').exec(),
+    CampaignAction.findById(campaignActionId).populate('campaign').exec(),
     UserAction.create({ user: ObjectId(userId), campaignAction: ObjectId(campaignActionId) })
   ])
   .then(function([user, representatives, campaignAction, userAction]) {
