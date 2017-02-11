@@ -29,7 +29,7 @@ campaignActionSchema.virtual('userActions', {
 campaignActionSchema.virtual('campaignUpdates', {
   ref: 'CampaignUpdate',
   localField: '_id',
-  foreignField: 'campaignAction'
+  foreignField: 'campaignUpdate'
 })
 
 campaignActionSchema.methods.getMatchingRepresentatives = function() {

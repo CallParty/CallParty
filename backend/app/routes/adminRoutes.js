@@ -2,6 +2,7 @@ const auth = require('basic-auth')
 const jwt = require('jsonwebtoken')
 const campaignMethods = require('../methods/campaignMethods')
 const committeeMethods = require('../methods/committeeMethods')
+const campaignActionMethods = require('../methods/campaignActionMethods')
 
 function handleTokenRequest(req, res) {
   const user = auth(req)
@@ -24,6 +25,8 @@ module.exports = function (apiRouter) {
   apiRouter.post('/campaigns', campaignMethods.newCampaign)
   apiRouter.post('/campaigns/:id/action/new', campaignMethods.newCampaignAction)
   apiRouter.post('/campaigns/:id/update/new', campaignMethods.newCampaignUpdate)
+
+  apiRouter.get('/campaign_actions/:id', campaignActionMethods.getCampaignAction)
 
   apiRouter.get('/committees', committeeMethods.getCommittees)
 
