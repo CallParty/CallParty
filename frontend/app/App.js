@@ -5,18 +5,29 @@ import { Campaigns, Campaign, NewCampaign } from './Campaign'
 import { NewUpdate, NewAction } from './Conversation'
 import RequireAuthenticationContainer from './RequireAuthenticationContainer'
 import Login from './Login'
+import API from './API'
 
 function logout() {
   window.localStorage.removeItem('callparty_session_token')
   browserHistory.push('/login')
 }
+function refreshReps(e) {
+  e.preventDefault()
+  API.updateReps()
+}
 
 const Container = (props) => {
-  const logoutButton = props.location.pathname !== '/login' ? <a onClick={logout} href="">Sign Out</a> : null
+  const logoutButton = props.location.pathname !== '/login' ? <a onClick={logout} href=""><button>Sign Out</button></a> : null
+  
+  const refreshButton = props.location.pathname !== '/login' ? <a onClick={refreshReps} href=""><button className="warn">Refresh Rep Data</button></a> : null
+  
   return <div>
     <header className="main-header">
       <Link to="/">CallParty</Link>
-      {logoutButton}
+      <div className="main-header-nav">
+        {refreshButton}
+        {logoutButton}
+      </div>
     </header>
     {props.children}
   </div>

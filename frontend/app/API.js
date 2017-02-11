@@ -9,7 +9,7 @@ const parse = {
         message: a.message,
         task: a.task,
         link: a.link,
-        userActions: a.userActions.map(parse.userAction),
+        userActions: (a.userActions || []).map(parse.userAction),
         active: a.active,
         type: a.type,
         memberTypes: a.memberTypes,
@@ -39,7 +39,7 @@ const parse = {
   campaign: function(c) {
     return {
       id: c._id,
-      actions: c.campaignOps.map(parse.action),
+      actions: (c.campaignOps || []).map(parse.action),
       description: c.description,
       title: c.title,
       createdAt: c.createdAt
@@ -59,7 +59,7 @@ function redirectToLogin() {
   })
 }
 
-function get(endpoint, cb, onErr) {
+function get(endpoint, cb = () => {}, onErr = () => {}) {
   const sessionToken = window.localStorage.getItem('callparty_session_token')
 
   fetch(endpoint, {
@@ -82,7 +82,7 @@ function get(endpoint, cb, onErr) {
     })
 }
 
-function post(endpoint, data, cb, onErr) {
+function post(endpoint, data = {}, cb = () => {}, onErr = () => {}) {
   const sessionToken = window.localStorage.getItem('callparty_session_token')
 
   fetch(endpoint, {
@@ -159,9 +159,13 @@ export default {
     fetch('/api/token', {
       headers: { Authorization: `Basic ${encodedCredentials}` }
     })
-      .then(resp => resp.json())
-      .then(({ token }) => window.localStorage.setItem('callparty_session_token', token))
-      .then(cb)
-      .catch(onErr)
-  }
+    .then(resp => resp.json())
+    .then(({ token }) => window.localStorage.setItem('callparty_session_token', token))
+    .then(cb)
+    .catch(onErr)
+  },
+
+  updateReps: function(cb) {
+    post(`/api/representatives/refresh`)
+  },
 }

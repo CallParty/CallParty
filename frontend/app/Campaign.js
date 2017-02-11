@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import { Link } from 'react-router'
 import moment from 'moment'
 import API from './API'
@@ -24,7 +24,7 @@ class Campaigns extends Component {
       <div className="table">
         <header>
           <h1>Campaigns</h1>
-          <Link to="/new"><button>New Campaign</button></Link>
+          <Link to="/new"><button className="new-campaign">New Campaign</button></Link>
         </header>
         <table>
           <tbody>
@@ -141,6 +141,11 @@ class ConversationItem extends Component {
 }
 
 class NewCampaign extends Component {
+  constructor(props) {
+    super(props)
+
+    this.onSubmit = this.onSubmit.bind(this)
+  }
   static get contextTypes() {
     return { notify: React.PropTypes.func.isRequired }
   }
@@ -153,14 +158,14 @@ class NewCampaign extends Component {
   }
 
   onSubmit(ev) {
-    ev.preventDefault();
+    ev.preventDefault()
     API.newCampaign(this.state, campaign => {
       this.context.notify({
         message: `Campaign created`,
         level: 'success',
         autoDismiss: 1,
         onRemove: () => {
-          this.props.router.push(`/${campaign.id}`);
+          this.props.router.push(`/${campaign.id}`)
         }
       })
     })
@@ -174,7 +179,7 @@ class NewCampaign extends Component {
 
   render() {
     return <div>
-      <form onSubmit={this.onSubmit.bind(this)}>
+      <form onSubmit={this.onSubmit}>
         <fieldset>
           <label>Title</label>
           <input

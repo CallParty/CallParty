@@ -1,5 +1,6 @@
 var path = require('path')
 var ExtractTextPlugin = require('extract-text-webpack-plugin')
+var Dotenv = require('dotenv-webpack')
 
 var BUILD_DIR = path.resolve(__dirname, 'build')
 
@@ -32,7 +33,10 @@ module.exports = {
     ]
   },
   plugins: [
-    new ExtractTextPlugin('css/style.css')
+    new ExtractTextPlugin('css/style.css'),
+    new Dotenv({
+      'path': '../backend/.env'
+    })
   ],
   resolve: {
     extensions: ['', '.js', '.sass'],

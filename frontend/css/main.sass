@@ -29,6 +29,13 @@ button, input[type=submit]
     background: #fbd9d9
     box-shadow: 4px 4px 0px #f3a8cb
 
+.warn
+  background: #e7e0fe
+  box-shadow: 4px 4px 0px #ad71ff
+  &:hover
+    background: #d2c4fd
+    box-shadow: 4px 4px 0px #8000e1
+
 .table
   header
     margin: 0 0 1em 0
@@ -110,6 +117,10 @@ textarea, input[type=text], input[type=password]
   &:hover
     background: #dcffdc
 
+.new-campaign
+  padding: 0.8em 1.2em
+  font-size: 1em
+
 .user-var
   font-style: italic
   color: rgba(255,255,255,0.6)
@@ -122,3 +133,7 @@ textarea, input[type=text], input[type=password]
   padding: 1em 0
   display: flex
   justify-content: space-between
+  &-nav
+    margin-bottom: 20px;
+    a 
+      margin-left: 10px;

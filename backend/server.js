@@ -3,9 +3,7 @@ const express = require('express') // framework d'appli
 const app = express()
 const Raven = require('raven')
 // Must configure Raven before doing anything else with it
-// TODO(joshblum): This the private DSN key, _must_ be removed before open
-// sourcing.
-Raven.config('https://19d1de037dd74a459b5eccc120a8495a:d3d991faa8bb44e59289b97eda1a712a@sentry.io/135820').install()
+Raven.config(process.env.SENTRY_BACKEND_DSN).install()
 // The request handler must be the first middleware on the app
 app.use(Raven.requestHandler())
 // The error handler must be before any other error middleware
@@ -93,7 +91,13 @@ db.once('open', function() {
   insertReps().then(insertCommittees)
 })
 
-console.log('***-----MongoDB Connected-----***')
+if (/.*callpartyprod$/.test(dbUri)) {
+  console.log('***----- USING PROD DATABASE -----***')
+}
+else {
+  console.log('++ staging database connected')
+}
+
 
 // START ===================================================
 http.listen(app.get('port'), function () {
