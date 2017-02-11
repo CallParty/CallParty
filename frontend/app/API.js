@@ -7,7 +7,7 @@ const parse = {
       subject: a.title,
       message: a.message,
       cta: a.cta,
-      userActions: a.userActions.map(parse.userAction),
+      userActions: (a.userActions || []).map(parse.userAction),
       active: a.active,
       type: a.type,
       memberTypes: a.memberTypes,
@@ -25,7 +25,7 @@ const parse = {
   campaign: function(c) {
     return {
       id: c._id,
-      actions: c.campaignActions.map(parse.action),
+      actions: (c.campaignActions || []).map(parse.action),
       description: c.description,
       title: c.title,
       createdAt: c.createdAt
@@ -45,7 +45,7 @@ function redirectToLogin() {
   })
 }
 
-function get(endpoint, cb, onErr) {
+function get(endpoint, cb, onErr = () => {}) {
   const sessionToken = window.localStorage.getItem('callparty_session_token')
 
   fetch(endpoint, {
@@ -68,7 +68,7 @@ function get(endpoint, cb, onErr) {
   })
 }
 
-function post(endpoint, data, cb, onErr) {
+function post(endpoint, data, cb, onErr = () => {}) {
   const sessionToken = window.localStorage.getItem('callparty_session_token')
 
   fetch(endpoint, {
