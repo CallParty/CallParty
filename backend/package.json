@@ -4,7 +4,9 @@
   "description": "Demo with Express and MongoDB",
   "main": "server.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "server": "node server.js",
+    "worker": "node worker.js"
   },
   "author": "",
   "license": "ISC",
