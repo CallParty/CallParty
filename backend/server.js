@@ -80,6 +80,7 @@ app.use(function(err, req, res, next) {
 // mongodb
 const dbUri = process.env.MONGODB_URI || ''
 
+mongoose.Promise = require('es6-promise')
 mongoose.connect(dbUri)
 const db = mongoose.connection
 const { insertReps } = require('./app/methods/representativesMethods')

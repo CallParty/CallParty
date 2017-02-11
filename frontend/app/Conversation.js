@@ -232,6 +232,15 @@ class NewAction extends Component {
     })
     API.committees(data => this.setState({ committees: data }))
     this.inputs = {}
+
+    // if a cloneId param was passed, then pre-populate fields based on that campaignAction
+    if (this.props.location && this.props.location.query && this.props.location.query.cloneId) {
+      API.campaignAction(this.props.location.query.cloneId, data => {
+        this.setState({
+          action: data
+        })
+      })
+    }
   }
 
   onSelectChange(key, val) {

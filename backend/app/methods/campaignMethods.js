@@ -1,6 +1,5 @@
 const mongoose = require('mongoose')
 const { Campaign, CampaignAction, CampaignUpdate } = require('../models')
-const { createCallToActionJob } = require('../../jobs/callToAction')
 const createQueue = require('../utilities/createQueue')
 
 const ObjectId = mongoose.Types.ObjectId
@@ -68,7 +67,8 @@ exports.newCampaignAction = function(req, res) {
   const campaignAction = new CampaignAction({
     title: data.subject,
     message: data.message,
-    cta: data.cta,
+    link: data.link,
+    task: data.task,
     active: false,
     type: data.type,
     memberTypes: data.memberTypes,
@@ -81,7 +81,6 @@ exports.newCampaignAction = function(req, res) {
     .then(savedCampaignAction => Promise.all([savedCampaignAction, savedCampaignAction.getMatchingUsersWithRepresentatives()]))
     .then(([savedCampaignAction, matchingUsersWithRepresentatives]) => {
       // send the users a call to action
-      console.log(matchingUsersWithRepresentatives.length)
       for (let { user, representatives } of matchingUsersWithRepresentatives) {
         const job = queue.create('callToAction', {
           userId: user._id.toString(),
@@ -93,9 +92,6 @@ exports.newCampaignAction = function(req, res) {
         })
       }
 
-      return null
-    })
-    .then(() => {
       return Campaign
         .findOne({ _id: req.params.id })
         .populate('campaignUpdates')
@@ -114,14 +110,37 @@ exports.newCampaignAction = function(req, res) {
 
 exports.newCampaignUpdate = function(req, res) {
   const data = req.body
-  const campaignUpdate = new CampaignUpdate({
-    message: data.message,
-    campaignAction: ObjectId(data.campaignActionId),
-    campaign: ObjectId(req.params.id)
-  })
+  const campaignActionId = data.campaignAction.value
 
-  campaignUpdate.save()
-    .then(() => {
+  CampaignAction
+    .findById(ObjectId(campaignActionId))
+    .populate({ path: 'userActions', populate: { path: 'user' } })
+    .exec().then(function(campaignAction) {
+      const campaignUpdate = new CampaignUpdate({
+        message: data.message,
+        campaignAction: ObjectId(campaignActionId),
+        campaign: ObjectId(req.params.id),
+        type:  'update',
+        title: `Update: ${campaignAction.title}`
+      })
+      return Promise.all([campaignUpdate.save(), campaignAction])
+    }).then(function([savedCampaignUpdate, campaignAction]) {
+      return Promise.all([
+        savedCampaignUpdate,
+        campaignAction.userActions.filter(ua => ua.active).map(ua => ua.user)
+      ])
+    })
+    .then(([savedCampaignUpdate, users]) => {
+      for (let user of users) {
+        const job = queue.create('update', {
+          userId: user._id,
+          campaignUpdateId: savedCampaignUpdate._id
+        })
+        job.save(function(err) {
+          if (err) { throw err }
+        })
+      }
+
       return Campaign
         .findOne({ _id: req.params.id })
         .populate('campaignUpdates')

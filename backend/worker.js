@@ -32,13 +32,14 @@ queue.on('job enqueue', function(id, type) {
   console.log( 'Job %s got queued of type %s', id, type )
 })
 
-queue.process('callToAction', require('./jobs/callToAction'))
+queue.process('callToAction', require('./jobs/processCallToAction'))
 
 // kue viewer
 const app = express()
 app.use(basicAuth(process.env.ADMIN_USERNAME, process.env.ADMIN_PASSWORD))
 app.use('/kue', kue.app)
+app.set('port', 8083)
 const http = require('http').Server(app)
-http.listen(8083, function () {
+http.listen(app.get('port'), function () {
   console.log('listening on port ' + app.get('port'))
 })

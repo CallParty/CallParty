@@ -25,4 +25,12 @@ campaignSchema.virtual('campaignUpdates', {
   foreignField: 'campaign'
 })
 
+campaignSchema.virtual('campaignOps').get(function() {
+  if (!this.campaignActions || !this.campaignUpdates) {
+    return null
+  }
+
+  return this.campaignActions.concat(this.campaignUpdates)
+})
+
 module.exports = mongoose.model('Campaign', campaignSchema)
