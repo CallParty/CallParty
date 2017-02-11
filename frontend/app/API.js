@@ -146,7 +146,6 @@ export default {
   },
 
   updateReps: function(cb) {
-    console.log(`update reps`)
     post(`/api/representatives/refresh`)
   },
 }
