@@ -1,5 +1,6 @@
 var path = require('path')
 var ExtractTextPlugin = require('extract-text-webpack-plugin')
+var webpack = require('webpack')
 
 var BUILD_DIR = path.resolve(__dirname, 'build')
 
@@ -32,7 +33,10 @@ module.exports = {
     ]
   },
   plugins: [
-    new ExtractTextPlugin('css/style.css')
+    new ExtractTextPlugin('css/style.css'),
+    new webpack.DefinePlugin({
+          SENTRY_FRONTEND_DSN: JSON.stringify(process.env.SENTRY_FRONTEND_DSN),
+    })
   ],
   resolve: {
     extensions: ['', '.js', '.sass'],
