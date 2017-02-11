@@ -27,9 +27,10 @@ function loadRepsFromFile() {
   return Promise.all(repsFromYaml.map(function(repFromYaml, i) {
     const termLength = repFromYaml.terms.length - 1
     const lastTerm = repFromYaml.terms[termLength]
+    const bioguide = repFromYaml.id.bioguide
 
     return Reps.findOneAndUpdate(
-      { bioguide: repFromYaml.id.bioguide },
+      { bioguide: bioguide },
       {
         id: `rep-${i}`,
         full_name: `${repFromYaml.name.first} ${repFromYaml.name.last}`,
@@ -47,7 +48,8 @@ function loadRepsFromFile() {
         term_end: lastTerm.term_end,
         district: lastTerm.district,
         wikipedia: repFromYaml.wikipedia,
-        wikidata: repFromYaml.wikidata
+        wikidata: repFromYaml.wikidata,
+        image_url: `https://theunitedstates.io/images/congress/225x275/${repFromYaml.id.bioguide}.jpg`
       },
       { upsert: true, new: true, setDefaultsOnInsert: true }
     )
