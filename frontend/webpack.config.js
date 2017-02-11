@@ -1,6 +1,6 @@
 var path = require('path')
 var ExtractTextPlugin = require('extract-text-webpack-plugin')
-var webpack = require('webpack')
+var Dotenv = require('dotenv-webpack')
 
 var BUILD_DIR = path.resolve(__dirname, 'build')
 
@@ -34,8 +34,8 @@ module.exports = {
   },
   plugins: [
     new ExtractTextPlugin('css/style.css'),
-    new webpack.DefinePlugin({
-          SENTRY_FRONTEND_DSN: JSON.stringify(process.env.SENTRY_FRONTEND_DSN),
+    new Dotenv({
+      'path': '../backend/.env'
     })
   ],
   resolve: {
