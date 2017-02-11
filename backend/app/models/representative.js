@@ -1,7 +1,7 @@
-var mongoose = require('mongoose'),
-    Schema = mongoose.Schema
+const mongoose = require('mongoose')
+const Schema = mongoose.Schema
 
-var representativeSchema = new Schema({
+const representativeSchema = new Schema({
   id: String,
   full_name: String,
   first_name: String,
@@ -9,10 +9,10 @@ var representativeSchema = new Schema({
   official_full: String,
   gender: String,
   state: String,
-  legislator_type: String,
+  legislator_type: { type: String, enum: ['rep', 'sen'] },
   term_start: String,
   term_end: String,
-  party: String,
+  party: { type: String, enum: ['Democrat', 'Republican', 'Independent'] },
   url: String,
   phone: String,
   contact_form: String,
@@ -48,6 +48,16 @@ representativeSchema.virtual('committees').get(function() {
 representativeSchema.virtual('subcommittees').get(function() {
   if (!this.representativeSubcommittees) { return null }
   return this.representativeSubcommittees.map(rs => rs.subcommittee)
+})
+
+representativeSchema.virtual('legislatorTitle').get(function() {
+  if (!this.legislator_type) { return '' }
+
+  const legislatorTypeLabels = {
+    rep: 'Representative',
+    sen: 'Senator'
+  }
+  return legislatorTypeLabels[this.legislator_type]
 })
 
 var Reps = mongoose.model('Reps', representativeSchema)
