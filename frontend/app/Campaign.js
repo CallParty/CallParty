@@ -24,7 +24,7 @@ class Campaigns extends Component {
       <div className="table">
         <header>
           <h1>Campaigns</h1>
-          <Link to="/new"><button>New Campaign</button></Link>
+          <Link to="/new"><button className="new-campaign">New Campaign</button></Link>
         </header>
         <table>
           <tbody>
