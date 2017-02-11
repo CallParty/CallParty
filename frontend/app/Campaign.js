@@ -28,14 +28,14 @@ class Campaigns extends Component {
         </header>
         <table>
           <tbody>
-            <tr>
-              <th>#</th>
-              <th>Title</th>
-              <th>Description</th>
-              <th>Date Created</th>
-            </tr>
-            {this.state.campaigns.map(campaign =>
-              <CampaignItem key={campaign.id} onClick={this.viewCampaign.bind(this)} {...campaign} />)}
+          <tr>
+            <th>#</th>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Date Created</th>
+          </tr>
+          {this.state.campaigns.map(campaign =>
+            <CampaignItem key={campaign.id} onClick={this.viewCampaign.bind(this)} {...campaign} />)}
           </tbody>
         </table>
       </div>
@@ -93,14 +93,20 @@ class Campaign extends Component {
           </header>
           <table>
             <tbody>
-              <tr>
-                <th>#</th>
-                <th>Type</th>
-                <th>Subject</th>
-                <th>Date Created</th>
-              </tr>
-              {this.state.actions.map((convo, i) =>
-                <ConversationItem key={i} num={i} {...convo} />)}
+            <tr>
+              <th>#</th>
+              <th>Type</th>
+              <th>Subject</th>
+              <th>Date Created</th>
+            </tr>
+            {this.state.actions.map((convo, i) =>
+              <ConversationItem
+                key={i}
+                num={i}
+                campaignId={this.props.params.id}
+                campaignActionId={convo.id}
+                {...convo}
+              />)}
             </tbody>
           </table>
         </div>
@@ -109,6 +115,15 @@ class Campaign extends Component {
 }
 
 class ConversationItem extends Component {
+
+  getCreateDuplicateUrl() {
+    const actionType = {
+      'call': 'action',
+      'update': 'update',
+    }[this.props.type]
+    return `/${this.props.campaignId}/${actionType}/new/${this.props.campaignActionId}`
+  }
+
   render() {
     const createdAt = moment.utc(this.props.createdAt).local().format('h:mma on M/DD/YYYY')
 
@@ -117,6 +132,7 @@ class ConversationItem extends Component {
       <td>{this.props.type}</td>
       <td>{this.props.subject}</td>
       <td>{createdAt}</td>
+      <td><Link to={this.getCreateDuplicateUrl()}>Duplicate</Link></td>
     </tr>
   }
 }
@@ -155,23 +171,23 @@ class NewCampaign extends Component {
 
   render() {
     return <div>
-        <form onSubmit={this.onSubmit.bind(this)}>
-          <fieldset>
-            <label>Title</label>
-            <input
-              type="text"
-              value={this.state.title}
-              onChange={this.onInputChange.bind(this, 'title')} />
-          </fieldset>
-          <fieldset>
-            <label>Description</label>
-            <input
-              type="text"
-              value={this.state.description}
-              onChange={this.onInputChange.bind(this, 'description')} />
-          </fieldset>
-          <input type="submit" value="Create" />
-        </form>
+      <form onSubmit={this.onSubmit.bind(this)}>
+        <fieldset>
+          <label>Title</label>
+          <input
+            type="text"
+            value={this.state.title}
+            onChange={this.onInputChange.bind(this, 'title')} />
+        </fieldset>
+        <fieldset>
+          <label>Description</label>
+          <input
+            type="text"
+            value={this.state.description}
+            onChange={this.onInputChange.bind(this, 'description')} />
+        </fieldset>
+        <input type="submit" value="Create" />
+      </form>
     </div>
   }
 }
