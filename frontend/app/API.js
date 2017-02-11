@@ -45,7 +45,7 @@ function redirectToLogin() {
   })
 }
 
-function get(endpoint, cb, onErr = () => {}) {
+function get(endpoint, cb = () => {}, onErr = () => {}) {
   const sessionToken = window.localStorage.getItem('callparty_session_token')
 
   fetch(endpoint, {
@@ -68,7 +68,7 @@ function get(endpoint, cb, onErr = () => {}) {
   })
 }
 
-function post(endpoint, data, cb, onErr = () => {}) {
+function post(endpoint, data = {}, cb = () => {}, onErr = () => {}) {
   const sessionToken = window.localStorage.getItem('callparty_session_token')
 
   fetch(endpoint, {
@@ -143,5 +143,10 @@ export default {
     .then(({ token }) => window.localStorage.setItem('callparty_session_token', token))
     .then(cb)
     .catch(onErr)
-  }
+  },
+
+  updateReps: function(cb) {
+    console.log(`update reps`)
+    post(`/api/representatives/refresh`)
+  },
 }
