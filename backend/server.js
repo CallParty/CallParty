@@ -1,6 +1,5 @@
 // modules =================================================
 const express = require('express') // framework d'appli
-const kue = require('kue')
 const app = express()
 const Raven = require('raven')
 // Must configure Raven before doing anything else with it
@@ -93,7 +92,13 @@ db.once('open', function() {
   insertReps().then(insertCommittees)
 })
 
-console.log('***-----MongoDB Connected-----***')
+if (/.*callpartyprod$/.test(dbUri)) {
+  console.log('***----- USING PROD DATABASE -----***')
+}
+else {
+  console.log('++ staging database connected')
+}
+
 
 // START ===================================================
 http.listen(app.get('port'), function () {
