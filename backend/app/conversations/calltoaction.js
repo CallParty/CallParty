@@ -9,7 +9,7 @@ function startCallToActionConversation(user, representatives, campaignAction, ca
     issueLink: campaign.link,
     issueSubject: campaign.title,
     issueAction: campaignAction.cta,
-    repType: representatives[0].legislator_type,
+    repType: representatives[0].legislatorTitle,
     repName: representatives[0].official_full,
     repImage: representatives[0].image_url,
     repPhoneNumber: representatives[0].phone,
@@ -51,13 +51,38 @@ function callToActionPart1Convo(user, message) {
     `)
     })
     .then(function () {
-      return botReply(message, stripIndent`
-      Rep card
-      ${user.convoData.repImage}
-      ${user.convoData.repName}
-      * ${user.convoData.repPhoneNumber} ⇢
-      * ${user.convoData.repWebsite} ⇢
-    `)
+      const msgAttachment = {
+        attachment: {
+          type: 'template',
+          payload: {
+            template_type: 'generic',
+            elements: [
+              {
+                title: `${user.convoData.repType} ${user.convoData.repName}`,
+                image_url: user.convoData.repImage,
+                default_action: {
+                  type: 'phone_number',
+                  title: user.convoData.repPhoneNumber,
+                  payload: user.convoData.repPhoneNumber
+                },
+                buttons: [
+                  {
+                    type: 'phone_number',
+                    title: user.convoData.repPhoneNumber,
+                    payload: user.convoData.repPhoneNumber
+                  },
+                  {
+                    type: 'web_url',
+                    url: user.convoData.repWebsite,
+                    title: 'View Website'
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+      return botReply(message, msgAttachment)
     })
     .then(() => botReply(message, 'Give me a thumbs up once you’ve tried to call!'))
     .then(() => setUserCallback(user, '/calltoaction/part2'))
