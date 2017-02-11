@@ -1,6 +1,5 @@
 const yaml = require('js-yaml')
 const fs = require('fs')
-const request = require('request')
 const mongoose = require('mongoose')
 const {
   Committee,
@@ -9,20 +8,12 @@ const {
   RepresentativeSubcommittee,
   Reps
 } = require('../models')
+const downloadFile = require('./downloadFile')
 
 mongoose.Promise = require('es6-promise')
 
 const COMMITTEE_FILE_NAME = '/tmp/committees-current.yaml'
 const COMMITTEE_MEMBERSHIP_FILE_NAME = '/tmp/committee-membership-current.yaml'
-
-function downloadFile(url, destPath) {
-  return new Promise(function(resolve, reject) {
-    const writeableStream = fs.createWriteStream(destPath)
-    request.get(url).pipe(writeableStream)
-    writeableStream.on('finish', resolve)
-    writeableStream.on('error', reject)
-  })
-}
 
 function downloadCommitteeYamlFile() {
   return downloadFile(
