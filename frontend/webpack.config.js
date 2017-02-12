@@ -5,7 +5,7 @@ var Dotenv = require('dotenv-webpack')
 var BUILD_DIR = path.resolve(__dirname, 'build')
 
 module.exports = {
-  entry: ['whatwg-fetch', './main'],
+  entry: ['react-hot-loader/patch', 'whatwg-fetch', './main'],
   output: {
     path: BUILD_DIR,
     filename: 'bundle.js',
@@ -16,11 +16,8 @@ module.exports = {
     loaders: [
       {
         test: /\.js$/,
-        loader: 'babel-loader',
-        exclude: /(node_modules|bower_components)/,
-        query: {
-          presets: ['es2015', 'stage-2', 'react']
-        }
+        loaders: ['babel-loader'],
+        exclude: /(node_modules|bower_components)/
       },
       {
         test: /\.sass$/,
