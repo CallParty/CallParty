@@ -24,14 +24,6 @@ const CONFIRMATION_MODAL_STYLE = {
 }
 
 
-const ACTIONS = [{
-  value: 'call',
-  label: 'Call'
-}, {
-  value: 'vote',
-  label: 'Vote'
-}]
-
 class NewUpdate extends Component {
   constructor(props) {
     super(props)
@@ -207,7 +199,6 @@ class NewCallToAction extends Component {
         link: '',
         subject: '',
         task: '',
-        type: 'call',
         memberTypes: [],
         parties: [],
         committees: []
@@ -274,7 +265,7 @@ class NewCallToAction extends Component {
   createAction() {
     this.closeConfirmationModal()
 
-    API.newCampaignAction(
+    API.newCampaignCall(
       this.state.campaign.id,
       this.state.callToAction,
       () => {
@@ -316,16 +307,6 @@ class NewCallToAction extends Component {
           <h3>Campaign: <Link to={`/${this.state.campaign.id}`}>{this.state.campaign.title}</Link></h3>
         </div>
         <form onSubmit={this.onSubmit.bind(this)}>
-          <fieldset>
-            <label>Type</label>
-            <Select
-              name="type"
-              placeholder="Action Type"
-              value={this.state.callToAction.type}
-              options={ACTIONS}
-              onChange={this.onSelectChange.bind(this, 'type')}
-            />
-          </fieldset>
           <fieldset>
             <label>Targeting</label>
             <div>
