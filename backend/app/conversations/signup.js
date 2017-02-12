@@ -20,17 +20,18 @@ function startSignupConversation(fbId) {
 
   return rp(facebookGraphRequestOptions)
     .then(function(fbUserData) {
-      User.findOrCreate(
+      return User.findOneAndUpdate(
         { fbId: fbId },
         { firstName: fbUserData.first_name, lastName: fbUserData.last_name },
-        function (err, user) {
-          // use a fakeMessage to initiate the conversation with the correct user
-          const fakeMessage = {
-            channel: fbId,
-            user: fbId
-          }
-          askForAddressConvo(user, fakeMessage)
-        })
+        { upsert: true, new: true, setDefaultsOnInsert: true }
+      ).exec()
+    })
+    .then(function(user) {
+      const fakeMessage = {
+        channel: fbId,
+        user: fbId
+      }
+      return askForAddressConvo(user, fakeMessage)
     })
     .catch(function(err) { throw new Error(err) })
 }

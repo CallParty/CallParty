@@ -1,5 +1,4 @@
 const mongoose = require('mongoose')
-const findOrCreate = require('mongoose-findorcreate')
 const moment = require('moment')
 const Schema = mongoose.Schema
 
@@ -29,8 +28,6 @@ userSchema.virtual('userActions', {
   localField: '_id',
   foreignField: 'user'
 })
-
-userSchema.plugin(findOrCreate)
 
 module.exports = mongoose.model('User', userSchema)
 
