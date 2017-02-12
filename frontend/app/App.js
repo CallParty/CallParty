@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Router, Route, Link, IndexRoute, browserHistory } from 'react-router'
 import NotificationSystem from 'react-notification-system'
 import { Campaigns, Campaign, NewCampaign } from './Campaign'
-import { NewUpdate, NewCampaignCall } from './Conversation'
+import { NewCampaignUpdate, NewCampaignCall } from './NewCampaignAction'
 import RequireAuthenticationContainer from './RequireAuthenticationContainer'
 import Login from './Login'
 import API from './API'
@@ -62,7 +62,7 @@ class App extends Component {
               <Route path="new" component={NewCampaign} />
               <Route path=":id" component={Campaign} />
               <Route path=":id/call/new" component={NewCampaignCall} />
-              <Route path=":id/update/new" component={NewUpdate} />
+              <Route path=":id/update/new" component={NewCampaignUpdate} />
             </Route>
           </Route>
           <Route path="*" component={NotFound} />

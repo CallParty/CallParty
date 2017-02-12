@@ -4,7 +4,7 @@ import Select from 'react-select'
 import { Link } from 'react-router'
 import Modal from 'react-modal'
 
-// used in both the NewUpdate and NewAction components
+// used in both the NewCampaignUpdate and NewAction components
 const CONFIRMATION_MODAL_STYLE = {
   content: {
     top: '50%',
@@ -24,7 +24,7 @@ const CONFIRMATION_MODAL_STYLE = {
 }
 
 
-class NewUpdate extends Component {
+class NewCampaignUpdate extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -39,7 +39,7 @@ class NewUpdate extends Component {
     this.onSubmit = this.onSubmit.bind(this)
     this.onSelectChange = this.onSelectChange.bind(this)
     this.onMessageChange = this.onMessageChange.bind(this)
-    this.createUpdate = this.createUpdate.bind(this)
+    this.createCampaignUpdate = this.createCampaignUpdate.bind(this)
     this.closeConfirmationModal = this.closeConfirmationModal.bind(this)
   }
 
@@ -77,7 +77,7 @@ class NewUpdate extends Component {
     this.setState({ confirmationModalIsOpen: true })
   }
 
-  createUpdate() {
+  createCampaignUpdate() {
     this.closeConfirmationModal()
 
     API.newCampaignUpdate(
@@ -156,7 +156,7 @@ class NewUpdate extends Component {
         >
           <p style={{ marginBottom: '10px' }}>Are you sure?</p>
           <div>
-            <button onClick={this.createUpdate} style={{ marginRight: '10px' }}>Yes</button>
+            <button onClick={this.createCampaignUpdate} style={{ marginRight: '10px' }}>Yes</button>
             <button onClick={this.closeConfirmationModal}>No</button>
           </div>
         </Modal>
@@ -205,7 +205,7 @@ class NewCampaignCall extends Component {
 
     this.onSubmit = this.onSubmit.bind(this)
     this.closeConfirmationModal = this.closeConfirmationModal.bind(this)
-    this.createAction = this.createAction.bind(this)
+    this.createCampaignCall = this.createCampaignCall.bind(this)
   }
 
   static get contextTypes() {
@@ -268,7 +268,7 @@ class NewCampaignCall extends Component {
     this.setState({ confirmationModalIsOpen: false })
   }
 
-  createAction() {
+  createCampaignCall() {
     this.closeConfirmationModal()
 
     API.newCampaignCall(
@@ -394,7 +394,7 @@ class NewCampaignCall extends Component {
         >
           <p style={{ marginBottom: '10px' }}>Are you sure?</p>
           <div>
-            <button onClick={this.createAction} style={{ marginRight: '10px' }}>Yes</button>
+            <button onClick={this.createCampaignCall} style={{ marginRight: '10px' }}>Yes</button>
             <button onClick={this.closeConfirmationModal}>No</button>
           </div>
         </Modal>
@@ -403,4 +403,4 @@ class NewCampaignCall extends Component {
   }
 }
 
-export { NewUpdate, NewCampaignCall }
+export { NewCampaignUpdate, NewCampaignCall }

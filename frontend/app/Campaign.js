@@ -101,7 +101,7 @@ class Campaign extends Component {
               <th>Clone</th>
             </tr>
             {this.state.actions.map((convo, i) =>
-              <ConversationItem
+              <CampaignAction
                 key={i}
                 num={i}
                 campaignId={this.props.params.id}
@@ -120,7 +120,7 @@ const ACTION_TYPES = {
   CampaignUpdate: 'update'
 }
 
-class ConversationItem extends Component {
+class CampaignAction extends Component {
 
   getCreateDuplicateUrl() {
 
