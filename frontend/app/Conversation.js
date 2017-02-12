@@ -117,7 +117,7 @@ class NewUpdate extends Component {
   }
 
   render() {
-    const notUpdates = this.state.campaign.actions.filter(a => a.type != 'CampaignUpdate')
+    const notUpdates = this.state.campaign.actions.filter(a => a.type !== 'CampaignUpdate')
     const options = notUpdates.map(a => ({
       value: a.id,
       label: a.subject
