@@ -1,86 +1,21 @@
-const moment = require('moment')
 const mongoose = require('mongoose')
+const moment = require('moment')
 const Schema = mongoose.Schema
-
-const ObjectId = mongoose.Types.ObjectId
 
 const campaignActionSchema = new Schema({
   title: String,
-  message: String,
-  task: String,
-  link: String,
-  active: Boolean,
-  type: String,
-  memberTypes: [{ type: String, enum: ['rep', 'sen'] }],
-  parties: [{ type: String, enum: ['Democrat', 'Republican', 'Independent'] }],
-  committees: Array,
   createdAt: { type: Date, default: () => moment.utc().toDate() },
   campaign: { type: Schema.Types.ObjectId, ref: 'Campaign' }
 }, {
   toObject: { virtuals: true },
-  toJSON: { virtuals: true }
+  toJSON: { virtuals: true },
+  discriminatorKey: 'type'
 })
 
-campaignActionSchema.virtual('userActions', {
-  ref: 'UserAction',
+campaignActionSchema.virtual('userConversations', {
+  ref: 'UserConversation',
   localField: '_id',
   foreignField: 'campaignAction'
 })
-
-campaignActionSchema.virtual('campaignUpdates', {
-  ref: 'CampaignUpdate',
-  localField: '_id',
-  foreignField: 'campaignAction'
-})
-
-campaignActionSchema.methods.getMatchingRepresentatives = function() {
-  return this.model('Reps')
-    .aggregate()
-    .lookup({ from: 'representativecommittees', localField: '_id', foreignField: 'representative', as: 'representativeCommittees' })
-    .unwind({ path: '$representativeCommittees', preserveNullAndEmptyArrays: true })
-    .lookup({ from: 'committees', localField: 'representativeCommittees.committee', foreignField: '_id', as: 'committees' })
-    .unwind({ path: '$committees', preserveNullAndEmptyArrays: true })
-    .group({
-      _id: '$_id',
-      legislator_type: { $first: '$legislator_type' },
-      party: { $first: '$party' },
-      state: { $first: '$state' },
-      district: { $first: '$district' },
-      official_full: { $first: '$official_full' },
-      committees: { $push: '$committees' }
-    })
-    .match({
-      legislator_type: { $in: this.memberTypes },
-      party: { $in: this.parties },
-      'committees._id': { $in: this.committees.map(ObjectId) }
-    })
-    .exec()
-}
-
-campaignActionSchema.methods.getMatchingUsersWithRepresentatives = function () {
-  return Promise.all([
-    this.getMatchingRepresentatives(),
-    this.model('User').find({ active: true, unsubscribed: false }).exec(),
-  ])
-  .then(function([matchingRepresentatives, users]) {
-    const repsByUser = users.reduce(function(repsByUser, user) {
-      for (let rep of matchingRepresentatives) {
-        const matchesSenator = (rep.legislator_type === 'sen' && rep.state === user.state)
-        const matchesHouseRep = (
-          rep.legislator_type === 'rep' &&
-          rep.state === user.state &&
-          rep.district === user.congressionalDistrict
-        )
-        if (matchesSenator || matchesHouseRep) {
-          repsByUser[user._id] = repsByUser[user._id] || { user, representatives: [] }
-          repsByUser[user._id].representatives.push(rep)
-        }
-      }
-      return repsByUser
-    }, {})
-
-    return Object.values(repsByUser)
-  })
-}
 
 module.exports = mongoose.model('CampaignAction', campaignActionSchema)

@@ -23,8 +23,8 @@ const userSchema = new Schema({
   toJSON: { virtuals: true }
 })
 
-userSchema.virtual('userActions', {
-  ref: 'UserAction',
+userSchema.virtual('userConversations', {
+  ref: 'UserConversation',
   localField: '_id',
   foreignField: 'user'
 })

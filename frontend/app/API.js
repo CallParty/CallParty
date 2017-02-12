@@ -1,45 +1,47 @@
 import { browserHistory } from 'react-router'
 
 const parse = {
-  action: function(a) {
-    if (a.type === 'call') {
-      return {
-        id: a._id,
-        subject: a.title,
-        message: a.message,
-        task: a.task,
-        link: a.link,
-        userActions: (a.userActions || []).map(parse.userAction),
-        active: a.active,
-        type: a.type,
-        memberTypes: a.memberTypes,
-        parties: a.parties,
-        committees: a.committees,
-        createdAt: a.createdAt
-      }
-    }
-    // else it is an update
-    else {
-      return {
-        id: a._id,
-        message: a.message,
-        subject: a.title,
-        active: a.active,
-        type: a.type,
-        createdAt: a.createdAt
-      }
+  call: function(c) {
+    return {
+      id: c._id,
+      subject: c.title,
+      message: c.message,
+      task: c.task,
+      link: c.link,
+      userConversations: (c.userConversations || []).map(parse.userConversation),
+      active: c.active,
+      type: c.type,
+      memberTypes: c.memberTypes,
+      parties: c.parties,
+      committees: c.committees,
+      createdAt: c.createdAt
     }
   },
 
-  userAction: function(a) {
+  update: function(u) {
+    return {
+      id: u._id,
+      message: u.message,
+      subject: u.title,
+      active: u.active,
+      type: u.type,
+      createdAt: u.createdAt
+    }
+  },
+
+  action: function(a) {
+    return a.type === 'CampaignCall' ? parse.call(a) : parse.update(a)
+  },
+
+  userConversation: function(c) {
     // TODO
-    return a
+    return c
   },
 
   campaign: function(c) {
     return {
       id: c._id,
-      actions: (c.campaignOps || []).map(parse.action),
+      actions: (c.campaignActions || []).map(parse.action),
       description: c.description,
       title: c.title,
       createdAt: c.createdAt
@@ -65,21 +67,21 @@ function get(endpoint, cb = () => {}, onErr = () => {}) {
   fetch(endpoint, {
     headers: { Authorization: `Bearer ${sessionToken}` }
   })
-    .then(resp => {
-      if (resp.status === 401) {
-        throw new Error('unauthorized')
-      }
-      return resp
-    })
-    .then(resp => resp.json())
-    .then(cb)
-    .catch(err => {
-      if (err.message === 'unauthorized') {
-        redirectToLogin()
-        return
-      }
-      throw err
-    })
+  .then(resp => {
+    if (resp.status === 401) {
+      throw new Error('unauthorized')
+    }
+    return resp
+  })
+  .then(resp => resp.json())
+  .then(cb)
+  .catch(err => {
+    if (err.message === 'unauthorized') {
+      redirectToLogin()
+      return
+    }
+    onErr(err)
+  })
 }
 
 function post(endpoint, data = {}, cb = () => {}, onErr = () => {}) {
@@ -94,21 +96,21 @@ function post(endpoint, data = {}, cb = () => {}, onErr = () => {}) {
     method: 'post',
     body: JSON.stringify(data)
   })
-    .then(resp => {
-      if (resp.status === 401) {
-        throw new Error('unauthorized')
-      }
-      return resp
-    })
-    .then(resp => resp.json())
-    .then(cb)
-    .catch(err => {
-      if (err.message === 'unauthorized') {
-        redirectToLogin()
-        return
-      }
-      onErr(err)
-    })
+  .then(resp => {
+    if (resp.status === 401) {
+      throw new Error('unauthorized')
+    }
+    return resp
+  })
+  .then(resp => resp.json())
+  .then(cb)
+  .catch(err => {
+    if (err.message === 'unauthorized') {
+      redirectToLogin()
+      return
+    }
+    onErr(err)
+  })
 }
 
 export default {
@@ -124,20 +126,14 @@ export default {
     })
   },
 
-  campaignAction: function(id, cb) {
-    get(`/api/campaign_actions/${id}`, data => {
-      cb(parse.action(data))
-    })
-  },
-
   newCampaign: function(data, cb) {
     post('/api/campaigns', data, data => {
       cb(parse.campaign(data))
     })
   },
 
-  newCampaignAction: function(id, data, cb) {
-    post(`/api/campaigns/${id}/action/new`, data, data => {
+  newCampaignCall: function(id, data, cb) {
+    post(`/api/campaigns/${id}/call/new`, data, data => {
       cb(parse.campaign(data))
     })
   },
@@ -145,6 +141,12 @@ export default {
   newCampaignUpdate: function(id, data, cb) {
     post(`/api/campaigns/${id}/update/new`, data, data => {
       cb(parse.campaign(data))
+    })
+  },
+
+  campaignCall: function(id, cb) {
+    get(`/api/campaign_calls/${id}`, data => {
+      cb(parse.call(data))
     })
   },
 
@@ -165,7 +167,7 @@ export default {
     .catch(onErr)
   },
 
-  updateReps: function(cb) {
-    post(`/api/representatives/refresh`)
+  updateReps: function() {
+    post('/api/representatives/refresh')
   },
 }

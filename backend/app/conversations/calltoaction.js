@@ -2,21 +2,21 @@ const moment = require('moment')
 const { stripIndent } = require('common-tags')
 const { setUserCallback } = require('../methods/userMethods')
 const { botReply } = require('../utilities/botkit')
-const { UserAction } = require('../models')
+const { UserConversation } = require('../models')
 
-function startCallToActionConversation(user, representatives, campaignAction, campaign, userAction) {
+function startCallToActionConversation(user, representatives, campaignCall, campaign, userConversation) {
   const convoData = {
     firstName: user.firstName,
     issueMessage: campaign.description,
     issueLink: campaign.link,
     issueSubject: campaign.title,
-    issueAction: campaignAction.cta,
+    issueAction: campaignCall.cta,
     repType: representatives[0].legislatorTitle,
     repName: representatives[0].official_full,
     repImage: representatives[0].image_url,
     repPhoneNumber: representatives[0].phone,
     repWebsite: representatives[0].url,
-    userActionId: userAction._id
+    userConversationId: userConversation._id
   }
 
   // save params as convoData
@@ -120,7 +120,7 @@ function callToActionPart2Convo(user, message) {
     }
   }
   return Promise.all([
-    UserAction.update({ _id: user.convoData.userActionId }, { active: true }, { multi: false }).exec(),
+    UserConversation.update({ _id: user.convoData.userConversationId }, { active: true }, { multi: false }).exec(),
     botReply(message, msg_attachment)
   ])
   .then(() => setUserCallback(user, '/calltoaction/part3'))
@@ -168,7 +168,7 @@ function callToActionPart3Convo(user, message) {
 
 // thanks for sharing
 function thanksForSharingConvo(user, message) {
-  return UserAction.update({ _id: user.convoData.userActionId }, { dateCompleted: moment.utc().toDate() }).exec()
+  return UserConversation.update({ _id: user.convoData.userConversationId }, { dateCompleted: moment.utc().toDate() }).exec()
     .then(() => botReply(message, 'Thanks for sharing! We’ll reach back out if we can be helpful.'))
     .then(function () {
       // TODO: log response.text to slack so we can see the feedback

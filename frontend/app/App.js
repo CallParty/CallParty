@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Router, Route, Link, IndexRoute, browserHistory } from 'react-router'
 import NotificationSystem from 'react-notification-system'
 import { Campaigns, Campaign, NewCampaign } from './Campaign'
-import { NewUpdate, NewAction } from './Conversation'
+import { NewUpdate, NewCallToAction } from './Conversation'
 import RequireAuthenticationContainer from './RequireAuthenticationContainer'
 import Login from './Login'
 import API from './API'
@@ -18,9 +18,9 @@ function refreshReps(e) {
 
 const Container = (props) => {
   const logoutButton = props.location.pathname !== '/login' ? <a onClick={logout} href=""><button>Sign Out</button></a> : null
-  
+
   const refreshButton = props.location.pathname !== '/login' ? <a onClick={refreshReps} href=""><button className="warn">Refresh Rep Data</button></a> : null
-  
+
   return <div>
     <header className="main-header">
       <Link to="/">CallParty</Link>
@@ -61,7 +61,7 @@ class App extends Component {
               <IndexRoute component={Campaigns} />
               <Route path="new" component={NewCampaign} />
               <Route path=":id" component={Campaign} />
-              <Route path=":id/action/new" component={NewAction} />
+              <Route path=":id/call/new" component={NewCallToAction} />
               <Route path=":id/update/new" component={NewUpdate} />
             </Route>
           </Route>
