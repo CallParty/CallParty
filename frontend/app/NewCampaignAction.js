@@ -309,7 +309,7 @@ class NewCampaignCall extends Component {
     return (
       <div>
         <div className="meta">
-          <h1>New Call</h1>
+          <h1>New Action</h1>
           <h3>Campaign: <Link to={`/${this.state.campaign.id}`}>{this.state.campaign.title}</Link></h3>
         </div>
         <form onSubmit={this.onSubmit.bind(this)}>

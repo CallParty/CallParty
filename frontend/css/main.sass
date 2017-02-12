@@ -14,27 +14,33 @@ html
 
 h1
   font-size: 2em
+  font-weight: bold
 
 button, input[type=submit]
   border: none
+  border-radius: 4px
   padding: 1em
-  background: #f7eaea
+  background: #F2205C
   text-align: center
-  box-shadow: 4px 4px 0px #ffaadb
-  font-family: 'Cousine', monospace
+  font-family: 'Helvetica', sans-serif
+  font-weight: bold
+  color: #FFF
   cursor: pointer
   margin: 0 4px 4px 0
   min-width: 8em
   &:hover
-    background: #fbd9d9
-    box-shadow: 4px 4px 0px #f3a8cb
+    background: #41416B
+
+button, input[type=button]
+  color: #FFF
+  background: #41416B
+  &:hover
+    background: #F2205C
 
 .warn
-  background: #e7e0fe
-  box-shadow: 4px 4px 0px #ad71ff
+  background: #18C7EF
   &:hover
-    background: #d2c4fd
-    box-shadow: 4px 4px 0px #8000e1
+    background: #F2205C
 
 .table
   header
@@ -48,21 +54,22 @@ button, input[type=submit]
   table
     clear: both
     width: 100%
+    border-radius: 4px
   tr
-    background: #f2f2f2
+    background: #F2F3F7
     cursor: pointer
     &:hover
-      background: #7070f9
+      background: #41416B
       color: #fff
     &:first-child
-      background: #e4e7fb
-      color: #888
+      background: #241F3D
+      color: #FFF
   td, th
     padding: 1em
     text-align: left
 
 .preview-message
-  background: #4545ff
+  background: #4080FF
   border-radius: 1em
   padding: 1.5em
   min-width: 16em
@@ -80,7 +87,7 @@ form, .preview
   padding: 0 0 0 4em
   position: fixed
   right: 1em
-  top: 3em
+  top: 16em
   h4
     margin-bottom: 1em
 
@@ -118,8 +125,31 @@ textarea, input[type=text], input[type=password]
     background: #dcffdc
 
 .new-campaign
-  padding: 0.8em 1.2em
+  padding: 20px
   font-size: 1em
+  height: 60px
+  background-color: #F2205C
+  color: #FFF
+  &:hover
+    background: #41416B
+
+.new-action
+  padding: 20px
+  font-size: 1em
+  height: 60px
+  background-color: #F2205C
+  color: #FFF
+  &:hover
+    background: #41416B
+
+.new-update
+  padding: 20px
+  font-size: 1em
+  height: 60px
+  background-color: #F2205C
+  color: #FFF
+  &:hover
+    background: #41416B
 
 .user-var
   font-style: italic
