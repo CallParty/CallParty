@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "main": "main.js",
   "scripts": {
-    "start": "webpack-dev-server --colors --progress --port 8082",
+    "start": "webpack-dev-server --colors --progress --hot --inline --port 8082",
     "build": "webpack --colors --progress",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -13,6 +13,7 @@
     "raven-js": "^3.10.0",
     "react": "^15.4.1",
     "react-dom": "^15.4.1",
+    "react-hot-loader": "^3.0.0-beta.3",
     "react-modal": "^1.6.5",
     "react-notification-system": "^0.2.11",
     "react-router": "^3.0.1",
