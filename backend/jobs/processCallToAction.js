@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 const { User, Reps, CampaignCall, UserConversation } = require('../app/models')
-const { startCallToActionConversation } = require('../app/conversations/calltoaction')
+const { startCallToActionConversation } = require('../app/conversations/callToAction')
 
 const ObjectId = mongoose.Types.ObjectId
 
