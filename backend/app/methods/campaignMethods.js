@@ -117,7 +117,6 @@ exports.newCampaignUpdate = function(req, res) {
         message: data.message,
         campaignCall: ObjectId(campaignCallId),
         campaign: ObjectId(req.params.id),
-        type:  'update',
         title: `Update: ${campaignCall.title}`
       })
       return Promise.all([campaignUpdate.save(), campaignCall])

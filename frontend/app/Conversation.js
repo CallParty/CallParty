@@ -28,7 +28,7 @@ class NewUpdate extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      campaign: { campaignCalls: [] },
+      campaign: { actions: [] },
       update: {
         message: 'Hello! This is an update.',
         campaignCall: null
@@ -117,14 +117,11 @@ class NewUpdate extends Component {
   }
 
   render() {
-    const options = this.state.campaign.campaignCalls.map(a => ({
+    const notUpdates = this.state.campaign.actions.filter(a => a.type != 'CampaignUpdate')
+    const options = notUpdates.map(a => ({
       value: a.id,
       label: a.subject
     }))
-
-    if (options.length === 0) {
-      return null
-    }
 
     return (
       <div>
@@ -188,13 +185,13 @@ const MEMBERS = [{
   label: 'Senator'
 }]
 
-class NewCallToAction extends Component {
+class NewCampaignCall extends Component {
   constructor(props) {
     super(props)
     this.state = {
       campaign: {},
       committees: [],
-      callToAction: {
+      campaignCall: {
         message: '',
         link: '',
         subject: '',
@@ -223,30 +220,39 @@ class NewCallToAction extends Component {
     })
     API.committees(data => this.setState({ committees: data }))
     this.inputs = {}
+
+    // if a cloneId param was passed, then pre-populate fields based on that campaignAction
+    if (this.props.location && this.props.location.query && this.props.location.query.cloneId) {
+      API.campaignCall(this.props.location.query.cloneId, data => {
+        this.setState({
+          campaignCall: data
+        })
+      })
+    }
   }
 
   onSelectChange(key, val) {
-    const callToAction = this.state.callToAction
+    const campaignCall = this.state.campaignCall
     if (Array.isArray(val)) {
-      callToAction[key] = val.map(v => v.value)
+      campaignCall[key] = val.map(v => v.value)
     } else {
-      callToAction[key] = val.value
+      campaignCall[key] = val.value
     }
-    this.setState({ callToAction: callToAction })
+    this.setState({ campaignCall: campaignCall })
   }
 
   onInputChange(key, ev) {
-    var callToAction = this.state.callToAction
-    callToAction[key] = ev.target.value
-    this.setState({ callToAction: callToAction })
+    var campaignCall = this.state.campaignCall
+    campaignCall[key] = ev.target.value
+    this.setState({ campaignCall: campaignCall })
   }
 
   onSubmit(ev) {
     ev.preventDefault()
 
-    const callToAction = this.state.callToAction
-    for (let k of Object.keys(callToAction)) {
-      if (callToAction[k] === undefined || callToAction[k] === null || callToAction[k] === '') {
+    const campaignCall = this.state.campaignCall
+    for (let k of Object.keys(campaignCall)) {
+      if (campaignCall[k] === undefined || campaignCall[k] === null || campaignCall[k] === '') {
         this.context.notify({
           message: `${k} can't be blank`,
           level: 'error'
@@ -267,7 +273,7 @@ class NewCallToAction extends Component {
 
     API.newCampaignCall(
       this.state.campaign.id,
-      this.state.callToAction,
+      this.state.campaignCall,
       () => {
         this.context.notify({
           message: 'Action created',
@@ -284,13 +290,13 @@ class NewCallToAction extends Component {
     this.inputs[input].focus()
   }
 
-  previewTemplate(callToAction) {
+  previewTemplate(campaignCall) {
     return <div>
       <p>Hi <span className="user-var">[firstName]</span>! We’ve got an issue to call about.</p>
-      <p><span className="action-var" onClick={this.focusInput.bind(this, 'message')}>{callToAction.desc}</span>. You can find out more about the issue here: <span className="action-var" onClick={this.focusInput.bind(this, 'link')}>{callToAction.link}</span>.</p>
+      <p><span className="action-var" onClick={this.focusInput.bind(this, 'message')}>{campaignCall.desc}</span>. You can find out more about the issue here: <span className="action-var" onClick={this.focusInput.bind(this, 'link')}>{campaignCall.link}</span>.</p>
       <p>You’ll be calling <span className="user-var">[repType]</span> <span className="user-var">[repName]</span>. When you call you’ll talk to a staff member, or you’ll leave a voicemail. Let them know:</p>
-      <p>* You’re a constituent calling about <span className="action-var" onClick={this.focusInput.bind(this, 'subject')}>{callToAction.subject}</span>.</p>
-      <p>* The call to action: “I’d like <span className="user-var">[repType]</span> <span className="user-var">[repName]</span> to <span className="action-var" onClick={this.focusInput.bind(this, 'task')}>{callToAction.task}</span>.”</p>
+      <p>* You’re a constituent calling about <span className="action-var" onClick={this.focusInput.bind(this, 'subject')}>{campaignCall.subject}</span>.</p>
+      <p>* The call to action: “I’d like <span className="user-var">[repType]</span> <span className="user-var">[repName]</span> to <span className="action-var" onClick={this.focusInput.bind(this, 'task')}>{campaignCall.task}</span>.”</p>
       <p>* Share any personal feelings or stories</p>
       <p>* If taking the wrong stance on this issue would endanger your vote, let them know.</p>
       <p>* Answer any questions the staffer has, and be friendly!</p>
@@ -313,7 +319,7 @@ class NewCallToAction extends Component {
               <Select
                 name="memberTypes"
                 placeholder="Member Type"
-                value={this.state.callToAction.memberTypes}
+                value={this.state.campaignCall.memberTypes}
                 options={MEMBERS}
                 onChange={this.onSelectChange.bind(this, 'memberTypes')}
                 clearable={false}
@@ -322,7 +328,7 @@ class NewCallToAction extends Component {
               <Select
                 name="parties"
                 placeholder="Party"
-                value={this.state.callToAction.parties}
+                value={this.state.campaignCall.parties}
                 options={PARTIES}
                 onChange={this.onSelectChange.bind(this, 'parties')}
                 clearable={false}
@@ -331,7 +337,7 @@ class NewCallToAction extends Component {
               <Select
                 name="committees"
                 placeholder="Committee"
-                value={this.state.callToAction.committees}
+                value={this.state.campaignCall.committees}
                 options={committeeOptions}
                 onChange={this.onSelectChange.bind(this, 'committees')}
                 clearable={false}
@@ -342,7 +348,7 @@ class NewCallToAction extends Component {
           <fieldset>
             <label>Message</label>
             <textarea
-              value={this.state.callToAction.message}
+              value={this.state.campaignCall.message}
               onChange={this.onInputChange.bind(this, 'message')}
               ref={(input) => { this.inputs.message = input }} />
           </fieldset>
@@ -350,7 +356,7 @@ class NewCallToAction extends Component {
             <label>Link</label>
             <input
               type="text"
-              value={this.state.callToAction.link}
+              value={this.state.campaignCall.link}
               onChange={this.onInputChange.bind(this, 'link')}
               ref={(input) => { this.inputs.link = input }} />
           </fieldset>
@@ -358,7 +364,7 @@ class NewCallToAction extends Component {
             <label>Subject</label>
             <input
               type="text"
-              value={this.state.callToAction.subject}
+              value={this.state.campaignCall.subject}
               onChange={this.onInputChange.bind(this, 'subject')}
               ref={(input) => { this.inputs.subject = input }} />
           </fieldset>
@@ -366,7 +372,7 @@ class NewCallToAction extends Component {
             <label>Task</label>
             <input
               type="text"
-              value={this.state.callToAction.task}
+              value={this.state.campaignCall.task}
               onChange={this.onInputChange.bind(this, 'task')}
               ref={(input) => { this.inputs.task = input }} />
           </fieldset>
@@ -375,10 +381,10 @@ class NewCallToAction extends Component {
         <div className="preview">
           <h4>Preview</h4>
           <div className="preview-message">{this.previewTemplate({
-            desc: this.state.callToAction.message,
-            link: this.state.callToAction.link,
-            subject: this.state.callToAction.subject,
-            task: this.state.callToAction.task
+            desc: this.state.campaignCall.message,
+            link: this.state.campaignCall.link,
+            subject: this.state.campaignCall.subject,
+            task: this.state.campaignCall.task
           })}</div>
         </div>
         <Modal
@@ -397,4 +403,4 @@ class NewCallToAction extends Component {
   }
 }
 
-export { NewUpdate, NewCallToAction }
+export { NewUpdate, NewCampaignCall }
