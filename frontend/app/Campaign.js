@@ -88,8 +88,8 @@ class Campaign extends Component {
         <div className="table">
           <header>
             <h1>Conversations</h1>
-            <Link to={`/${this.props.params.id}/action/new`}><button>New Action</button></Link>
-            <Link to={`/${this.props.params.id}/update/new`}><button>New Update</button></Link>
+            <Link to={`/${this.props.params.id}/action/new`}><button className="new-action">New Action</button></Link>
+            <Link to={`/${this.props.params.id}/update/new`}><button className="new-update">New Update</button></Link>
           </header>
           <table>
             <tbody>
