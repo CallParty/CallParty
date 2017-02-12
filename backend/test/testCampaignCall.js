@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 const chai = require('chai')
-const { CampaignAction, Reps, Committee, RepresentativeCommittee, User } = require('../app/models')
+const { CampaignCall, Reps, Committee, RepresentativeCommittee, User } = require('../app/models')
 
 const expect = chai.expect
 
@@ -8,7 +8,7 @@ const dbUri = process.env.MONGODB_TEST_URI || 'mongodb://localhost/test'
 
 mongoose.Promise = require('es6-promise')
 
-describe('CampaignAction', function() {
+describe('CampaignCall', function() {
   beforeEach(function(done) {
     mongoose.connect(dbUri, done)
   })
@@ -57,15 +57,15 @@ describe('CampaignAction', function() {
       let expectedRepresentatives = null
 
       beforeEach(function() {
-        // Bernie is an Indepdendent so he shouldn't match this CampaignAction
+        // Bernie is an Indepdendent so he shouldn't match this CampaignCall
         expectedRepresentatives = [representatives[0], representatives[2]]
 
-        return CampaignAction.create({
+        return CampaignCall.create({
           memberTypes: ['rep', 'sen'],
           parties: ['Democrat', 'Republican'],
           committees: committees.map(c => c._id)
         })
-        .then(campaignAction => campaignAction.getMatchingRepresentatives())
+        .then(campaignCall => campaignCall.getMatchingRepresentatives())
         .then(matchingReps => matchingRepresentatives = matchingReps)
       })
 
@@ -81,20 +81,20 @@ describe('CampaignAction', function() {
       })
     })
 
-    describe('when the CampaignAction has no memberTypes', function() {
+    describe('when the CampaignCall has no memberTypes', function() {
       let matchingRepresentatives = null
       let expectedRepresentatives = null
 
       beforeEach(function() {
-        // this CampaignAction has no memberTypes so no representatives should match
+        // this CampaignCall has no memberTypes so no representatives should match
         expectedRepresentatives = []
 
-        return CampaignAction.create({
+        return CampaignCall.create({
           memberTypes: [],
           parties: ['Democrat', 'Republican'],
           committees: committees.map(c => c._id)
         })
-        .then(campaignAction => campaignAction.getMatchingRepresentatives())
+        .then(campaignCall => campaignCall.getMatchingRepresentatives())
         .then(matchingReps => matchingRepresentatives = matchingReps)
       })
 
@@ -108,20 +108,20 @@ describe('CampaignAction', function() {
       })
     })
 
-    describe('when the CampaignAction has no parties', function() {
+    describe('when the CampaignCall has no parties', function() {
       let matchingRepresentatives = null
       let expectedRepresentatives = null
 
       beforeEach(function() {
-        // this CampaignAction has no memberTypes so no representatives should match
+        // this CampaignCall has no memberTypes so no representatives should match
         expectedRepresentatives = []
 
-        return CampaignAction.create({
+        return CampaignCall.create({
           memberTypes: ['rep', 'sen'],
           parties: [],
           committees: committees.map(c => c._id)
         })
-        .then(campaignAction => campaignAction.getMatchingRepresentatives())
+        .then(campaignCall => campaignCall.getMatchingRepresentatives())
         .then(matchingReps => matchingRepresentatives = matchingReps)
       })
 
@@ -135,20 +135,20 @@ describe('CampaignAction', function() {
       })
     })
 
-    describe('when the CampaignAction has no committees', function() {
+    describe('when the CampaignCall has no committees', function() {
       let matchingRepresentatives = null
       let expectedRepresentatives = null
 
       beforeEach(function() {
-        // this CampaignAction has no memberTypes so no representatives should match
+        // this CampaignCall has no memberTypes so no representatives should match
         expectedRepresentatives = []
 
-        return CampaignAction.create({
+        return CampaignCall.create({
           memberTypes: ['rep', 'sen'],
           parties: ['Democrat', 'Republican'],
           committees: []
         })
-        .then(campaignAction => campaignAction.getMatchingRepresentatives())
+        .then(campaignCall => campaignCall.getMatchingRepresentatives())
         .then(matchingReps => matchingRepresentatives = matchingReps)
       })
 
@@ -217,12 +217,12 @@ describe('CampaignAction', function() {
           { user: users[2], representatives: [representatives[2]] }
         ]
 
-        return CampaignAction.create({
+        return CampaignCall.create({
           memberTypes: ['rep', 'sen'],
           parties: ['Democrat', 'Republican'],
           committees: committees.map(c => c._id)
         })
-        .then(campaignAction => campaignAction.getMatchingUsersWithRepresentatives())
+        .then(campaignCall => campaignCall.getMatchingUsersWithRepresentatives())
         .then(matchingTestUsers => matchingUsersWithRepresentatives = matchingTestUsers)
       })
 
@@ -255,19 +255,19 @@ describe('CampaignAction', function() {
       })
     })
 
-    describe('when the CampaignAction has no memberTypes', function() {
+    describe('when the CampaignCall has no memberTypes', function() {
       let matchingUsersWithRepresentatives = null
       let expectedUsersWithRepresentatives = null
 
       beforeEach(function() {
         expectedUsersWithRepresentatives = []
 
-        return CampaignAction.create({
+        return CampaignCall.create({
           memberTypes: [],
           parties: ['Democrat', 'Republican'],
           committees: committees.map(c => c._id)
         })
-        .then(campaignAction => campaignAction.getMatchingUsersWithRepresentatives())
+        .then(campaignCall => campaignCall.getMatchingUsersWithRepresentatives())
         .then(matchingTestUsers => matchingUsersWithRepresentatives = matchingTestUsers)
       })
 
@@ -281,19 +281,19 @@ describe('CampaignAction', function() {
       })
     })
 
-    describe('when the CampaignAction has no parties', function() {
+    describe('when the CampaignCall has no parties', function() {
       let matchingUsersWithRepresentatives = null
       let expectedUsersWithRepresentatives = null
 
       beforeEach(function() {
         expectedUsersWithRepresentatives = []
 
-        return CampaignAction.create({
+        return CampaignCall.create({
           memberTypes: ['rep', 'sen'],
           parties: [],
           committees: committees.map(c => c._id)
         })
-        .then(campaignAction => campaignAction.getMatchingUsersWithRepresentatives())
+        .then(campaignCall => campaignCall.getMatchingUsersWithRepresentatives())
         .then(matchingTestUsers => matchingUsersWithRepresentatives = matchingTestUsers)
       })
 
@@ -307,19 +307,19 @@ describe('CampaignAction', function() {
       })
     })
 
-    describe('when the CampaignAction has no committees', function() {
+    describe('when the CampaignCall has no committees', function() {
       let matchingUsersWithRepresentatives = null
       let expectedUsersWithRepresentatives = null
 
       beforeEach(function() {
         expectedUsersWithRepresentatives = []
 
-        return CampaignAction.create({
+        return CampaignCall.create({
           memberTypes: [],
           parties: ['Democrat', 'Republican'],
           committees: []
         })
-        .then(campaignAction => campaignAction.getMatchingUsersWithRepresentatives())
+        .then(campaignCall => campaignCall.getMatchingUsersWithRepresentatives())
         .then(matchingTestUsers => matchingUsersWithRepresentatives = matchingTestUsers)
       })
 

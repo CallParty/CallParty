@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const Promise = require('es6-promise')
 
-const { User, CampaignAction, Reps } = require('../models')
+const { User, CampaignCall, Reps } = require('../models')
 
 const startCallToActionConversation = require('../conversations/calltoaction').startCallToActionConversation
 const startUpdateConversation = require('../conversations/update').startUpdateConversation
@@ -15,14 +15,14 @@ module.exports = function(apiRouter) {
 
   apiRouter.post('/start/calltoaction', function(req, res) {
     const fbId = req.body.fbId
-    const campaignActionId = req.body.campaignActionId
+    const campaignCallId = req.body.campaignCallId
     const repIds = req.body.repIds
     const userPromise = User.findOne({ fbId: fbId }).exec()
-    const campaignActionPromise = CampaignAction.findOne({ _id: campaignActionId}).populate('campaign').exec()
+    const campaignCallPromise = CampaignCall.findById(ObjectId(campaignCallId)).populate('campaign').exec()
     const repsPromise = Reps.find({ _id: { $in: repIds.map(ObjectId) } }).exec()
-    Promise.all([userPromise, campaignActionPromise, repsPromise])
-      .then(function([user, campaignAction, representatives]) {
-        startCallToActionConversation(user, representatives, campaignAction, campaignAction.campaign)
+    Promise.all([userPromise, campaignCallPromise, repsPromise])
+      .then(function([user, campaignCall, representatives]) {
+        startCallToActionConversation(user, representatives, campaignCall, campaignCall.campaign)
         res.send('ok')
       })
       .catch(function(err) { throw err })

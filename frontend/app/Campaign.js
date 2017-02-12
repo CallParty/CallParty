@@ -115,14 +115,16 @@ class Campaign extends Component {
   }
 }
 
+const ACTION_TYPES = {
+  CampaignCall: 'call',
+  CampaignUpdate: 'update'
+}
+
 class ConversationItem extends Component {
 
   getCreateDuplicateUrl() {
-    const actionType = {
-      'call': 'action',
-      'update': 'update',
-    }[this.props.type]
-    return `/${this.props.campaignId}/${actionType}/new?cloneId=${this.props.campaignActionId}`
+
+    return `/${this.props.campaignId}/${ACTION_TYPES[this.props.type]}/new?cloneId=${this.props.campaignActionId}`
   }
 
   render() {
@@ -130,10 +132,10 @@ class ConversationItem extends Component {
 
     return <tr>
       <td>{this.props.num}</td>
-      <td>{this.props.type}</td>
+      <td>{ACTION_TYPES[this.props.type]}</td>
       <td>{this.props.subject}</td>
       <td>{createdAt}</td>
-      {this.props.type === 'call'
+      {this.props.type === 'CampaignCall'
         ? <td><Link to={this.getCreateDuplicateUrl()}>Clone</Link></td>
         : <td></td>}
     </tr>

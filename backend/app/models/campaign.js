@@ -19,18 +19,20 @@ campaignSchema.virtual('campaignActions', {
   foreignField: 'campaign'
 })
 
-campaignSchema.virtual('campaignUpdates', {
-  ref: 'CampaignUpdate',
-  localField: '_id',
-  foreignField: 'campaign'
-})
-
-campaignSchema.virtual('campaignOps').get(function() {
-  if (!this.campaignActions || !this.campaignUpdates) {
+campaignSchema.virtual('campaignCalls').get(function() {
+  if (!this.campaignActions) {
     return null
   }
 
-  return this.campaignActions.concat(this.campaignUpdates)
+  return this.campaignActions.filter(campaignAction => campaignAction.type === 'CampaignCall')
+})
+
+campaignSchema.virtual('campaignUpdates').get(function() {
+  if (!this.campaignActions) {
+    return null
+  }
+
+  return this.campaignActions.filter(campaignAction => campaignAction.type === 'CampaignUpdate')
 })
 
 module.exports = mongoose.model('Campaign', campaignSchema)

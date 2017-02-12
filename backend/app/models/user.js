@@ -1,5 +1,4 @@
 const mongoose = require('mongoose')
-const findOrCreate = require('mongoose-findorcreate')
 const moment = require('moment')
 const Schema = mongoose.Schema
 
@@ -24,13 +23,11 @@ const userSchema = new Schema({
   toJSON: { virtuals: true }
 })
 
-userSchema.virtual('userActions', {
-  ref: 'UserAction',
+userSchema.virtual('userConversations', {
+  ref: 'UserConversation',
   localField: '_id',
   foreignField: 'user'
 })
-
-userSchema.plugin(findOrCreate)
 
 module.exports = mongoose.model('User', userSchema)
 

@@ -1,7 +1,8 @@
 const User = require('./user')
-const UserAction = require('./userAction')
+const UserConversation = require('./userConversation')
 const Campaign = require('./campaign')
 const CampaignAction = require('./campaignAction')
+const CampaignCall = require('./campaignCall')
 const CampaignUpdate = require('./campaignUpdate')
 const Reps = require('./representative')
 const Committee = require('./committee')
@@ -11,9 +12,10 @@ const RepresentativeSubcommittee = require('./representativeSubcommittee')
 
 module.exports = {
   User,
-  UserAction,
+  UserConversation,
   Campaign,
   CampaignAction,
+  CampaignCall,
   CampaignUpdate,
   Reps,
   Committee,
