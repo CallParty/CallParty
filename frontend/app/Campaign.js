@@ -88,7 +88,7 @@ class Campaign extends Component {
         <div className="table">
           <header>
             <h1>Conversations</h1>
-            <Link to={`/${this.props.params.id}/call/new`}><button>New Action</button></Link>
+            <Link to={`/${this.props.params.id}/call/new`}><button>New Call</button></Link>
             <Link to={`/${this.props.params.id}/update/new`}><button>New Update</button></Link>
           </header>
           <table>
@@ -101,7 +101,7 @@ class Campaign extends Component {
               <th>Clone</th>
             </tr>
             {this.state.actions.map((convo, i) =>
-              <ConversationItem
+              <CampaignAction
                 key={i}
                 num={i}
                 campaignId={this.props.params.id}
@@ -120,7 +120,7 @@ const ACTION_TYPES = {
   CampaignUpdate: 'update'
 }
 
-class ConversationItem extends Component {
+class CampaignAction extends Component {
 
   getCreateDuplicateUrl() {
 
