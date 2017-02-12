@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const { Campaign, CampaignAction, CampaignUpdate } = require('../models')
+const { Campaign, CampaignCall, CampaignUpdate } = require('../models')
 const createQueue = require('../utilities/createQueue')
 
 const ObjectId = mongoose.Types.ObjectId
@@ -33,11 +33,10 @@ exports.modifyCampaign = function(req, res) {
 exports.getCampaign = function(req, res) {
   Campaign
     .findOne({ _id: req.params.id })
-    .populate('campaignUpdates')
     .populate({
       path: 'campaignActions',
       populate: {
-        path: 'userActions'
+        path: 'userConversations'
       }
     })
     .exec(function(err, campaign) {
@@ -49,11 +48,10 @@ exports.getCampaign = function(req, res) {
 exports.getCampaigns = function(req, res) {
   Campaign
     .find({})
-    .populate('campaignUpdates')
     .populate({
       path: 'campaignActions',
       populate: {
-        path: 'userActions'
+        path: 'userConversations'
       }
     })
     .exec(function(err, campaigns) {
@@ -62,9 +60,9 @@ exports.getCampaigns = function(req, res) {
     })
 }
 
-exports.newCampaignAction = function(req, res) {
+exports.newCampaignCall = function(req, res) {
   const data = req.body
-  const campaignAction = new CampaignAction({
+  const campaignCall = new CampaignCall({
     title: data.subject,
     message: data.message,
     link: data.link,
@@ -77,15 +75,15 @@ exports.newCampaignAction = function(req, res) {
     campaign: ObjectId(req.params.id)
   })
 
-  campaignAction.save()
-    .then(savedCampaignAction => Promise.all([savedCampaignAction, savedCampaignAction.getMatchingUsersWithRepresentatives()]))
-    .then(([savedCampaignAction, matchingUsersWithRepresentatives]) => {
+  campaignCall.save()
+    .then(savedCampaignCall => Promise.all([savedCampaignCall, savedCampaignCall.getMatchingUsersWithRepresentatives()]))
+    .then(([savedCampaignCall, matchingUsersWithRepresentatives]) => {
       // send the users a call to action
       for (let { user, representatives } of matchingUsersWithRepresentatives) {
         const job = queue.create('callToAction', {
           userId: user._id.toString(),
           representativeIds: representatives.map(r => r._id.toString()),
-          campaignActionId: savedCampaignAction._id.toString()
+          campaignCallId: savedCampaignCall._id.toString()
         })
         job.save(function(err) {
           if (err) { throw err }
@@ -94,11 +92,10 @@ exports.newCampaignAction = function(req, res) {
 
       return Campaign
         .findOne({ _id: req.params.id })
-        .populate('campaignUpdates')
         .populate({
           path: 'campaignActions',
           populate: {
-            path: 'userActions'
+            path: 'userConversations'
           }
         }).exec()
     })
@@ -110,24 +107,24 @@ exports.newCampaignAction = function(req, res) {
 
 exports.newCampaignUpdate = function(req, res) {
   const data = req.body
-  const campaignActionId = data.campaignAction.value
+  const campaignCallId = data.campaignCall.value
 
-  CampaignAction
-    .findById(ObjectId(campaignActionId))
-    .populate({ path: 'userActions', populate: { path: 'user' } })
-    .exec().then(function(campaignAction) {
+  CampaignCall
+    .findById(ObjectId(campaignCallId))
+    .populate({ path: 'userConversations', populate: { path: 'user' } })
+    .exec().then(function(campaignCall) {
       const campaignUpdate = new CampaignUpdate({
         message: data.message,
-        campaignAction: ObjectId(campaignActionId),
+        campaignCall: ObjectId(campaignCallId),
         campaign: ObjectId(req.params.id),
         type:  'update',
-        title: `Update: ${campaignAction.title}`
+        title: `Update: ${campaignCall.title}`
       })
-      return Promise.all([campaignUpdate.save(), campaignAction])
-    }).then(function([savedCampaignUpdate, campaignAction]) {
+      return Promise.all([campaignUpdate.save(), campaignCall])
+    }).then(function([savedCampaignUpdate, campaignCall]) {
       return Promise.all([
         savedCampaignUpdate,
-        campaignAction.userActions.filter(ua => ua.active).map(ua => ua.user)
+        campaignCall.userConversations.filter(ua => ua.active).map(ua => ua.user)
       ])
     })
     .then(([savedCampaignUpdate, users]) => {
@@ -143,11 +140,10 @@ exports.newCampaignUpdate = function(req, res) {
 
       return Campaign
         .findOne({ _id: req.params.id })
-        .populate('campaignUpdates')
         .populate({
           path: 'campaignActions',
           populate: {
-            path: 'userActions'
+            path: 'userConversations'
           }
         }).exec()
     })
