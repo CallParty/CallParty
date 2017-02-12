@@ -12,7 +12,7 @@ exports.newCampaign = function(req, res) {
     description: data.description
   })
   campaign.save(function (err) {
-    if (err) return res.send(err)
+    if (err) return res.status(400).send(err)
     res.json(campaign)
   })
 }
@@ -102,7 +102,7 @@ exports.newCampaignCall = function(req, res) {
     .then(campaign => {
       res.json(campaign)
     })
-    .catch(err => res.send(err))
+    .catch(err => res.status(400).send(err))
 }
 
 exports.newCampaignUpdate = function(req, res) {
@@ -150,7 +150,7 @@ exports.newCampaignUpdate = function(req, res) {
     .then(campaign => {
       res.json(campaign)
     })
-    .catch(err => res.send(err))
+    .catch(err => res.status(400).send(err))
 }
 
 exports.createUserAction = function(req, res) {
