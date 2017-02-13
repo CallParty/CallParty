@@ -1,4 +1,4 @@
-repo_branch: master
+repo_branch: staging
 nginx_crt: secret_files/staging.callparty.org_nginx.crt
 nginx_key: secret_files/staging.callparty.org_nginx.key
 node_env: secret_files/staging_env
