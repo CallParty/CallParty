@@ -2,17 +2,18 @@ const moment = require('moment')
 const { stripIndent } = require('common-tags')
 const { setUserCallback } = require('../methods/userMethods')
 const { botReply } = require('../utilities/botkit')
-const { UserAction } = require('../models/userAction')
-const { UserConversation } = require('../models/userConversation')
+const { UserAction } = require('../models')
+const { UserConversation } = require('../models')
 const ACTION_TYPE_PAYLOADS = UserAction.ACTION_TYPE_PAYLOADS
 
 function startCallConversation(user, representatives, campaignCall, campaign, userConversation) {
   const convoData = {
     firstName: user.firstName,
-    issueMessage: campaign.description,
-    issueLink: campaign.link,
-    issueSubject: campaign.title,
-    issueAction: campaignCall,
+    issueMessage: campaignCall.description,
+    issueLink: campaignCall.link,
+    issueSubject: campaignCall.title,
+    issueTask: campaignCall.task,
+    campaignCall: campaignCall,
     repType: representatives[0].legislatorTitle,
     repName: representatives[0].official_full,
     repImage: representatives[0].image_url,
@@ -36,24 +37,27 @@ function startCallConversation(user, representatives, campaignCall, campaign, us
 
 // part 1
 function callPart1Convo(user, message) {
+  // set that the conversation has been intialized
+  UserConversation.update({ _id: user.convoData.userConversationId }, { active: true }).exec()
+  // begin the conversation
   return botReply(message,
       `Hi ${user.convoData.firstName}. We've got an issue to call about.`
     )
     .then(() => {
-      botReply(message, `${user.convoData.issueMessage}. ` +
+      return botReply(message, `${user.convoData.issueMessage}. ` +
         `You can find out more about the issue here ${user.convoData.issueLink}.`
       )
     }).then(() => {
-      botReply(message, stripIndent`
+      const msgToSend = stripIndent`
         You'll be calling ${user.convoData.repType} ${user.convoData.repName}. ` +
-          `When you call you'll talk to a staff member, or you'll leave a voicemail.
-        Let them know:
+        `When you call you'll talk to a staff member, or you'll leave a voicemail. ` +
+        `Let them know:
         *  You're a constituent calling about ${user.convoData.issueSubject}.
-        *  The call to action: "I'd like ${user.convoData.repType} ${user.convoData.repName} to ${user.convoData.issueAction}."
+        *  The call to action: "I'd like ${user.convoData.repType} ${user.convoData.repName} to ${user.convoData.issueTask}."
         *  Share any personal feelings or stories.
         *  If taking the wrong stance on this issue would endanger your vote, let them know.
-        *  Answer any questions the staffer has, and be friendly!
-      `)
+        *  Answer any questions the staffer has, and be friendly!`
+      return botReply(message, msgToSend)
     }).then(() => {
       const msgAttachment = {
         attachment: {
@@ -64,11 +68,12 @@ function callPart1Convo(user, message) {
               {
                 title: `${user.convoData.repType} ${user.convoData.repName}`,
                 image_url: user.convoData.repImage,
-                default_action: {
-                  type: 'phone_number',
-                  title: user.convoData.repPhoneNumber,
-                  payload: user.convoData.repPhoneNumber
-                },
+                // TODO: for some reason facebook is throwing error with this default_action included
+                // default_action: {
+                //   type: 'phone_number',
+                //   title: user.convoData.repPhoneNumber,
+                //   payload: user.convoData.repPhoneNumber
+                // },
                 buttons: [
                   {
                     type: 'phone_number',
@@ -120,23 +125,21 @@ function callPart2Convo(user, message) {
       }
     }
   }
-  return Promise.all([
-    UserConversation.update({ _id: user.convoData.userConversationId }, { active: true }).exec(),
-    botReply(message, msg_attachment)
-  ])
-  .then(() => setUserCallback(user, '/calltoaction/part3'))
+  return botReply(message, msg_attachment).then(() =>
+    setUserCallback(user, '/calltoaction/part3')
+  )
 }
 
 // part 3
 function callPart3Convo(user, message) {
   this.user = user
   return UserAction.create({
-    actionType: message.payload,
-    campaginCall: this.user.convoData.issueAction,
+    actionType: message.text,
+    campaignAction: this.user.convoData.campaignCall,
     user: this.user,
-  }).exec()
-  .then((userAction) => {
-    if ([ACTION_TYPE_PAYLOADS.voicemail, ACTION_TYPE_PAYLOADS.staffer].indexOf(message.payload) >= 0) {
+  })
+  .then(() => {
+    if ([ACTION_TYPE_PAYLOADS.voicemail, ACTION_TYPE_PAYLOADS.staffer].indexOf(message.text) >= 0) {
       return botReply(message, {
         attachment: {
           type: 'image',
@@ -146,8 +149,8 @@ function callPart3Convo(user, message) {
         }
       })
       .then(() => {
-        return UserAction.find({
-          campaignAction: userAction.campaignAction,
+        return UserAction.count({
+          campaignAction: this.user.convoData.campaignCall,
           active: true,
           actionType: {
             $in: [
@@ -157,16 +160,16 @@ function callPart3Convo(user, message) {
           }
         }).exec()
       })
-      .then((userActions) => {
-        botReply(message, stripIndent`
-          Woo thanks for your work! We’ve had ${userActions.count()} calls so far.
+      .then((numCalls) => {
+        return botReply(message, stripIndent`
+          Woo thanks for your work! We’ve had ${numCalls} calls so far.
           We’ll reach out when we have updates and an outcome on the issue.
-          Share this action with your friends to make it a party ${this.user.convoData.issueAction.link}
+          Share this action with your friends to make it a party ${this.user.convoData.issueLink}
           `)
       })
       .then(() => setUserCallback(user, null))
     }
-    else if (message.payload === ACTION_TYPE_PAYLOADS.error) {
+    else if (message.text === ACTION_TYPE_PAYLOADS.error) {
       return botReply(message, {
         attachment: {
           type: 'image',

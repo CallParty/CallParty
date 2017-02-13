@@ -8,7 +8,7 @@ const {
   UserConversation
 } = require('../models')
 
-const startCallConversation = require('../conversations/callConvo').startCallToActionConversation
+const startCallConversation = require('../conversations/callConvo').startCallConversation
 const startUpdateConversation = require('../conversations/updateConvo').startUpdateConversation
 const startSignupConversation = require('../conversations/signupConvo').startSignupConversation
 const startTestConversation = require('../conversations/testConvo').startTestConversation
@@ -26,13 +26,13 @@ module.exports = function(apiRouter) {
     const repsPromise = Reps.find({ _id: { $in: repIds.map(ObjectId) } }).exec()
     const campaignCallPromise = CampaignCall.findById(ObjectId(campaignCallId)).populate('campaign').exec()
     Promise.all([userPromise, campaignCallPromise, repsPromise])
-      .then(function([user, representatives, campaignCall]) {
+      .then(function([user, campaignCall, representatives]) {
         this.user = user
         this.representatives = representatives
         this.campaignCall = campaignCall
         return UserConversation.create({
           user: user,
-          campaignCall: campaignCall,
+          campaignAction: campaignCall._id,
         })
       })
       .then(function(userConversation) {
@@ -45,7 +45,9 @@ module.exports = function(apiRouter) {
         )
         res.send('ok')
       })
-      .catch(function(err) { throw err })
+      .catch(function(err) {
+        throw err
+      })
   })
 
   apiRouter.post('/start/updateConvo', function(req, res) {

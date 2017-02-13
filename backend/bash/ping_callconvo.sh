@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-curl -X POST -H 'content-type:application/json' -d '{"fbId": "1260551614030071", "campaignCallId": "589bbd5452c2c4354a9af327", "repIds": ["5899554751f086b33b6aea74"]}' http://localhost:8081/api/start/callConvo
+curl -X POST -H 'content-type:application/json' -d '{"fbId": "1260551614030071", "campaignCallId": "589fd0af121b9bcf8c147e4c", "repIds": ["589f825651f086b33b6b0118"]}' http://localhost:8081/api/start/callConvo

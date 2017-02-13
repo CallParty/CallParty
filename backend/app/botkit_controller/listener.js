@@ -1,5 +1,5 @@
-var startSignupConversation = require('./../conversations/signup').startSignupConversation
-var unsubscribeConvo = require('./../conversations/unsubscribe').unsubscribeConvo
+var startSignupConversation = require('./../conversations/signupConvo').startSignupConversation
+var unsubscribeConvo = require('./../conversations/unsubscribeConvo').unsubscribeConvo
 var runCallback = require('./../conversations/callbackRouter').runCallback
 const { User } = require('../models')
 
