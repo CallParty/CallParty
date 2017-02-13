@@ -8,17 +8,17 @@ const {
   UserConversation
 } = require('../models')
 
-const startCallToActionConversation = require('../conversations/callToAction').startCallToActionConversation
-const startUpdateConversation = require('../conversations/update').startUpdateConversation
-const startSignupConversation = require('../conversations/signup').startSignupConversation
-const startTestConversation = require('../conversations/test').startTestConversation
+const startCallConversation = require('../conversations/callConvo').startCallToActionConversation
+const startUpdateConversation = require('../conversations/updateConvo').startUpdateConversation
+const startSignupConversation = require('../conversations/signupConvo').startSignupConversation
+const startTestConversation = require('../conversations/testConvo').startTestConversation
 
 mongoose.Promise = Promise
 const ObjectId = mongoose.Types.ObjectId
 
 module.exports = function(apiRouter) {
 
-  apiRouter.post('/start/calltoaction', function(req, res) {
+  apiRouter.post('/start/callConvo', function(req, res) {
     const fbId = req.body.fbId
     const campaignCallId = req.body.campaignCallId
     const repIds = req.body.repIds
@@ -36,7 +36,7 @@ module.exports = function(apiRouter) {
         })
       })
       .then(function(userConversation) {
-        startCallToActionConversation(
+        startCallConversation(
           this.user,
           this.representatives,
           this.campaignCall,
@@ -48,20 +48,20 @@ module.exports = function(apiRouter) {
       .catch(function(err) { throw err })
   })
 
-  apiRouter.post('/start/update', function(req, res) {
+  apiRouter.post('/start/updateConvo', function(req, res) {
     const fbId = req.body.fbId
     const updateMessage = req.body.updateMessage
     startUpdateConversation(fbId, updateMessage)
     res.send('ok')
   })
 
-  apiRouter.post('/start/signup', function(req, res) {
+  apiRouter.post('/start/signupConvo', function(req, res) {
     const fbId = req.body.fbId
     startSignupConversation(fbId)
     res.send('ok')
   })
 
-  apiRouter.post('/start/test', function(req, res) {
+  apiRouter.post('/start/testConvo', function(req, res) {
     const fbId = req.body.fbId
     startTestConversation(fbId)
     res.send('ok')

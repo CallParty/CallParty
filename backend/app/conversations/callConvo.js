@@ -6,7 +6,7 @@ const { UserAction } = require('../models/userAction')
 const { UserConversation } = require('../models/userConversation')
 const ACTION_TYPE_PAYLOADS = UserAction.ACTION_TYPE_PAYLOADS
 
-function startCallToActionConversation(user, representatives, campaignCall, campaign, userConversation) {
+function startCallConversation(user, representatives, campaignCall, campaign, userConversation) {
   const convoData = {
     firstName: user.firstName,
     issueMessage: campaign.description,
@@ -30,12 +30,12 @@ function startCallToActionConversation(user, representatives, campaignCall, camp
       channel: user.fbId,
       user: user.fbId
     }
-    return callToActionPart1Convo(user, fakeMessage)
+    return callPart1Convo(user, fakeMessage)
   })
 }
 
 // part 1
-function callToActionPart1Convo(user, message) {
+function callPart1Convo(user, message) {
   return botReply(message,
       `Hi ${user.convoData.firstName}. We've got an issue to call about.`
     )
@@ -93,7 +93,7 @@ function callToActionPart1Convo(user, message) {
 }
 
 // part 2
-function callToActionPart2Convo(user, message) {
+function callPart2Convo(user, message) {
   const msg_attachment = {
     attachment: {
       type: 'template',
@@ -121,18 +121,18 @@ function callToActionPart2Convo(user, message) {
     }
   }
   return Promise.all([
-     UserConversation.update({ _id: user.convoData.userConversationId }, { active: true }).exec(),
-     botReply(message, msg_attachment)
-   ])
+    UserConversation.update({ _id: user.convoData.userConversationId }, { active: true }).exec(),
+    botReply(message, msg_attachment)
+  ])
   .then(() => setUserCallback(user, '/calltoaction/part3'))
 }
 
 // part 3
-function callToActionPart3Convo(user, message) {
+function callPart3Convo(user, message) {
   this.user = user
   return UserAction.create({
     actionType: message.payload,
-    campaginCall: this.user.convoData.issueAction
+    campaginCall: this.user.convoData.issueAction,
     user: this.user,
   }).exec()
   .then((userAction) => {
@@ -164,7 +164,7 @@ function callToActionPart3Convo(user, message) {
           Share this action with your friends to make it a party ${this.user.convoData.issueAction.link}
           `)
       })
-      .then(() => setUserCallback(user, null) // calltoaction is over)
+      .then(() => setUserCallback(user, null))
     }
     else if (message.payload === ACTION_TYPE_PAYLOADS.error) {
       return botReply(message, {
@@ -185,7 +185,7 @@ function callToActionPart3Convo(user, message) {
     else {
       throw new Error('Received unexpected message at path /calltoaction/part3: ' + message.text)
     }
-  }
+  })
 }
 
 // thanks for sharing
@@ -201,9 +201,9 @@ function thanksForSharingConvo(user, message) {
 
 
 module.exports = {
-  startCallToActionConversation,
-  callToActionPart1Convo,
-  callToActionPart2Convo,
-  callToActionPart3Convo,
+  startCallConversation,
+  callPart1Convo,
+  callPart2Convo,
+  callPart3Convo,
   thanksForSharingConvo,
 }
