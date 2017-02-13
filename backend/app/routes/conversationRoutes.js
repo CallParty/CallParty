@@ -1,9 +1,14 @@
 const mongoose = require('mongoose')
 const Promise = require('es6-promise')
 
-const { User, CampaignCall, Reps } = require('../models')
+const {
+  User,
+  CampaignCall,
+  Reps,
+  UserConversation
+} = require('../models')
 
-const startCallToActionConversation = require('../conversations/calltoaction').startCallToActionConversation
+const startCallToActionConversation = require('../conversations/callToAction').startCallToActionConversation
 const startUpdateConversation = require('../conversations/update').startUpdateConversation
 const startSignupConversation = require('../conversations/signup').startSignupConversation
 const startTestConversation = require('../conversations/test').startTestConversation
@@ -18,11 +23,26 @@ module.exports = function(apiRouter) {
     const campaignCallId = req.body.campaignCallId
     const repIds = req.body.repIds
     const userPromise = User.findOne({ fbId: fbId }).exec()
-    const campaignCallPromise = CampaignCall.findById(ObjectId(campaignCallId)).populate('campaign').exec()
     const repsPromise = Reps.find({ _id: { $in: repIds.map(ObjectId) } }).exec()
+    const campaignCallPromise = CampaignCall.findById(ObjectId(campaignCallId)).populate('campaign').exec()
     Promise.all([userPromise, campaignCallPromise, repsPromise])
-      .then(function([user, campaignCall, representatives]) {
-        startCallToActionConversation(user, representatives, campaignCall, campaignCall.campaign)
+      .then(function([user, representatives, campaignCall]) {
+        this.user = user
+        this.representatives = representatives
+        this.campaignCall = campaignCall
+        return UserConversation.create({
+          user: user,
+          campaignCall: campaignCall,
+        })
+      })
+      .then(function(userConversation) {
+        startCallToActionConversation(
+          this.user,
+          this.representatives,
+          this.campaignCall,
+          this.campaignCall.campaign,
+          userConversation
+        )
         res.send('ok')
       })
       .catch(function(err) { throw err })

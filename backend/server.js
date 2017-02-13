@@ -1,4 +1,10 @@
-// modules =================================================
+// configuration ===========================================
+// load environment variables,
+// either from .env files (development),
+// heroku environment in production, etc...
+const dotenv = require('dotenv')
+dotenv.load()
+
 const express = require('express') // framework d'appli
 const app = express()
 const Raven = require('raven')
@@ -9,19 +15,13 @@ app.use(Raven.requestHandler())
 // The error handler must be before any other error middleware
 app.use(Raven.errorHandler())
 
+// modules =================================================
 const apiRouter = express.Router()
 const bodyParser = require('body-parser') // BodyParser pour POST
 const http = require('http').Server(app) // préparer le serveur web
-const dotenv = require('dotenv')
 const path = require('path')
 const mongoose = require('mongoose')
 const jwt = require('express-jwt')
-
-// configuration ===========================================
-// load environment variables,
-// either from .env files (development),
-// heroku environment in production, etc...
-dotenv.load()
 
 // Handle CORS
 app.use(function(req, res, next) {

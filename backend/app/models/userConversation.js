@@ -5,7 +5,7 @@ const Schema = mongoose.Schema
 const userConversationSchema = new Schema({
   active: { type: Boolean, default: false },
   user: { type: Schema.Types.ObjectId, ref: 'User' },
-  campaignAction: { type: Schema.Types.ObjectId, ref: 'CampaignAction' },
+  campaignCall: { type: Schema.Types.ObjectId, ref: 'CampaignCall' },
   datePrompted:  { type: Date, default: () => moment.utc().toDate() },
   dateCompleted: Date
 })
