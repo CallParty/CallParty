@@ -1,13 +1,23 @@
 var path = require('path')
+var webpack = require('webpack')
 var ExtractTextPlugin = require('extract-text-webpack-plugin')
 var Dotenv = require('dotenv-webpack')
 
-var BUILD_DIR = path.resolve(__dirname, 'build')
+
+const params = {}
+if (process.env.BUILD_ENV === 'production') {
+    params.BUILD_DIR = path.resolve(__dirname, 'build/prod')
+    params.SENTRY_FRONTEND_DSN = 'https://994a895dccec491d92bf5f99a9bd349f@sentry.io/135819'
+}
+else {
+    params.BUILD_DIR = path.resolve(__dirname, 'build/staging')
+    params.SENTRY_FRONTEND_DSN = 'https://4bac552fe9ba4a62a1cc7dffed3ac1d9@sentry.io/138146'
+}
 
 module.exports = {
   entry: ['react-hot-loader/patch', 'whatwg-fetch', './main'],
   output: {
-    path: BUILD_DIR,
+    path: params.BUILD_DIR,
     filename: 'bundle.js',
     publicPath: '/build/'
   },
@@ -31,9 +41,9 @@ module.exports = {
   },
   plugins: [
     new ExtractTextPlugin('css/style.css'),
-    new Dotenv({
-      'path': '../backend/.env'
-    })
+    new webpack.DefinePlugin({
+      'process.env.SENTRY_FRONTEND_DSN ': params.SENTRY_FRONTEND_DSN,
+    }),
   ],
   resolve: {
     extensions: ['', '.js', '.sass'],

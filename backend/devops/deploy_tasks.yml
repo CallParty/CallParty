@@ -28,7 +28,7 @@
     with_items:
       - { from: '../../frontend/index.html', to: '{{public_dir}}' }
       - { from: '../../frontend/main.js', to: '{{public_dir}}' }
-      - { from: '../../frontend/build', to: '{{public_dir}}' }
+      - { from: '../../frontend/build/{{frontend_build_dir}}/', to: '{{public_dir}}/build/' }
 
   - name: create nginx site config
     action: template src=templates/nginx_site.conf dest=/etc/nginx/sites-available/{{app_name}}.conf

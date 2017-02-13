@@ -4,7 +4,8 @@
   "main": "main.js",
   "scripts": {
     "start": "webpack-dev-server --colors --progress --hot --inline --port 8082",
-    "build": "webpack --colors --progress",
+    "build-prod": "BUILD_ENV=production webpack --colors --progress",
+    "build-staging": "BUILD_ENV=staging webpack --colors --progress",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
