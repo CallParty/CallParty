@@ -2,9 +2,9 @@ const moment = require('moment')
 const { stripIndent } = require('common-tags')
 const { setUserCallback } = require('../methods/userMethods')
 const { botReply } = require('../utilities/botkit')
-const { UserConversation } = require('../models')
 const { UserAction } = require('../models/userAction')
-const { ACTION_TYPE_PAYLOADS } = require('../models/userAction')
+const { UserConversation } = require('../models/userConversation')
+const ACTION_TYPE_PAYLOADS = UserAction.ACTION_TYPE_PAYLOADS
 
 function startCallToActionConversation(user, representatives, campaignCall, campaign, userConversation) {
   const convoData = {
@@ -18,7 +18,6 @@ function startCallToActionConversation(user, representatives, campaignCall, camp
     repImage: representatives[0].image_url,
     repPhoneNumber: representatives[0].phone,
     repWebsite: representatives[0].url,
-    // What about userAction?
     userConversationId: userConversation._id
   }
 
@@ -122,7 +121,6 @@ function callToActionPart2Convo(user, message) {
     }
   }
   return Promise.all([
-     UserAction.update({ _id: user.convoData.userActionId }, { active: true }).exec(),
      UserConversation.update({ _id: user.convoData.userConversationId }, { active: true }).exec(),
      botReply(message, msg_attachment)
    ])
@@ -132,8 +130,10 @@ function callToActionPart2Convo(user, message) {
 // part 3
 function callToActionPart3Convo(user, message) {
   this.user = user
-  return UserAction.update({ _id: user.convoData.userActionId }, {
+  return UserAction.create({
     actionType: message.payload,
+    campaginCall: this.user.convoData.issueAction
+    user: this.user,
   }).exec()
   .then((userAction) => {
     if ([ACTION_TYPE_PAYLOADS.voicemail, ACTION_TYPE_PAYLOADS.staffer].indexOf(message.payload) >= 0) {
@@ -190,15 +190,8 @@ function callToActionPart3Convo(user, message) {
 
 // thanks for sharing
 function thanksForSharingConvo(user, message) {
-  // TODO(joshblum): need to figure out which model is which
-  // return UserConversation.update({ _id: user.convoData.userConversationId }, { dateCompleted: moment.utc().toDate() }).exec()
-  //   .then(() => botReply(message, 'Thanks for sharing! We’ll reach back out if we can be helpful.'))
-  return UserAction.update({ _id: user.convoData.userActionId }, {
-    dateCompleted: moment.utc().toDate(
-  }).exec()
-  .then(() => {
-    botReply(message, 'Thanks for sharing! We’ll reach back out if we can be helpful.')
-  })
+  return UserConversation.update({ _id: user.convoData.userConversationId }, { dateCompleted: moment.utc().toDate() }).exec()
+  .then(() => botReply(message, 'Thanks for sharing! We’ll reach back out if we can be helpful.'))
   .then(function () {
     // Should be logged to sentry and then slack.
     console.log(message.text)

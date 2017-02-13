@@ -1,7 +1,12 @@
 const mongoose = require('mongoose')
 const Promise = require('es6-promise')
 
-const { User, CampaignCall, Reps } = require('../models')
+const {
+  User,
+  CampaignCall,
+  Reps,
+  UserConversation
+} = require('../models')
 
 const startCallToActionConversation = require('../conversations/callToAction').startCallToActionConversation
 const startUpdateConversation = require('../conversations/update').startUpdateConversation
@@ -25,20 +30,18 @@ module.exports = function(apiRouter) {
         this.user = user
         this.representatives = representatives
         this.campaignCall = campaignCall
-        return UserAction.create({
+        return UserConversation.create({
           user: user,
           campaignCall: campaignCall,
-          // what is `targetName`?
-          // what is `actionStatus`?
         })
       })
-      .then(function(userAction) {
+      .then(function(userConversation) {
         startCallToActionConversation(
           this.user,
           this.representatives,
           this.campaignCall,
           this.campaignCall.campaign,
-          userAction
+          userConversation
         )
         res.send('ok')
       })

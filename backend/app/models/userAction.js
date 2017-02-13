@@ -9,20 +9,15 @@ const ACTION_TYPE_PAYLOADS = {
 }
 
 const userActionsSchema = new Schema({
-  active: { type: Boolean, default: false },
-  user: { type: Schema.Types.ObjectId, ref: 'User' },
-  campaignAction: { type: Schema.Types.ObjectId, ref: 'CampaignAction' },
-  targetName: Boolean,
   actionType: {
     type: String,
     enum: Object.values(ACTION_TYPE_PAYLOADS)
-    ]
   },
-  datePrompted:  { type: Date, default: () => moment.utc().toDate() },
-  dateCompleted: Date
+  campaignCall: { type: Schema.Types.ObjectId, ref: 'CampaignCall' },
+  datePerformed:  { type: Date, default: () => moment.utc().toDate() },
+  user: { type: Schema.Types.ObjectId, ref: 'User' },
 })
 
-module.exports = {
-  mongoose.model('UserAction', userActionsSchema),
-  ACTION_TYPE_PAYLOADS
-}
+userActionsSchema.statics.ACTION_TYPE_PAYLOADS = ACTION_TYPE_PAYLOADS
+
+module.exports = mongoose.model('UserAction', userActionsSchema)
