@@ -1,6 +1,6 @@
-var defaultConvo = require('./default')
-var signupConvo = require('./signup')
-var callToActionConvo = require('./callToAction')
+var defaultConvo = require('./defaultConvo')
+var signupConvo = require('./signupConvo')
+var callConvo = require('./callConvo')
 
 const callbackRoutes = {
 
@@ -11,10 +11,10 @@ const callbackRoutes = {
   '/signup/finishSignup1':  signupConvo.finishSignup1Convo,
   '/signup/finishSignup2': signupConvo.finishSignup2Convo,
 
-  '/calltoaction/part1': callToActionConvo.callToActionPart1Convo,
-  '/calltoaction/part2': callToActionConvo.callToActionPart2Convo,
-  '/calltoaction/part3': callToActionConvo.callToActionPart3Convo,
-  '/calltoaction/thanksforsharing': callToActionConvo.thanksForSharingConvo,
+  '/calltoaction/part1': callConvo.callPart1Convo,
+  '/calltoaction/part2': callConvo.callPart2Convo,
+  '/calltoaction/part3': callConvo.callPart3Convo,
+  '/calltoaction/thanksforsharing': callConvo.thanksForSharingConvo,
 
 }
 
