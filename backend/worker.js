@@ -7,6 +7,7 @@ const dotenv = require('dotenv')
 mongoose.Promise = require('es6-promise')
 
 dotenv.load()
+const logMessage = require('./app/utilities/logHelper').logMessage
 
 mongoose.connect(process.env.MONGODB_URI)
 const db = mongoose.connection
@@ -40,6 +41,7 @@ app.use(basicAuth(process.env.ADMIN_USERNAME, process.env.ADMIN_PASSWORD))
 app.use('/kue', kue.app)
 app.set('port', 8083)
 const http = require('http').Server(app)
+logMessage('++ starting kue', '#_kue')
 http.listen(app.get('port'), function () {
   console.log('listening on port ' + app.get('port'))
 })

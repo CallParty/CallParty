@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const { Campaign, CampaignCall, CampaignUpdate } = require('../models')
 const createQueue = require('../utilities/createQueue')
+const logMessage = require('../utilities/logHelper').logMessage
 
 const ObjectId = mongoose.Types.ObjectId
 const queue = createQueue()
@@ -86,6 +87,7 @@ exports.newCampaignCall = function(req, res) {
           campaignCallId: savedCampaignCall._id.toString()
         })
         job.save(function(err) {
+          logMessage(`++ creating callConvo Job: ${JSON.stringify(job.data)}`, '#_kue')
           if (err) { throw err }
         })
       }
