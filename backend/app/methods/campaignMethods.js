@@ -80,7 +80,7 @@ exports.newCampaignCall = function(req, res) {
     .then(([savedCampaignCall, matchingUsersWithRepresentatives]) => {
       // send the users a call to action
       for (let { user, representatives } of matchingUsersWithRepresentatives) {
-        const job = queue.create('callToAction', {
+        const job = queue.create('callConvo', {
           userId: user._id.toString(),
           representativeIds: representatives.map(r => r._id.toString()),
           campaignCallId: savedCampaignCall._id.toString()

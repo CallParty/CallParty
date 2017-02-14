@@ -1,10 +1,10 @@
 const mongoose = require('mongoose')
 const { User, Reps, CampaignCall, UserConversation } = require('../app/models')
-const { startCallToActionConversation } = require('../app/conversations/callToAction')
+const { startCallConversation } = require('../app/conversations/callConvo')
 
 const ObjectId = mongoose.Types.ObjectId
 
-module.exports = function processCallToActionJob(job, done) {
+module.exports = function processCallConvoJob(job, done) {
   const { userId, representativeIds, campaignCallId } = job.data
 
   Promise.all([
@@ -14,7 +14,7 @@ module.exports = function processCallToActionJob(job, done) {
     UserConversation.create({ user: ObjectId(userId), campaignAction: ObjectId(campaignCallId) })
   ])
   .then(function([user, representatives, campaignCall, userConversation]) {
-    startCallToActionConversation(user, representatives, campaignCall, campaignCall.campaign, userConversation)
+    startCallConversation(user, representatives, campaignCall, campaignCall.campaign, userConversation)
   })
   .then(done)
 }
