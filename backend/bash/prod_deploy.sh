@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
 BASEDIR=$( cd $(dirname $(dirname $0)) ; pwd -P )
+cd $BASEDIR/../frontend; npm run build-prod
 cd $BASEDIR/devops
 GCE_INI_PATH=$BASEDIR/devops/gce.ini ansible-playbook -i inventory prod_deploy.yml
