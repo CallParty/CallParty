@@ -1,7 +1,5 @@
 // configuration ===========================================
 // load environment variables,
-// either from .env files (development),
-// heroku environment in production, etc...
 const dotenv = require('dotenv')
 dotenv.load()
 const logMessage = require('./app/utilities/logHelper').logMessage
@@ -93,7 +91,7 @@ else {
   logMessage('++ staging database connected')
 }
 
-// add error logging with sentry (for some reason needs to be at bottom of server.js)
+// configure error logging (needs to be at the bottom of server.js for some reason)
 if (process.env.SENTRY_BACKEND_DSN) {
   logMessage('++ using Sentry for error logging')
   // Must configure Raven before doing anything else with it
