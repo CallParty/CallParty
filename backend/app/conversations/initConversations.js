@@ -9,17 +9,21 @@ function initCallConvos(matchingUsersWithRepresentatives, campaignCall) {
     `+++++++ initialize conversations for campaignCall: ${campaignCall.title} (${campaignCall._id})`
   )
   logPromise.then(() => {
-    matchingUsersWithRepresentatives.reduce(function (promise, item) {
-      return promise.then(function () {
+    let promiseChain = Promise.resolve()
+    for (let i = 0; i < matchingUsersWithRepresentatives.length; i++) {
+      promiseChain = promiseChain.then(function() {
         try {
+          const item = matchingUsersWithRepresentatives[i]
           return startCallConversation(item.user, item.representatives, campaignCall)
         } catch (e) {
           Raven.captureException(e)
         }
       })
-    }, Promise.resolve()).then(() => {
-      logMessage(`+++++++ finished conversations for campaignCall: ${campaignCall.title} (${campaignCall._id})`)
-    })
+    }
+    return promiseChain
+  })
+  .then(() => {
+    logMessage(`+++++++ finished conversations for campaignCall: ${campaignCall.title} (${campaignCall._id})`)
   })
 }
 
