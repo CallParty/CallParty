@@ -12,7 +12,7 @@ function logMessage (message, channel, noSuffix) {
   if (!channel) {
     channel = '#_log'
   }
-  if (!noSuffix) {
+  if (!noSuffix & process.env.SLACK_CHANNEL_SUFFIX) {
     channel = channel + process.env.SLACK_CHANNEL_SUFFIX
   }
   slack.send({

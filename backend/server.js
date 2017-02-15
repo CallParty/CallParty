@@ -102,7 +102,6 @@ if (process.env.SENTRY_BACKEND_DSN) {
   app.use(Raven.errorHandler())
 }
 
-
 // START ===================================================
 http.listen(app.get('port'), function () {
   logMessage('++ listening on port ' + app.get('port'))
