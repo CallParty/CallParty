@@ -5,33 +5,54 @@ const { botReply } = require('../utilities/botkit')
 const { UserAction } = require('../models')
 const { UserConversation } = require('../models')
 const ACTION_TYPE_PAYLOADS = UserAction.ACTION_TYPE_PAYLOADS
+const logMessage = require('../utilities/logHelper').logMessage
+const mongoose = require('mongoose')
+const ObjectId = mongoose.Types.ObjectId
 
-function startCallConversation(user, representatives, campaignCall, campaign, userConversation) {
-  const convoData = {
-    firstName: user.firstName,
-    issueMessage: campaignCall.description,
-    issueLink: campaignCall.link,
-    issueSubject: campaignCall.title,
-    issueTask: campaignCall.task,
-    campaignCall: campaignCall,
-    repType: representatives[0].legislatorTitle,
-    repName: representatives[0].official_full,
-    repImage: representatives[0].image_url,
-    repPhoneNumber: representatives[0].phone,
-    repWebsite: representatives[0].url,
-    userConversationId: userConversation._id
+function startCallConversation(user, representatives, campaignCall) {
+
+  const logPromise = logMessage(
+    `++ initializing callConvo ${campaignCall.title} for: ${user.firstName} ${user.lastName} (${user.fbId})`
+  )
+  // create a UserConversation, so we can easily look up which users were messaged
+  const userConvoPromise = UserConversation.create({
+    user: ObjectId(user._id),
+    campaignAction: ObjectId(campaignCall._id)
+  })
+
+  // for testing so that we can ensure that an error on one user, does not botch the whole run
+  if (campaignCall.title === 'TestErrorLogging' && user.firstName === 'Max' && user.lastName === 'Fowler') {
+    throw new Error('Testing error logging within conversation initiation')
   }
 
-  // save params as convoData
-  user.convoData = convoData
-
-  return user.save().then(() => {
-    // start the conversation
-    const fakeMessage = {
-      channel: user.fbId,
-      user: user.fbId
+  // then begin the conversation
+  Promise.all([userConvoPromise, logPromise]).then((userConversation) => {
+    const convoData = {
+      firstName: user.firstName,
+      issueMessage: campaignCall.description,
+      issueLink: campaignCall.link,
+      issueSubject: campaignCall.title,
+      issueTask: campaignCall.task,
+      campaignCall: campaignCall,
+      repType: representatives[0].legislatorTitle,
+      repName: representatives[0].official_full,
+      repImage: representatives[0].image_url,
+      repPhoneNumber: representatives[0].phone,
+      repWebsite: representatives[0].url,
+      userConversationId: userConversation._id
     }
-    return callPart1Convo(user, fakeMessage)
+
+    // save params as convoData
+    user.convoData = convoData
+
+    return user.save().then(() => {
+      // start the conversation
+      const fakeMessage = {
+        channel: user.fbId,
+        user: user.fbId
+      }
+      return callPart1Convo(user, fakeMessage)
+    })
   })
 }
 
@@ -41,8 +62,8 @@ function callPart1Convo(user, message) {
   UserConversation.update({ _id: user.convoData.userConversationId }, { active: true }).exec()
   // begin the conversation
   return botReply(message,
-      `Hi ${user.convoData.firstName}. We've got an issue to call about.`
-    )
+    `Hi ${user.convoData.firstName}. We've got an issue to call about.`
+  )
     .then(() => {
       return botReply(message, `${user.convoData.issueMessage}. ` +
         `You can find out more about the issue here ${user.convoData.issueLink}.`
@@ -138,68 +159,68 @@ function callPart3Convo(user, message) {
     campaignAction: this.user.convoData.campaignCall,
     user: this.user,
   })
-  .then(() => {
-    if ([ACTION_TYPE_PAYLOADS.voicemail, ACTION_TYPE_PAYLOADS.staffer].indexOf(message.text) >= 0) {
-      return botReply(message, {
-        attachment: {
-          type: 'image',
-          payload: {
-            url: 'https://storage.googleapis.com/callparty/success.gif'
+    .then(() => {
+      if ([ACTION_TYPE_PAYLOADS.voicemail, ACTION_TYPE_PAYLOADS.staffer].indexOf(message.text) >= 0) {
+        return botReply(message, {
+          attachment: {
+            type: 'image',
+            payload: {
+              url: 'https://storage.googleapis.com/callparty/success.gif'
+            }
           }
-        }
-      })
-      .then(() => {
-        return UserAction.count({
-          campaignAction: this.user.convoData.campaignCall,
-          active: true,
-          actionType: {
-            $in: [
-              ACTION_TYPE_PAYLOADS.voicemail,
-              ACTION_TYPE_PAYLOADS.staffer
-            ]
-          }
-        }).exec()
-      })
-      .then((numCalls) => {
-        return botReply(message, stripIndent`
+        })
+          .then(() => {
+            return UserAction.count({
+              campaignAction: this.user.convoData.campaignCall,
+              active: true,
+              actionType: {
+                $in: [
+                  ACTION_TYPE_PAYLOADS.voicemail,
+                  ACTION_TYPE_PAYLOADS.staffer
+                ]
+              }
+            }).exec()
+          })
+          .then((numCalls) => {
+            return botReply(message, stripIndent`
           Woo thanks for your work! We’ve had ${numCalls} calls so far.
           We’ll reach out when we have updates and an outcome on the issue.
           Share this action with your friends to make it a party ${this.user.convoData.issueLink}
           `)
-      })
-      .then(() => setUserCallback(user, null))
-    }
-    else if (message.text === ACTION_TYPE_PAYLOADS.error) {
-      return botReply(message, {
-        attachment: {
-          type: 'image',
-          payload: {
-            url: 'https://storage.googleapis.com/callparty/bummer.gif'
+          })
+          .then(() => setUserCallback(user, null))
+      }
+      else if (message.text === ACTION_TYPE_PAYLOADS.error) {
+        return botReply(message, {
+          attachment: {
+            type: 'image',
+            payload: {
+              url: 'https://storage.googleapis.com/callparty/bummer.gif'
+            }
           }
-        }
-      })
-      .then(() => {
-        botReply(message,
-            'We’re sorry to hear that, but good on you for trying! Want to tell us about it?'
-        )
-      })
-      .then(() => setUserCallback(user, '/calltoaction/thanksforsharing'))
-    }
-    else {
-      throw new Error('Received unexpected message at path /calltoaction/part3: ' + message.text)
-    }
-  })
+        })
+          .then(() => {
+            botReply(message,
+              'We’re sorry to hear that, but good on you for trying! Want to tell us about it?'
+            )
+          })
+          .then(() => setUserCallback(user, '/calltoaction/thanksforsharing'))
+      }
+      else {
+        throw new Error('Received unexpected message at path /calltoaction/part3: ' + message.text)
+      }
+    })
 }
 
 // thanks for sharing
 function thanksForSharingConvo(user, message) {
   return UserConversation.update({ _id: user.convoData.userConversationId }, { dateCompleted: moment.utc().toDate() }).exec()
-  .then(() => botReply(message, 'Thanks for sharing! We’ll reach back out if we can be helpful.'))
-  .then(function () {
-    // Should be logged to sentry and then slack.
-    console.log(message.text)
-    return setUserCallback(user, null)
-  })
+    .then(() => botReply(message, 'Thanks for sharing! We’ll reach back out if we can be helpful.'))
+    .then(function () {
+      // Should be logged to sentry and then slack.
+      console.log(message.text)
+      return setUserCallback(user, null)
+    })
 }
 
 

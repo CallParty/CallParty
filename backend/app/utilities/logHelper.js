@@ -12,10 +12,10 @@ function logMessage (message, channel, noSuffix) {
   if (!channel) {
     channel = '#_log'
   }
-  if (!noSuffix & process.env.SLACK_CHANNEL_SUFFIX) {
+  if (noSuffix !== true && process.env.SLACK_CHANNEL_SUFFIX) {
     channel = channel + process.env.SLACK_CHANNEL_SUFFIX
   }
-  slack.send({
+  return slack.send({
     text: message,
     channel: channel,
     username: 'Bot'
