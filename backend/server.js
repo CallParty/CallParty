@@ -5,19 +5,9 @@
 const dotenv = require('dotenv')
 dotenv.load()
 const logMessage = require('./app/utilities/logHelper').logMessage
-
 const express = require('express') // framework d'appli
 const app = express()
 const Raven = require('raven')
-if (process.env.SENTRY_BACKEND_DSN) {
-  logMessage('++ using Sentry for error logging')
-  // Must configure Raven before doing anything else with it
-  Raven.config(process.env.SENTRY_BACKEND_DSN).install()
-  // The request handler must be the first middleware on the app
-  app.use(Raven.requestHandler())
-  // The error handler must be before any other error middleware
-  app.use(Raven.errorHandler())
-}
 
 // modules =================================================
 const apiRouter = express.Router()
@@ -103,6 +93,16 @@ else {
   logMessage('++ staging database connected')
 }
 
+// add error logging with sentry (for some reason needs to be at bottom of server.js)
+if (process.env.SENTRY_BACKEND_DSN) {
+  logMessage('++ using Sentry for error logging')
+  // Must configure Raven before doing anything else with it
+  Raven.config(process.env.SENTRY_BACKEND_DSN).install()
+  // The request handler must be the first middleware on the app
+  app.use(Raven.requestHandler())
+  // The error handler must be before any other error middleware
+  app.use(Raven.errorHandler())
+}
 
 // START ===================================================
 http.listen(app.get('port'), function () {
