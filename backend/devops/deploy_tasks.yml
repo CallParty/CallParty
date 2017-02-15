@@ -20,12 +20,17 @@
   - name: npm install backend/package.json
     npm: path={{backend_dir}} executable=/usr/local/bin/npm
 
-  # sometimes this command needs to be run twice, because warnings register as errors
-  - name: npm install frontend/package.json
-    npm: path={{frontend_dir}} executable=/usr/local/bin/npm
+  - name: ensure public directory
+    action: file dest={{public_dir}} state=directory
 
-  - name: build frontend
-    command: /usr/local/bin/npm run build chdir={{frontend_dir}}
+  - name: copy over frontend assets to public_dir
+    action: copy src={{item.from}} dest={{item.to}}
+    with_items:
+      - { from: '../../frontend/index.html', to: '{{public_dir}}' }
+      - { from: '../../frontend/main.js', to: '{{public_dir}}' }
+      - { from: '../../frontend/build/{{frontend_build_dir}}/', to: '{{public_dir}}/build/' }
+    tags:
+      quick
 
   - name: create nginx site config
     action: template src=templates/nginx_site.conf dest=/etc/nginx/sites-available/{{app_name}}.conf
@@ -41,8 +46,8 @@
   - name: Copy .env file
     copy: src={{node_env}} dest={{backend_dir}}/.env
 
-  - name: make src_dir writeable by webgroup
-    action: file path={{src_dir}} mode=u=rwX,g=rwX,o=X recurse=yes group=webgroup owner=ubuntu
+  - name: make srv_dir writeable by webgroup
+    action: file path={{srv_dir}} mode=u=rwX,g=rwX,o=X recurse=yes group=webgroup owner=ubuntu
 
   - name: make log_dir writeable by webgroup
     action: file path={{log_dir}} mode=u=rwX,g=rwX,o=X recurse=yes group=webgroup owner=ubuntu

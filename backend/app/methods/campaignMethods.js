@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const { Campaign, CampaignCall, CampaignUpdate } = require('../models')
 const createQueue = require('../utilities/createQueue')
+const logMessage = require('../utilities/logHelper').logMessage
 
 const ObjectId = mongoose.Types.ObjectId
 const queue = createQueue()
@@ -80,12 +81,13 @@ exports.newCampaignCall = function(req, res) {
     .then(([savedCampaignCall, matchingUsersWithRepresentatives]) => {
       // send the users a call to action
       for (let { user, representatives } of matchingUsersWithRepresentatives) {
-        const job = queue.create('callToAction', {
+        const job = queue.create('callConvo', {
           userId: user._id.toString(),
           representativeIds: representatives.map(r => r._id.toString()),
           campaignCallId: savedCampaignCall._id.toString()
         })
         job.save(function(err) {
+          logMessage(`++ creating callConvo Job: ${JSON.stringify(job.data)}`, '#_kue')
           if (err) { throw err }
         })
       }

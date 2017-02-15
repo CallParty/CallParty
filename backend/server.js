@@ -4,11 +4,13 @@
 // heroku environment in production, etc...
 const dotenv = require('dotenv')
 dotenv.load()
+const logMessage = require('./app/utilities/logHelper').logMessage
 
 const express = require('express') // framework d'appli
 const app = express()
 const Raven = require('raven')
 if (process.env.SENTRY_BACKEND_DSN) {
+  logMessage('++ using Sentry for error logging')
   // Must configure Raven before doing anything else with it
   Raven.config(process.env.SENTRY_BACKEND_DSN).install()
   // The request handler must be the first middleware on the app
@@ -49,6 +51,7 @@ app.use(jwt({ secret: process.env.JWT_SECRET }).unless({
     '/api/home',
     '/api/test',
     '/api/webhook',
+    '/api/error-test',
     new RegExp('/api/start/.*', 'i')
   ]
 }))
@@ -94,14 +97,14 @@ db.once('open', function() {
 })
 
 if (/.*callpartyprod$/.test(dbUri)) {
-  console.log('***----- USING PROD DATABASE -----***')
+  logMessage('***----- USING PROD DATABASE -----***')
 }
 else {
-  console.log('++ staging database connected')
+  logMessage('++ staging database connected')
 }
 
 
 // START ===================================================
 http.listen(app.get('port'), function () {
-  console.log('listening on port ' + app.get('port'))
+  logMessage('++ listening on port ' + app.get('port'))
 })

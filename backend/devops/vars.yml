@@ -4,6 +4,7 @@ repo_remote: origin
 repo_branch: master
 srv_dir: /srv
 src_dir: /srv/hello_webapp
+public_dir: /srv/public
 config_dir: /srv/config
 backend_dir: /srv/hello_webapp/backend
 frontend_dir: /srv/hello_webapp/frontend
