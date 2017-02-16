@@ -8,7 +8,7 @@ function initConvos(campaignAction, toUsers, userConversationByUser) {
 
   campaignAction: the campaignAction being sent
   toUsers: a list of User which the campaignAction should be sent to
-  userConversationById: a map from userId to UserConversation (an object which stores if a conversation has been initialized)
+  userConversationByUser: a map from userId to UserConversation (an object which stores if a conversation has been initialized)
   - note that each userConversation should have a convoData field which has any data necessary for sending the conversation
   */
   // make an initial log statement to indicate we are about to start conversations for this campaignAction
