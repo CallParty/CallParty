@@ -6,19 +6,12 @@ const { UserAction } = require('../models')
 const { UserConversation } = require('../models')
 const ACTION_TYPE_PAYLOADS = UserAction.ACTION_TYPE_PAYLOADS
 const logMessage = require('../utilities/logHelper').logMessage
-const mongoose = require('mongoose')
-const ObjectId = mongoose.Types.ObjectId
 
-function startCallConversation(user, representatives, campaignCall) {
+function startCallConversation(user, userConversation, representatives, campaignCall) {
 
   const logPromise = logMessage(
     `++ initializing callConvo ${campaignCall.title} for: ${user.firstName} ${user.lastName} (${user.fbId})`
   )
-  // create a UserConversation, so we can easily look up which users were messaged
-  const userConvoPromise = UserConversation.create({
-    user: ObjectId(user._id),
-    campaignAction: ObjectId(campaignCall._id)
-  })
 
   // for testing so that we can ensure that an error on one user, does not botch the whole run
   if (campaignCall.title === 'TestErrorLogging' && user.firstName === 'Max' && user.lastName === 'Fowler') {
@@ -26,7 +19,7 @@ function startCallConversation(user, representatives, campaignCall) {
   }
 
   // then begin the conversation
-  Promise.all([userConvoPromise, logPromise]).then((userConversation) => {
+  return logPromise.then(() => {
     const convoData = {
       firstName: user.firstName,
       issueMessage: campaignCall.description,
@@ -59,6 +52,7 @@ function startCallConversation(user, representatives, campaignCall) {
 // part 1
 function callPart1Convo(user, message) {
   // set that the conversation has been intialized
+  // (we could consider putting this after the first set of messages instead of before)
   UserConversation.update({ _id: user.convoData.userConversationId }, { active: true }).exec()
   // begin the conversation
   return botReply(message,

@@ -1,4 +1,5 @@
 var Slack = require('node-slack')
+const Raven = require('raven')
 
 // initialize slack
 var slack = new Slack(process.env.SLACK_HOOK_URL)
@@ -7,7 +8,7 @@ var slack = new Slack(process.env.SLACK_HOOK_URL)
 function logMessage (message, channel, noSuffix) {
   console.log(message)
   if (!process.env.SLACK_HOOK_URL) {
-    return
+    return Promise.resolve()
   }
   if (!channel) {
     channel = '#_log'
@@ -22,6 +23,16 @@ function logMessage (message, channel, noSuffix) {
   })
 }
 
+function captureException(e) {
+  if (process.env.SENTRY_BACKEND_DSN) {
+    Raven.captureException(e)
+  }
+  else {
+    console.log(e)
+  }
+}
+
 module.exports = {
-  logMessage
+  logMessage,
+  captureException,
 }

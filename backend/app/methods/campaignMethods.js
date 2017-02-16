@@ -1,6 +1,5 @@
 const mongoose = require('mongoose')
-const { Campaign, CampaignCall, CampaignUpdate } = require('../models')
-const { initCallConvos } = require('../conversations/initConversations')
+const { Campaign, CampaignCall, CampaignUpdate, UserConversation } = require('../models')
 
 const ObjectId = mongoose.Types.ObjectId
 
@@ -73,24 +72,27 @@ exports.newCampaignCall = function(req, res) {
     committees: data.committees,
     campaign: ObjectId(req.params.id)
   })
-
   campaignCall.save()
     .then(savedCampaignCall => Promise.all([savedCampaignCall, savedCampaignCall.getMatchingUsersWithRepresentatives()]))
     .then(([savedCampaignCall, matchingUsersWithRepresentatives]) => {
-      // start async function to loop through all users and start a callConvo with them
-      initCallConvos(matchingUsersWithRepresentatives, savedCampaignCall)
-      // then immediately return Campaign to frontend
-      return Campaign
-        .findOne({ _id: req.params.id })
-        .populate({
-          path: 'campaignActions',
-          populate: {
-            path: 'userConversations'
-          }
-        }).exec()
+      // for each targeted user create a UserConversation
+      // we will use these objects to keep track of which users have been messaged
+      // uninitialized conversations are initialized by pinging /api/start/campaignCall
+      const userConvoPromises = []
+      for (let i = 0; i < matchingUsersWithRepresentatives.length; i++) {
+        const user = matchingUsersWithRepresentatives[i].user
+        const userConvoPromise = UserConversation.create({
+          user: ObjectId(user._id),
+          campaignAction: ObjectId(savedCampaignCall._id)
+        })
+        userConvoPromises.push(userConvoPromise)
+      }
+      return Promise.all(userConvoPromises).then(() => {
+        return savedCampaignCall
+      })
     })
-    .then(campaign => {
-      res.json(campaign)
+    .then(campaignCall => {
+      res.json(campaignCall)
     })
     .catch(err => res.status(400).send(err))
 }
@@ -103,19 +105,19 @@ exports.newCampaignUpdate = function(req, res) {
     .findById(ObjectId(campaignCallId))
     .populate({ path: 'userConversations', populate: { path: 'user' } })
     .exec().then(function(campaignCall) {
-      const campaignUpdate = new CampaignUpdate({
-        message: data.message,
-        campaignCall: ObjectId(campaignCallId),
-        campaign: ObjectId(req.params.id),
-        title: `Update: ${campaignCall.title}`
-      })
-      return Promise.all([campaignUpdate.save(), campaignCall])
-    }).then(function([savedCampaignUpdate, campaignCall]) {
-      return Promise.all([
-        savedCampaignUpdate,
-        campaignCall.userConversations.filter(ua => ua.active).map(ua => ua.user)
-      ])
+    const campaignUpdate = new CampaignUpdate({
+      message: data.message,
+      campaignCall: ObjectId(campaignCallId),
+      campaign: ObjectId(req.params.id),
+      title: `Update: ${campaignCall.title}`
     })
+    return Promise.all([campaignUpdate.save(), campaignCall])
+  }).then(function([savedCampaignUpdate, campaignCall]) {
+    return Promise.all([
+      savedCampaignUpdate,
+      campaignCall.userConversations.filter(ua => ua.active).map(ua => ua.user)
+    ])
+  })
     .then(([savedCampaignUpdate, users]) => {
       for (let user of users) {
         const job = queue.create('update', {

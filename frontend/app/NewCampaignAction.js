@@ -274,11 +274,14 @@ class NewCampaignCall extends Component {
     API.newCampaignCall(
       this.state.campaign.id,
       this.state.campaignCall,
-      () => {
+      (campaignCall) => {
+        // start the CampaignCall after it has been created (this can be async, we don't need to wait for response)
+        API.startCampaignCall(campaignCall.id)
         this.context.notify({
           message: 'Action created',
           level: 'success',
           autoDismiss: 1,
+          // TODO: redirect to CampaignActionDetail page for newly created CampaignAction
           onRemove: () => {
             this.props.router.push(`/${this.state.campaign.id}`)
           }
