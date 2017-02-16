@@ -105,41 +105,35 @@ exports.newCampaignUpdate = function(req, res) {
     .findById(ObjectId(campaignCallId))
     .populate({ path: 'userConversations', populate: { path: 'user' } })
     .exec().then(function(campaignCall) {
-    const campaignUpdate = new CampaignUpdate({
-      message: data.message,
-      campaignCall: ObjectId(campaignCallId),
-      campaign: ObjectId(req.params.id),
-      title: `Update: ${campaignCall.title}`
+      const campaignUpdate = new CampaignUpdate({
+        message: data.message,
+        campaignCall: ObjectId(campaignCallId),
+        campaign: ObjectId(req.params.id),
+        title: `Update: ${campaignCall.title}`
+      })
+      return Promise.all([campaignUpdate.save(), campaignCall])
+    }).then(function([savedCampaignUpdate, campaignCall]) {
+      return Promise.all([
+        savedCampaignUpdate,
+        campaignCall.userConversations.map(ua => ua.user)
+      ])
     })
-    return Promise.all([campaignUpdate.save(), campaignCall])
-  }).then(function([savedCampaignUpdate, campaignCall]) {
-    return Promise.all([
-      savedCampaignUpdate,
-      campaignCall.userConversations.filter(ua => ua.active).map(ua => ua.user)
-    ])
-  })
     .then(([savedCampaignUpdate, users]) => {
-      for (let user of users) {
-        const job = queue.create('update', {
-          userId: user._id,
-          campaignUpdateId: savedCampaignUpdate._id
+      const userConvoPromises = []
+      for (let i = 0; i < users.length; i++) {
+        const user = users[i]
+        const userConvoPromise = UserConversation.create({
+          user: ObjectId(user._id),
+          campaignAction: ObjectId(savedCampaignUpdate._id)
         })
-        job.save(function(err) {
-          if (err) { throw err }
-        })
+        userConvoPromises.push(userConvoPromise)
       }
-
-      return Campaign
-        .findOne({ _id: req.params.id })
-        .populate({
-          path: 'campaignActions',
-          populate: {
-            path: 'userConversations'
-          }
-        }).exec()
+      return Promise.all(userConvoPromises).then(() => {
+        return savedCampaignUpdate
+      })
     })
-    .then(campaign => {
-      res.json(campaign)
+    .then(campaignUpdate => {
+      res.json(campaignUpdate)
     })
     .catch(err => res.status(400).send(err))
 }

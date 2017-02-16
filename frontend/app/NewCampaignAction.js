@@ -83,7 +83,8 @@ class NewCampaignUpdate extends Component {
     API.newCampaignUpdate(
       this.state.campaign.id,
       this.state.update,
-      () => {
+      (campaignUpdate) => {
+        API.startCampaignUpdate(campaignUpdate.id)
         this.context.notify({
           message: 'Update created',
           level: 'success',
