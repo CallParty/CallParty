@@ -158,7 +158,6 @@ function callPart3Convo(user, message) {
   })
     .then(() => {
       if ([ACTION_TYPE_PAYLOADS.voicemail, ACTION_TYPE_PAYLOADS.staffer].indexOf(message.text) >= 0) {
-        logMessage('++ sending success gif', '#_msg')
         return botReply(user, {
           attachment: {
             type: 'image',
@@ -168,7 +167,6 @@ function callPart3Convo(user, message) {
           }
         })
           .then(() => {
-            logMessage('++ sending call count', '#_msg')
             return UserAction.count({
               campaignAction: this.user.convoData.campaignCall,
               active: true,
