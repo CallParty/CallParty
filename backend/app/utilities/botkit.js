@@ -1,5 +1,5 @@
 const { bot } = require('../botkit_controller/botkitSetup')
-const { captureException } = require('./logHelper')
+const { captureException, logMessage } = require('./logHelper')
 
 
 function botReply(user, text) {
@@ -8,6 +8,9 @@ function botReply(user, text) {
     channel: user.fbId,
     user: user.fbId,
   }
+  // for early testing going to keep this log in here
+  logMessage(`++ sending message to ${user.fbId}: ${typeof text !== 'string' ? JSON.stringify(text) : text}`, '#_msg')
+  // return promisified bot message
   return new Promise(function(resolve, reject) {
     bot.reply(message, text, function(err, response) {
       // if there was an error, lets try to log info about it for debugging purposes
