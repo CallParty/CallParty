@@ -23,12 +23,16 @@ function logMessage (message, channel, noSuffix) {
   })
 }
 
-function captureException(e) {
+function captureException(e, params) {
   if (process.env.SENTRY_BACKEND_DSN) {
-    Raven.captureException(e)
+    params = params || {}
+    Raven.captureException(e, params)
   }
   else {
     console.log(e)
+    if (params) {
+      console.log(params)
+    }
   }
 }
 
