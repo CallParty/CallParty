@@ -138,12 +138,12 @@ export default {
     })
   },
 
-  startCampaignCall: function(id) {
-    post(`/api/start/campaignCall/${id}/`, {}, data => {})
+  sendCampaignCall: function(id) {
+    post(`/api/send/campaignCall/${id}/`, {}, data => {})
   },
 
-  startCampaignUpdate: function(id) {
-    post(`/api/start/campaignUpdate/${id}/`, {}, data => {})
+  sendCampaignUpdate: function(id) {
+    post(`/api/send/campaignUpdate/${id}/`, {}, data => {})
   },
 
   newCampaignUpdate: function(id, data, cb) {

@@ -18,7 +18,7 @@ function startCallConversation(user, userConversation, representatives, campaign
     throw new Error('Testing error logging within conversation initiation')
   }
 
-  const repId = representatives[0]._id
+  const repId = representatives[0]
   const repPromise = Reps.findOne({_id: repId}).exec()
   // then begin the conversation
   return Promise.all([logPromise, repPromise]).then(([unusedLog, representative]) => {

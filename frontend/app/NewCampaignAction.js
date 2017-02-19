@@ -84,7 +84,7 @@ class NewCampaignUpdate extends Component {
       this.state.campaign.id,
       this.state.update,
       (campaignUpdate) => {
-        API.startCampaignUpdate(campaignUpdate.id)
+        API.sendCampaignUpdate(campaignUpdate.id)
         this.context.notify({
           message: 'Update created',
           level: 'success',
@@ -277,7 +277,7 @@ class NewCampaignCall extends Component {
       this.state.campaignCall,
       (campaignCall) => {
         // start the CampaignCall after it has been created (this can be async, we don't need to wait for response)
-        API.startCampaignCall(campaignCall.id)
+        API.sendCampaignCall(campaignCall.id)
         this.context.notify({
           message: 'Action created',
           level: 'success',

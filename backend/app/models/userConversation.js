@@ -7,7 +7,8 @@ const userConversationSchema = new Schema({
   user: { type: Schema.Types.ObjectId, ref: 'User' },
   campaignAction: { type: Schema.Types.ObjectId, ref: 'CampaignAction' },
   datePrompted:  { type: Date, default: () => moment.utc().toDate() },
-  dateCompleted: Date
+  dateCompleted: Date,
+  convoData: Schema.Types.Mixed,  // data which is needed to send this UserConversation
 })
 
 module.exports = mongoose.model('UserConversation', userConversationSchema)

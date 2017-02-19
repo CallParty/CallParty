@@ -20,52 +20,23 @@ const ObjectId = mongoose.Types.ObjectId
 
 module.exports = function(apiRouter) {
 
-  apiRouter.post('/start/campaignCall/:id', function(req, res) {
+  apiRouter.post('/send/campaignCall/:id', function(req, res) {
     const campaignCallId = req.params.id
     const campaignCallPromise = CampaignCall.findById(ObjectId(campaignCallId))
       .populate('campaign').populate({ path: 'userConversations', populate: { path: 'user' } }).exec()
-    campaignCallPromise.then(campaignCall => Promise.all([campaignCall, campaignCall.getMatchingUsersWithRepresentatives()]))
-      .then(([campaignCall, matchingUsersWithRepresentatives]) => {
-        const userConversationsByUserId = {}
-        const userConversations = campaignCall.userConversations
-        const users = campaignCall.userConversations.map(uc => uc.user)
-        // for ease of access create a map from userId to userConversation
-        for (let i = 0; i < userConversations.length; i++) {
-          const userConversation = userConversations[i]
-          const user = userConversation.user
-          userConversationsByUserId[user._id] = userConversation
-        }
-        // populate convoData for each UserConversation using matchingUsersWithRepresentatives
-        for (let i = 0; i < matchingUsersWithRepresentatives.length; i++) {
-          const item = matchingUsersWithRepresentatives[i]
-          const userConversation = userConversationsByUserId[item.user._id]
-          userConversation.convoData = item
-        }
-        // then initialize the conversation passing the campaignCall, the users it should be sent to
-        // and a map for looking up necessary data associated with each user
-        return initConvos(campaignCall, users, userConversationsByUserId)
-      })
+    campaignCallPromise.then(campaignCall => {
+      return initConvos(campaignCall, campaignCall.userConversations)
+    })
     // send response
     res.send('ok')
   })
 
-  apiRouter.post('/start/campaignUpdate/:id', function(req, res) {
+  apiRouter.post('/send/campaignUpdate/:id', function(req, res) {
     const campaignUpdateId = req.params.id
     const campaignUpdatePromise = CampaignUpdate.findById(ObjectId(campaignUpdateId))
       .populate('campaign').populate({ path: 'userConversations', populate: { path: 'user' } }).exec()
-    campaignUpdatePromise.then(function (campaignUpdate) {
-      const userConversations = campaignUpdate.userConversations
-      const userConversationsByUserId = {}
-      const users = []
-      // for ease of access create a map from userId to userConversation and attach an empty convoData
-      for (let i = 0; i < userConversations.length; i++) {
-        const userConversation = userConversations[i]
-        const user = userConversation.user
-        userConversation.convoData = {}
-        userConversationsByUserId[user._id] = userConversation
-        users.push(userConversation.user)
-      }
-      initConvos(campaignUpdate, users, userConversationsByUserId)
+    campaignUpdatePromise.then(campaignUpdate => {
+      return initConvos(campaignUpdate, campaignUpdate.userConversations)
     })
     // send response
     res.send('ok')

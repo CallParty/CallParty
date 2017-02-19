@@ -77,13 +77,17 @@ exports.newCampaignCall = function(req, res) {
     .then(([savedCampaignCall, matchingUsersWithRepresentatives]) => {
       // for each targeted user create a UserConversation
       // we will use these objects to keep track of which users have been messaged
-      // uninitialized conversations are initialized by pinging /api/start/campaignCall
+      // uninitialized conversations are initialized by pinging /send/campaignCall
       const userConvoPromises = []
       for (let i = 0; i < matchingUsersWithRepresentatives.length; i++) {
         const user = matchingUsersWithRepresentatives[i].user
+        const repIds = matchingUsersWithRepresentatives[i].representatives.map(r => r._id)
         const userConvoPromise = UserConversation.create({
           user: ObjectId(user._id),
-          campaignAction: ObjectId(savedCampaignCall._id)
+          campaignAction: ObjectId(savedCampaignCall._id),
+          convoData: {
+            representatives: repIds,
+          }
         })
         userConvoPromises.push(userConvoPromise)
       }
