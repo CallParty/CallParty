@@ -27,11 +27,7 @@ function startSignupConversation(fbId) {
       ).exec()
     })
     .then(function(user) {
-      const fakeMessage = {
-        channel: fbId,
-        user: fbId
-      }
-      return askForAddressConvo(user, fakeMessage)
+      return askForAddressConvo(user)
     })
     .catch(function(err) { throw new Error(err) })
 }
@@ -39,13 +35,13 @@ function startSignupConversation(fbId) {
 
 function askForAddressConvo(user, message) {
   const organization = 'CallParty' // this should be looked up from the db eventually
-  return botReply(message,
+  return botReply(user,
     `Hi there! Nice to meet you. ` +
     `I’m a bot made to send you calls to action from the people at ${organization}, ` +
     `because taking civic action is way more effective in large groups. ` +
     `You can unsubscribe any time by just saying ‘stop’ or ‘unsubscribe’.`
   ).then(function() {
-    return botReply(message,
+    return botReply(user,
       'First thing’s first: What’s the address of your voting registration? ' +
       'I’ll use this to identify who your reps are – don’t worry, I won’t be holding onto it.'
     )
@@ -58,7 +54,7 @@ function handleAddressResponseConvo(user, message) {
       if (!geocodingResult) {
         throw new Error('++ failed to find district from address: ' + message.text)
       }
-      return Promise.all([geocodingResult, botReply(message, 'Great!')])
+      return Promise.all([geocodingResult, botReply(user, 'Great!')])
     })
     .then(function([geocodingResult]) {
       user.state = geocodingResult.state
@@ -71,7 +67,7 @@ function handleAddressResponseConvo(user, message) {
     })
     .catch(function() {
       // log this exception somehow
-      bot.reply(message,
+      botReply(message,
         'Hm, something isn’t right. Make sure to include your street address, city, state, and zip code like this: ' +
         '123 Party Street, Brooklyn, NY 11206'
       )
@@ -80,7 +76,7 @@ function handleAddressResponseConvo(user, message) {
 }
 
 function finishSignup1Convo(user, message) {
-  return botReply(message,
+  return botReply(user,
     'Now that that’s sorted, we’ll reach out when there’s an issue that you can take an action about, ' +
     'including the rep for you to call and how to talk to them. ' +
     'We’ll also send updates and outcomes on the issues we send. Sound fun?'
@@ -89,7 +85,7 @@ function finishSignup1Convo(user, message) {
 }
 
 function finishSignup2Convo(user, message) {
-  return botReply(message, 'Excellent. Have a nice day, and talk soon!')
+  return botReply(user, 'Excellent. Have a nice day, and talk soon!')
     .then(() => setUserCallback(user, null))
 }
 

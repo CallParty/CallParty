@@ -7,16 +7,16 @@ function unsubscribeConvo(message) {
   User.findOne({fbId: message.user}).exec().then(function(user) {
     // if the user does not already exist, then maybe they are already unsubscribed
     if (!user) {
-      botReply(message, "Hey! Either you haven't signed up yet, or you've already unsubscribed. " +
+      botReply(user, "Hey! Either you haven't signed up yet, or you've already unsubscribed. " +
         "Just send us a message saying 'Hi' if you'd like to sign up again.")
     }
     else {
       if (user.unsubscribed != true) {
         unsubscribeAndAnonymizeUser(user)
-        botReply(message, 'You got it. Just message us again if you ever change your mind!')
+        botReply(user, 'You got it. Just message us again if you ever change your mind!')
       }
       else {
-        botReply(message, 'Got it, you are unsubscribed')
+        botReply(user, 'Got it, you are unsubscribed')
         throw new Error('An unsubscribed user who was not successfully anonymized just tried to Unsubscribe, ' +
           'or there was some kind of other error')
       }

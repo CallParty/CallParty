@@ -1,7 +1,7 @@
 const { botReply } = require('../utilities/botkit')
 
 function defaultConvo(user, message) {
-  botReply(message, "Oh gosh I didn't understand that. If you'd like to talk to a person " +
+  botReply(user, "Oh gosh I didn't understand that. If you'd like to talk to a person " +
     'send us an email at hi@callparty.org ')
 }
 

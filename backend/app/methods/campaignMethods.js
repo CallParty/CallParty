@@ -1,10 +1,7 @@
 const mongoose = require('mongoose')
-const { Campaign, CampaignCall, CampaignUpdate } = require('../models')
-const createQueue = require('../utilities/createQueue')
-const logMessage = require('../utilities/logHelper').logMessage
+const { Campaign, CampaignCall, CampaignUpdate, UserConversation } = require('../models')
 
 const ObjectId = mongoose.Types.ObjectId
-const queue = createQueue()
 
 exports.newCampaign = function(req, res) {
   const data = req.body
@@ -75,34 +72,31 @@ exports.newCampaignCall = function(req, res) {
     committees: data.committees,
     campaign: ObjectId(req.params.id)
   })
-
   campaignCall.save()
     .then(savedCampaignCall => Promise.all([savedCampaignCall, savedCampaignCall.getMatchingUsersWithRepresentatives()]))
     .then(([savedCampaignCall, matchingUsersWithRepresentatives]) => {
-      // send the users a call to action
-      for (let { user, representatives } of matchingUsersWithRepresentatives) {
-        const job = queue.create('callConvo', {
-          userId: user._id.toString(),
-          representativeIds: representatives.map(r => r._id.toString()),
-          campaignCallId: savedCampaignCall._id.toString()
-        })
-        job.save(function(err) {
-          logMessage(`++ creating callConvo Job: ${JSON.stringify(job.data)}`, '#_kue')
-          if (err) { throw err }
-        })
-      }
-
-      return Campaign
-        .findOne({ _id: req.params.id })
-        .populate({
-          path: 'campaignActions',
-          populate: {
-            path: 'userConversations'
+      // for each targeted user create a UserConversation
+      // we will use these objects to keep track of which users have been messaged
+      // uninitialized conversations are initialized by pinging /send/campaignCall
+      const userConvoPromises = []
+      for (let i = 0; i < matchingUsersWithRepresentatives.length; i++) {
+        const user = matchingUsersWithRepresentatives[i].user
+        const repIds = matchingUsersWithRepresentatives[i].representatives.map(r => r._id)
+        const userConvoPromise = UserConversation.create({
+          user: ObjectId(user._id),
+          campaignAction: ObjectId(savedCampaignCall._id),
+          convoData: {
+            representatives: repIds,
           }
-        }).exec()
+        })
+        userConvoPromises.push(userConvoPromise)
+      }
+      return Promise.all(userConvoPromises).then(() => {
+        return savedCampaignCall
+      })
     })
-    .then(campaign => {
-      res.json(campaign)
+    .then(campaignCall => {
+      res.json(campaignCall)
     })
     .catch(err => res.status(400).send(err))
 }
@@ -125,31 +119,25 @@ exports.newCampaignUpdate = function(req, res) {
     }).then(function([savedCampaignUpdate, campaignCall]) {
       return Promise.all([
         savedCampaignUpdate,
-        campaignCall.userConversations.filter(ua => ua.active).map(ua => ua.user)
+        campaignCall.userConversations.map(ua => ua.user)
       ])
     })
     .then(([savedCampaignUpdate, users]) => {
-      for (let user of users) {
-        const job = queue.create('update', {
-          userId: user._id,
-          campaignUpdateId: savedCampaignUpdate._id
+      const userConvoPromises = []
+      for (let i = 0; i < users.length; i++) {
+        const user = users[i]
+        const userConvoPromise = UserConversation.create({
+          user: ObjectId(user._id),
+          campaignAction: ObjectId(savedCampaignUpdate._id)
         })
-        job.save(function(err) {
-          if (err) { throw err }
-        })
+        userConvoPromises.push(userConvoPromise)
       }
-
-      return Campaign
-        .findOne({ _id: req.params.id })
-        .populate({
-          path: 'campaignActions',
-          populate: {
-            path: 'userConversations'
-          }
-        }).exec()
+      return Promise.all(userConvoPromises).then(() => {
+        return savedCampaignUpdate
+      })
     })
-    .then(campaign => {
-      res.json(campaign)
+    .then(campaignUpdate => {
+      res.json(campaignUpdate)
     })
     .catch(err => res.status(400).send(err))
 }

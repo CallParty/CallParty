@@ -38,7 +38,6 @@ campaignCallSchema.methods.getMatchingRepresentatives = function() {
       party: { $first: '$party' },
       state: { $first: '$state' },
       district: { $first: '$district' },
-      official_full: { $first: '$official_full' },
       committees: { $push: '$committees' }
     })
     .match({
