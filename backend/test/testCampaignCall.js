@@ -8,6 +8,33 @@ const dbUri = process.env.MONGODB_TEST_URI || 'mongodb://localhost/test'
 
 mongoose.Promise = require('es6-promise')
 
+
+function getIdsHelper(matchingUsersWithRepresentatives, expectedUsersWithRepresentatives) {
+  const idComparator = (a, b) => {
+    const idA = a.user._id.toString()
+    const idB = b.user._id.toString()
+
+    if (idA < idB) {
+      return -1
+    } else if (idA > idB) {
+      return 1
+    }
+    return 0
+  }
+  const sortedMatchingUsersWithRepresentatives = matchingUsersWithRepresentatives.sort(idComparator)
+  const sortedExpectedUsersWithRepresentatives = expectedUsersWithRepresentatives.sort(idComparator)
+  const matchingUserIds = sortedMatchingUsersWithRepresentatives.map(u => u.user._id.toString())
+  const expectedUserIds = sortedExpectedUsersWithRepresentatives.map(u => u.user._id.toString())
+  const matchingRepresentativeIds = sortedMatchingUsersWithRepresentatives.map(u => u.representatives.map(r => r._id.toString()))
+  const expectedRepresentativeIds = sortedExpectedUsersWithRepresentatives.map(u => u.representatives.map(r => r._id.toString()))
+  return {
+    matchingUserIds,
+    expectedUserIds,
+    matchingRepresentativeIds,
+    expectedRepresentativeIds,
+  }
+}
+
 describe('CampaignCall', function() {
   beforeEach(function(done) {
     mongoose.connect(dbUri, done)
@@ -35,16 +62,16 @@ describe('CampaignCall', function() {
           Reps.create({ official_full: 'Paul Ryan', bioguide: 'R000570', legislator_type: 'rep', party: 'Republican', state: 'WI', district: 1 })
         ])
       ])
-      .then(function([testCommittees, testReps]) {
-        committees = testCommittees
-        representatives = testReps
+        .then(function([testCommittees, testReps]) {
+          committees = testCommittees
+          representatives = testReps
 
-        return Promise.all([
-          RepresentativeCommittee.create({ representative: representatives[0]._id, committee: committees[1]._id }),
-          RepresentativeCommittee.create({ representative: representatives[1]._id, committee: committees[1]._id }),
-          RepresentativeCommittee.create({ representative: representatives[2]._id, committee: committees[0]._id })
-        ])
-      })
+          return Promise.all([
+            RepresentativeCommittee.create({ representative: representatives[0]._id, committee: committees[1]._id }),
+            RepresentativeCommittee.create({ representative: representatives[1]._id, committee: committees[1]._id }),
+            RepresentativeCommittee.create({ representative: representatives[2]._id, committee: committees[0]._id })
+          ])
+        })
     })
 
     afterEach(function() {
@@ -65,8 +92,8 @@ describe('CampaignCall', function() {
           parties: ['Democrat', 'Republican'],
           committees: committees.map(c => c._id)
         })
-        .then(campaignCall => campaignCall.getMatchingRepresentatives())
-        .then(matchingReps => matchingRepresentatives = matchingReps)
+          .then(campaignCall => campaignCall.getMatchingRepresentatives())
+          .then(matchingReps => matchingRepresentatives = matchingReps)
       })
 
       it('should return the correct representatives', function() {
@@ -86,16 +113,16 @@ describe('CampaignCall', function() {
       let expectedRepresentatives = null
 
       beforeEach(function() {
-        // this CampaignCall has no memberTypes so no representatives should match
-        expectedRepresentatives = []
+        // this CampaignCall has no membertype so should return all representatives
+        expectedRepresentatives = [representatives[0], representatives[1], representatives[2]]
 
         return CampaignCall.create({
           memberTypes: [],
-          parties: ['Democrat', 'Republican'],
+          parties: ['Democrat', 'Independent', 'Republican'],
           committees: committees.map(c => c._id)
         })
-        .then(campaignCall => campaignCall.getMatchingRepresentatives())
-        .then(matchingReps => matchingRepresentatives = matchingReps)
+          .then(campaignCall => campaignCall.getMatchingRepresentatives())
+          .then(matchingReps => matchingRepresentatives = matchingReps)
       })
 
       afterEach(function() {
@@ -103,8 +130,10 @@ describe('CampaignCall', function() {
         expectedRepresentatives = null
       })
 
-      it('should return an empty array', function() {
-        expect(matchingRepresentatives).to.deep.equal(expectedRepresentatives)
+      it('should return all', function() {
+        const matchingRepIds = matchingRepresentatives.map(r => r._id.toString()).sort()
+        const expectedRepIds = expectedRepresentatives.map(r => r._id.toString()).sort()
+        expect(matchingRepIds).to.deep.equal(expectedRepIds)
       })
     })
 
@@ -113,16 +142,16 @@ describe('CampaignCall', function() {
       let expectedRepresentatives = null
 
       beforeEach(function() {
-        // this CampaignCall has no memberTypes so no representatives should match
-        expectedRepresentatives = []
+        // this CampaignCall has no memberTypes so all reps and senators should match
+        expectedRepresentatives = [representatives[0], representatives[1], representatives[2]]
 
         return CampaignCall.create({
           memberTypes: ['rep', 'sen'],
           parties: [],
           committees: committees.map(c => c._id)
         })
-        .then(campaignCall => campaignCall.getMatchingRepresentatives())
-        .then(matchingReps => matchingRepresentatives = matchingReps)
+          .then(campaignCall => campaignCall.getMatchingRepresentatives())
+          .then(matchingReps => matchingRepresentatives = matchingReps)
       })
 
       afterEach(function() {
@@ -130,8 +159,10 @@ describe('CampaignCall', function() {
         expectedRepresentatives = null
       })
 
-      it('should return an empty array', function() {
-        expect(matchingRepresentatives).to.deep.equal(expectedRepresentatives)
+      it('should return all', function() {
+        const matchingRepIds = matchingRepresentatives.map(r => r._id.toString()).sort()
+        const expectedRepIds = expectedRepresentatives.map(r => r._id.toString()).sort()
+        expect(matchingRepIds).to.deep.equal(expectedRepIds)
       })
     })
 
@@ -140,16 +171,16 @@ describe('CampaignCall', function() {
       let expectedRepresentatives = null
 
       beforeEach(function() {
-        // this CampaignCall has no memberTypes so no representatives should match
-        expectedRepresentatives = []
+        // this CampaignCall has no committees so all reps and senators should match
+        expectedRepresentatives = [representatives[0], representatives[1], representatives[2]]
 
         return CampaignCall.create({
           memberTypes: ['rep', 'sen'],
-          parties: ['Democrat', 'Republican'],
+          parties: ['Democrat', 'Independent', 'Republican'],
           committees: []
         })
-        .then(campaignCall => campaignCall.getMatchingRepresentatives())
-        .then(matchingReps => matchingRepresentatives = matchingReps)
+          .then(campaignCall => campaignCall.getMatchingRepresentatives())
+          .then(matchingReps => matchingRepresentatives = matchingReps)
       })
 
       afterEach(function() {
@@ -157,8 +188,10 @@ describe('CampaignCall', function() {
         expectedRepresentatives = null
       })
 
-      it('should return an empty array', function() {
-        expect(matchingRepresentatives).to.deep.equal(expectedRepresentatives)
+      it('should return all', function() {
+        const matchingRepIds = matchingRepresentatives.map(r => r._id.toString()).sort()
+        const expectedRepIds = expectedRepresentatives.map(r => r._id.toString()).sort()
+        expect(matchingRepIds).to.deep.equal(expectedRepIds)
       })
     })
   })
@@ -187,17 +220,17 @@ describe('CampaignCall', function() {
           User.create({ active: true, state: 'NY', congressionalDistrict: 5 })
         ])
       ])
-      .then(function([testCommittees, testReps, testUsers]) {
-        committees = testCommittees
-        representatives = testReps
-        users = testUsers
+        .then(function([testCommittees, testReps, testUsers]) {
+          committees = testCommittees
+          representatives = testReps
+          users = testUsers
 
-        return Promise.all([
-          RepresentativeCommittee.create({ representative: representatives[0]._id, committee: committees[1]._id }),
-          RepresentativeCommittee.create({ representative: representatives[1]._id, committee: committees[1]._id }),
-          RepresentativeCommittee.create({ representative: representatives[2]._id, committee: committees[0]._id })
-        ])
-      })
+          return Promise.all([
+            RepresentativeCommittee.create({ representative: representatives[0]._id, committee: committees[1]._id }),
+            RepresentativeCommittee.create({ representative: representatives[1]._id, committee: committees[1]._id }),
+            RepresentativeCommittee.create({ representative: representatives[2]._id, committee: committees[0]._id })
+          ])
+        })
     })
 
     afterEach(function() {
@@ -222,31 +255,14 @@ describe('CampaignCall', function() {
           parties: ['Democrat', 'Republican'],
           committees: committees.map(c => c._id)
         })
-        .then(campaignCall => campaignCall.getMatchingUsersWithRepresentatives())
-        .then(matchingTestUsers => matchingUsersWithRepresentatives = matchingTestUsers)
+          .then(campaignCall => campaignCall.getMatchingUsersWithRepresentatives())
+          .then(matchingTestUsers => matchingUsersWithRepresentatives = matchingTestUsers)
       })
 
       it('should return the correct users', function() {
-        const idComparator = (a, b) => {
-          const idA = a.user._id.toString()
-          const idB = b.user._id.toString()
-
-          if (idA < idB) {
-            return -1
-          } else if (idA > idB) {
-            return 1
-          }
-          return 0
-        }
-        const sortedMatchingUsersWithRepresentatives = matchingUsersWithRepresentatives.sort(idComparator)
-        const sortedExpectedUsersWithRepresentatives = expectedUsersWithRepresentatives.sort(idComparator)
-        const matchingUserIds = sortedMatchingUsersWithRepresentatives.map(u => u.user._id.toString())
-        const expectedUserIds = sortedExpectedUsersWithRepresentatives.map(u => u.user._id.toString())
-        const matchingRepresentativeIds = sortedMatchingUsersWithRepresentatives.map(u => u.representatives.map(r => r._id.toString()))
-        const expectedRepresentativeIds = sortedExpectedUsersWithRepresentatives.map(u => u.representatives.map(r => r._id.toString()))
-
-        expect(matchingUserIds).to.deep.equal(expectedUserIds)
-        expect(matchingRepresentativeIds).to.deep.equal(expectedRepresentativeIds)
+        const idsDict = getIdsHelper(matchingUsersWithRepresentatives, expectedUsersWithRepresentatives)
+        expect(idsDict.matchingUserIds).to.deep.equal(idsDict.expectedUserIds)
+        expect(idsDict.matchingRepresentativeIds).to.deep.equal(idsDict.expectedRepresentativeIds)
       })
 
       afterEach(function() {
@@ -260,19 +276,25 @@ describe('CampaignCall', function() {
       let expectedUsersWithRepresentatives = null
 
       beforeEach(function() {
-        expectedUsersWithRepresentatives = []
+        expectedUsersWithRepresentatives = [
+          { user: users[0], representatives: [representatives[0]] },
+          { user: users[1], representatives: [representatives[1]] },
+          { user: users[2], representatives: [representatives[2]] },
+        ]
 
         return CampaignCall.create({
           memberTypes: [],
-          parties: ['Democrat', 'Republican'],
+          parties: ['Democrat', 'Republican', 'Independent'],
           committees: committees.map(c => c._id)
         })
-        .then(campaignCall => campaignCall.getMatchingUsersWithRepresentatives())
-        .then(matchingTestUsers => matchingUsersWithRepresentatives = matchingTestUsers)
+          .then(campaignCall => campaignCall.getMatchingUsersWithRepresentatives())
+          .then(matchingTestUsers => matchingUsersWithRepresentatives = matchingTestUsers)
       })
 
-      it('should return an empty array', function() {
-        expect(matchingUsersWithRepresentatives).to.deep.equal(expectedUsersWithRepresentatives)
+      it('should return all', function() {
+        const idsDict = getIdsHelper(matchingUsersWithRepresentatives, expectedUsersWithRepresentatives)
+        expect(idsDict.matchingUserIds).to.deep.equal(idsDict.expectedUserIds)
+        expect(idsDict.matchingRepresentativeIds).to.deep.equal(idsDict.expectedRepresentativeIds)
       })
 
       afterEach(function() {
@@ -286,19 +308,25 @@ describe('CampaignCall', function() {
       let expectedUsersWithRepresentatives = null
 
       beforeEach(function() {
-        expectedUsersWithRepresentatives = []
+        expectedUsersWithRepresentatives = [
+          { user: users[0], representatives: [representatives[0]] },
+          { user: users[1], representatives: [representatives[1]] },
+          { user: users[2], representatives: [representatives[2]] },
+        ]
 
         return CampaignCall.create({
           memberTypes: ['rep', 'sen'],
           parties: [],
           committees: committees.map(c => c._id)
         })
-        .then(campaignCall => campaignCall.getMatchingUsersWithRepresentatives())
-        .then(matchingTestUsers => matchingUsersWithRepresentatives = matchingTestUsers)
+          .then(campaignCall => campaignCall.getMatchingUsersWithRepresentatives())
+          .then(matchingTestUsers => matchingUsersWithRepresentatives = matchingTestUsers)
       })
 
-      it('should return an empty array', function() {
-        expect(matchingUsersWithRepresentatives).to.deep.equal(expectedUsersWithRepresentatives)
+      it('should return all', function() {
+        const idsDict = getIdsHelper(matchingUsersWithRepresentatives, expectedUsersWithRepresentatives)
+        expect(idsDict.matchingUserIds).to.deep.equal(idsDict.expectedUserIds)
+        expect(idsDict.matchingRepresentativeIds).to.deep.equal(idsDict.expectedRepresentativeIds)
       })
 
       afterEach(function() {
@@ -312,19 +340,25 @@ describe('CampaignCall', function() {
       let expectedUsersWithRepresentatives = null
 
       beforeEach(function() {
-        expectedUsersWithRepresentatives = []
+        expectedUsersWithRepresentatives = [
+          { user: users[0], representatives: [representatives[0]] },
+          { user: users[1], representatives: [representatives[1]] },
+          { user: users[2], representatives: [representatives[2]] },
+        ]
 
         return CampaignCall.create({
           memberTypes: [],
-          parties: ['Democrat', 'Republican'],
+          parties: ['Democrat', 'Republican', 'Independent'],
           committees: []
         })
-        .then(campaignCall => campaignCall.getMatchingUsersWithRepresentatives())
-        .then(matchingTestUsers => matchingUsersWithRepresentatives = matchingTestUsers)
+          .then(campaignCall => campaignCall.getMatchingUsersWithRepresentatives())
+          .then(matchingTestUsers => matchingUsersWithRepresentatives = matchingTestUsers)
       })
 
-      it('should return an empty array', function() {
-        expect(matchingUsersWithRepresentatives).to.deep.equal(expectedUsersWithRepresentatives)
+      it('should return all', function() {
+        const idsDict = getIdsHelper(matchingUsersWithRepresentatives, expectedUsersWithRepresentatives)
+        expect(idsDict.matchingUserIds).to.deep.equal(idsDict.expectedUserIds)
+        expect(idsDict.matchingRepresentativeIds).to.deep.equal(idsDict.expectedRepresentativeIds)
       })
 
       afterEach(function() {
