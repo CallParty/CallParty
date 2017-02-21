@@ -3,12 +3,24 @@ import { Link } from 'react-router'
 import moment from 'moment'
 import API from './API'
 
+function compareCampaigns(a, b) {
+  if (a.createdAt < b.createdAt) {
+    return -1
+  } else if (a.createdAt > b.createdAt) {
+    return 1
+  } else {
+    return 0
+  }
+}
+
 class Campaigns extends Component {
   constructor(props) {
     super(props)
     this.state = {
       campaigns: []
     }
+
+    this.viewCampaign = this.viewCampaign.bind(this)
   }
 
   componentWillMount() {
@@ -20,6 +32,10 @@ class Campaigns extends Component {
   }
 
   render() {
+    const campaigns = this.state.campaigns.sort(compareCampaigns).map(campaign => {
+      return <CampaignItem key={campaign.id} onClick={this.viewCampaign} {...campaign} />
+    })
+
     return (
       <div className="table">
         <header>
@@ -28,14 +44,13 @@ class Campaigns extends Component {
         </header>
         <table>
           <tbody>
-          <tr>
-            <th>#</th>
-            <th>Title</th>
-            <th>Description</th>
-            <th>Date Created</th>
-          </tr>
-          {this.state.campaigns.map(campaign =>
-            <CampaignItem key={campaign.id} onClick={this.viewCampaign.bind(this)} {...campaign} />)}
+            <tr>
+              <th>#</th>
+              <th>Title</th>
+              <th>Description</th>
+              <th>Date Created</th>
+            </tr>
+            {campaigns}
           </tbody>
         </table>
       </div>
