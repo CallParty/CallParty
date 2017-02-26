@@ -186,7 +186,7 @@ function callPart3Convo(user, message) {
               `)
             } else if (numCalls === 0) {
               return botReply(user, stripIndent`
-                Woo thanks for your work! We've had one call so far. We’ll reach out when we have updates and an outcome on the issue.
+                Woo thanks for your work! You're our first call! We’ll reach out when we have updates and an outcome on the issue.
               `)
             }
 

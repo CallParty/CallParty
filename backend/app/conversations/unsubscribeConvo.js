@@ -12,10 +12,9 @@ function unsubscribeConvo(message) {
     }
     else {
       if (user.unsubscribed != true) {
-        unsubscribeAndAnonymizeUser(user)
         botReply(user, 'You got it. Just message us again if you ever change your mind!')
-      }
-      else {
+        unsubscribeAndAnonymizeUser(user)
+      } else {
         botReply(user, 'Got it, you are unsubscribed')
         throw new Error('An unsubscribed user who was not successfully anonymized just tried to Unsubscribe, ' +
           'or there was some kind of other error')
