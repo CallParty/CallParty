@@ -14,7 +14,8 @@ const parse = {
       memberTypes: c.memberTypes,
       parties: c.parties,
       committees: c.committees,
-      createdAt: c.createdAt
+      createdAt: c.createdAt,
+      sentAt: c.sentAt
     }
   },
 
@@ -25,7 +26,8 @@ const parse = {
       subject: u.title,
       active: u.active,
       type: u.type,
-      createdAt: u.createdAt
+      createdAt: u.createdAt,
+      sentAt: u.sentAt
     }
   },
 

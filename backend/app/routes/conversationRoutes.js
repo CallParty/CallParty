@@ -1,6 +1,5 @@
 const mongoose = require('mongoose')
 const Promise = require('es6-promise')
-const moment = require('moment')
 
 const {
   User,
@@ -26,8 +25,6 @@ module.exports = function(apiRouter) {
     const campaignCallPromise = CampaignCall.findById(ObjectId(campaignCallId))
       .populate('campaign').populate({ path: 'userConversations', populate: { path: 'user' } }).exec()
     campaignCallPromise.then(campaignCall => {
-      campaignCall.campaign.lastCampaignActionSentAt = moment.utc().toDate()
-      campaignCall.campaign.save()
       return initConvos(campaignCall, campaignCall.userConversations)
     })
     // send response
@@ -39,8 +36,6 @@ module.exports = function(apiRouter) {
     const campaignUpdatePromise = CampaignUpdate.findById(ObjectId(campaignUpdateId))
       .populate('campaign').populate({ path: 'userConversations', populate: { path: 'user' } }).exec()
     campaignUpdatePromise.then(campaignUpdate => {
-      campaignUpdate.campaign.lastCampaignActionSentAt = moment.utc().toDate()
-      campaignUpdate.campaign.save()
       return initConvos(campaignUpdate, campaignUpdate.userConversations)
     })
     // send response

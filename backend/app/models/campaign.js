@@ -8,7 +8,6 @@ const campaignSchema = new Schema({
   active: Boolean,
   link: String,
   createdAt: { type: Date, default: () => moment.utc().toDate() },
-  lastCampaignActionSentAt: Date
 }, {
   toObject: { virtuals: true },
   toJSON: { virtuals: true }
@@ -34,6 +33,14 @@ campaignSchema.virtual('campaignUpdates').get(function() {
   }
 
   return this.campaignActions.filter(campaignAction => campaignAction.type === 'CampaignUpdate')
+})
+
+campaignSchema.virtual('lastCampaignActionSentAt').get(function() {
+  if (!this.campaignActions) {
+    return null
+  }
+
+  return this.campaignActions.map(ca => ca.sentAt).filter(sentAt => !!sentAt).sort().reverse()[0] || null
 })
 
 module.exports = mongoose.model('Campaign', campaignSchema)
