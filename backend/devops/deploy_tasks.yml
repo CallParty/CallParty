@@ -52,6 +52,14 @@
   - name: make log_dir writeable by webgroup
     action: file path={{log_dir}} mode=u=rwX,g=rwX,o=X recurse=yes group=webgroup owner=ubuntu
 
+  - name: create cron job for updating representative and committee data
+    cron:
+      name: "update representative and committee data"
+      job: "{{node_bin}} cron/updateRepsAndCommittees.js"
+      weekday: 0
+      hour: 0
+      minute: 0
+
   - name: Start pm2 (auto-restarts if already started)
     command: "{{node_bin}}/pm2 start {{config_dir}}/pm2.json"
     become: true
