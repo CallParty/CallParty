@@ -37,7 +37,6 @@ function startCallConversation(user, userConversation, representatives, campaign
       repWebsite: representative.url,
       userConversationId: userConversation._id
     }
-    console.log(campaignCall)
     // save params as convoData
     user.convoData = convoData
 
