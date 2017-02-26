@@ -25,7 +25,8 @@ function startCallConversation(user, userConversation, representatives, campaign
     const convoData = {
       firstName: user.firstName,
       issueMessage: campaignCall.campaign.description,
-      issueLink: campaignCall.link,
+      issueLink: campaignCall.issueLink,
+      shareLink: campaignCall.shareLink,
       issueSubject: campaignCall.title,
       issueTask: campaignCall.task,
       campaignCall: campaignCall.toObject({virtuals: false}), // without toObject mongoose goes into an infinite loop on insert
@@ -191,7 +192,7 @@ function callPart3Convo(user, message) {
 
           }).then( () => {
             return botReply(user, stripIndent`
-              Share this action with your friends to make it a party ${this.user.convoData.issueLink}
+              Share this action with your friends to make it a party ${this.user.convoData.shareLink}
             `)
           }).then(() => setUserCallback(user, null))
       }

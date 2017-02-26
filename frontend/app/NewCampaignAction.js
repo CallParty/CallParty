@@ -362,18 +362,18 @@ class NewCampaignCall extends Component {
             <input
               maxLength="640"
               type="text"
-              value={this.state.campaignCall.link}
-              onChange={this.onInputChange.bind(this, 'link')}
-              ref={(input) => { this.inputs.link = input }} />
+              value={this.state.campaignCall.issueLink}
+              onChange={this.onInputChange.bind(this, 'issueLink')}
+              ref={(input) => { this.inputs.issueLink = input }} />
           </fieldset>
           <fieldset>
             <label>Share Link</label>
             <input
               maxLength="640"
               type="text"
-              value={this.state.campaignCall.link}
-              onChange={this.onInputChange.bind(this, 'link')}
-              ref={(input) => { this.inputs.link = input }} />
+              value={this.state.campaignCall.shareLink}
+              onChange={this.onInputChange.bind(this, 'shareLink')}
+              ref={(input) => { this.inputs.shareLink = input }} />
           </fieldset>
           <fieldset>
             <label>Subject</label>
