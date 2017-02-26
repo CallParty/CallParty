@@ -35,4 +35,12 @@ campaignSchema.virtual('campaignUpdates').get(function() {
   return this.campaignActions.filter(campaignAction => campaignAction.type === 'CampaignUpdate')
 })
 
+campaignSchema.virtual('lastCampaignActionSentAt').get(function() {
+  if (!this.campaignActions) {
+    return null
+  }
+
+  return this.campaignActions.map(ca => ca.sentAt).filter(sentAt => !!sentAt).sort().reverse()[0] || null
+})
+
 module.exports = mongoose.model('Campaign', campaignSchema)

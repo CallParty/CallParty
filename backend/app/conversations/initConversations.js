@@ -1,3 +1,5 @@
+const moment = require('moment')
+
 const { logMessage, captureException } = require('../utilities/logHelper')
 const { startCallConversation } = require('./callConvo')
 const { startUpdateConversation } = require('./updateConvo')
@@ -34,6 +36,10 @@ function initConvos(campaignAction, userConversations) {
     }
     // finally return a log statement saying that all conversations have been initialized
     return Promise.all(convoPromises).then(() => {
+      campaignAction.sentAt = moment.utc().toDate()
+      return campaignAction.save()
+    })
+    .then(() => {
       return logMessage(`+++++++ finished initializing conversations for ${campaignAction.type}: ${campaignAction.title} (${campaignAction._id})`)
     }).catch(function(err) {
       captureException(err)
