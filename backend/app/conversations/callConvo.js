@@ -24,7 +24,7 @@ function startCallConversation(user, userConversation, representatives, campaign
   return Promise.all([logPromise, repPromise]).then(([unusedLog, representative]) => {
     const convoData = {
       firstName: user.firstName,
-      issueMessage: campaignCall.description,
+      issueMessage: campaignCall.campaign.description,
       issueLink: campaignCall.link,
       issueSubject: campaignCall.title,
       issueTask: campaignCall.task,
@@ -37,7 +37,7 @@ function startCallConversation(user, userConversation, representatives, campaign
       repWebsite: representative.url,
       userConversationId: userConversation._id
     }
-
+    console.log(campaignCall)
     // save params as convoData
     user.convoData = convoData
 
