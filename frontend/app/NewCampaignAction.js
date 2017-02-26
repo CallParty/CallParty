@@ -352,15 +352,24 @@ class NewCampaignCall extends Component {
           <fieldset>
             <label>Message</label>
             <textarea
-              maxLength="640" 
+              maxLength="640"
               value={this.state.campaignCall.message}
               onChange={this.onInputChange.bind(this, 'message')}
               ref={(input) => { this.inputs.message = input }} />
           </fieldset>
           <fieldset>
-            <label>Link</label>
+            <label>Issue Link</label>
             <input
-              maxLength="640" 
+              maxLength="640"
+              type="text"
+              value={this.state.campaignCall.link}
+              onChange={this.onInputChange.bind(this, 'link')}
+              ref={(input) => { this.inputs.link = input }} />
+          </fieldset>
+          <fieldset>
+            <label>Share Link</label>
+            <input
+              maxLength="640"
               type="text"
               value={this.state.campaignCall.link}
               onChange={this.onInputChange.bind(this, 'link')}
@@ -369,7 +378,7 @@ class NewCampaignCall extends Component {
           <fieldset>
             <label>Subject</label>
             <input
-              maxLength="640" 
+              maxLength="640"
               type="text"
               value={this.state.campaignCall.subject}
               onChange={this.onInputChange.bind(this, 'subject')}
@@ -378,7 +387,7 @@ class NewCampaignCall extends Component {
           <fieldset>
             <label>Task</label>
             <input
-              maxLength="640" 
+              maxLength="640"
               type="text"
               value={this.state.campaignCall.task}
               onChange={this.onInputChange.bind(this, 'task')}
