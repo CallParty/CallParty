@@ -186,7 +186,7 @@ function callPart3Convo(user, message) {
               `)
             } else if (numCalls === 0) {
               return botReply(user, stripIndent`
-                Woo thanks for your work! You're our first call! We’ll reach out when we have updates and an outcome on the issue.
+                Congrats, you’re the first caller on this issue! You’ve joined the ranks of other famous firsts in American History. We'll reach out when we have updates and an outcome on the issue.
               `)
             }
 
