@@ -62,7 +62,7 @@ Visit the webpage of your bot:
 - https://www.facebook.com/CallingTest2-1284903778233560/ # josh
 - https://www.facebook.com/pg/CallingTest3-394972167517670/ # max
 - https://www.facebook.com/pg/CallingTest4-1292845147475522/ # oren
-- https://www.facebook.com/CallingTest5-2060548600838593/
+- https://www.facebook.com/CallingTest5-2060548600838593/ # james
 
 And send the message 'hello' to make sure everything is working.
 
