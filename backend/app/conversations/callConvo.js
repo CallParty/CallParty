@@ -179,13 +179,22 @@ function callPart3Convo(user, message) {
             }).exec()
           })
           .then((numCalls) => {
+
+            if (numCalls !== 0) {
+              return botReply(user, stripIndent`
+                Woo thanks for your work! We’ve had ${numCalls} other calls so far. We’ll reach out when we have updates and an outcome on the issue.
+              `)
+            } else if (numCalls === 0) {
+              return botReply(user, stripIndent`
+                Congrats, you’re the first caller on this issue! You’ve joined the ranks of other famous firsts in American History. We'll reach out when we have updates and an outcome on the issue.
+              `)
+            }
+
+          }).then( () => {
             return botReply(user, stripIndent`
-          Woo thanks for your work! We’ve had ${numCalls} calls so far.
-          We’ll reach out when we have updates and an outcome on the issue.
-          Share this action with your friends to make it a party ${this.user.convoData.issueLink}
-          `)
-          })
-          .then(() => setUserCallback(user, null))
+              Share this action with your friends to make it a party ${this.user.convoData.issueLink}
+            `)
+          }).then(() => setUserCallback(user, null))
       }
       else if (message.text === ACTION_TYPE_PAYLOADS.error) {
         return botReply(user, {
