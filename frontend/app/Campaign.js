@@ -3,11 +3,13 @@ import { Link } from 'react-router'
 import moment from 'moment'
 import API from './API'
 
+const DATE_FORMAT = 'h:mma on M/DD/YYYY'
+
 function compareCampaigns(a, b) {
-  if (a.createdAt < b.createdAt) {
-    return -1
-  } else if (a.createdAt > b.createdAt) {
+  if (a.lastCampaignActionSentAt < b.lastCampaignActionSentAt || !a.lastCampaignActionSentAt) {
     return 1
+  } else if (a.lastCampaignActionSentAt > b.lastCampaignActionSentAt) {
+    return -1
   } else {
     return 0
   }
@@ -49,6 +51,7 @@ class Campaigns extends Component {
               <th>Title</th>
               <th>Description</th>
               <th>Date Created</th>
+              <th>Last Conversation Sent</th>
             </tr>
             {campaigns}
           </tbody>
@@ -68,13 +71,30 @@ class CampaignItem extends Component {
   }
 
   render() {
-    const createdAt = moment.utc(this.props.createdAt).local().format('h:mma on M/DD/YYYY')
+    const createdAt = moment.utc(this.props.createdAt).local().format(DATE_FORMAT)
+
+    let lastCampaignActionSentAt = 'N/A'
+    if (this.props.lastCampaignActionSentAt) {
+      lastCampaignActionSentAt = moment.utc(this.props.lastCampaignActionSentAt).local().format(DATE_FORMAT)
+    }
+
     return <tr onClick={() => this.props.onClick(this.props)}>
       <td>{this.props.id}</td>
       <td>{this.props.title}</td>
       <td>{this.props.description}</td>
       <td>{createdAt}</td>
+      <td>{lastCampaignActionSentAt}</td>
     </tr>
+  }
+}
+
+function compareCampaignActions(a, b) {
+  if (a.createdAt < b.createdAt) {
+    return 1
+  } else if (a.createdAt > b.createdAt) {
+    return -1
+  } else {
+    return 0
   }
 }
 
@@ -92,7 +112,17 @@ class Campaign extends Component {
   }
 
   render() {
-    const createdAt = moment.utc(this.state.createdAt).local().format('h:mma on M/DD/YYYY')
+    const createdAt = moment.utc(this.state.createdAt).local().format(DATE_FORMAT)
+    const campaignActions = this.state.actions.sort(compareCampaignActions).map((campaignAction, i) => {
+      return <CampaignAction
+        key={i}
+        num={i}
+        campaignId={this.props.params.id}
+        campaignActionId={campaignAction.id}
+        {...campaignAction}
+      />
+    })
+
     return (
       <div className="campaign">
         <div className="meta">
@@ -108,21 +138,14 @@ class Campaign extends Component {
           </header>
           <table>
             <tbody>
-            <tr>
-              <th>#</th>
-              <th>Type</th>
-              <th>Subject</th>
-              <th>Date Created</th>
-              <th>Clone</th>
-            </tr>
-            {this.state.actions.map((convo, i) =>
-              <CampaignAction
-                key={i}
-                num={i}
-                campaignId={this.props.params.id}
-                campaignActionId={convo.id}
-                {...convo}
-              />)}
+              <tr>
+                <th>#</th>
+                <th>Type</th>
+                <th>Subject</th>
+                <th>Date Created</th>
+                <th>Clone</th>
+              </tr>
+              {campaignActions}
             </tbody>
           </table>
         </div>
@@ -143,7 +166,7 @@ class CampaignAction extends Component {
   }
 
   render() {
-    const createdAt = moment.utc(this.props.createdAt).local().format('h:mma on M/DD/YYYY')
+    const createdAt = moment.utc(this.props.createdAt).local().format(DATE_FORMAT)
 
     return <tr>
       <td>{this.props.num}</td>

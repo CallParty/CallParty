@@ -44,7 +44,8 @@ const parse = {
       actions: (c.campaignActions || []).map(parse.action),
       description: c.description,
       title: c.title,
-      createdAt: c.createdAt
+      createdAt: c.createdAt,
+      lastCampaignActionSentAt: c.lastCampaignActionSentAt
     }
   },
 
