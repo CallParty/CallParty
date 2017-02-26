@@ -8,6 +8,7 @@ const campaignSchema = new Schema({
   active: Boolean,
   link: String,
   createdAt: { type: Date, default: () => moment.utc().toDate() },
+  lastCampaignActionSentAt: Date
 }, {
   toObject: { virtuals: true },
   toJSON: { virtuals: true }
