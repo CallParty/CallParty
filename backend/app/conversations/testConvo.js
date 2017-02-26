@@ -14,8 +14,8 @@ function startTestConversation(fbId) {
 }
 
 function testConvo(user, message) {
-  return botReply(message, 'Start Test Conversation').then(function() {
-    return botReply(message, {
+  return botReply(user, 'Start Test Conversation').then(function() {
+    return botReply(user, {
       attachment: {
         type: 'image',
         payload: {
@@ -27,7 +27,7 @@ function testConvo(user, message) {
       }
     })
   }).then(function() {
-    return botReply(message, 'End Test Conversation')
+    return botReply(user, 'End Test Conversation')
   }).then(function() {
     setUserCallback(user, null)
   })

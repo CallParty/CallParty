@@ -134,13 +134,21 @@ export default {
 
   newCampaignCall: function(id, data, cb) {
     post(`/api/campaigns/${id}/call/new`, data, data => {
-      cb(parse.campaign(data))
+      cb(parse.call(data))
     })
+  },
+
+  sendCampaignCall: function(id) {
+    post(`/api/send/campaignCall/${id}/`, {}, data => {})
+  },
+
+  sendCampaignUpdate: function(id) {
+    post(`/api/send/campaignUpdate/${id}/`, {}, data => {})
   },
 
   newCampaignUpdate: function(id, data, cb) {
     post(`/api/campaigns/${id}/update/new`, data, data => {
-      cb(parse.campaign(data))
+      cb(parse.update(data))
     })
   },
 

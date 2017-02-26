@@ -33,15 +33,19 @@ app.set('view engine', 'ejs')
 
 // set up JWT authentication and whitelist API routes that don't require JWT auth
 // this has to go before we define the API routes
+const unauthenticatedPaths = [
+  '/api/token',
+  '/api/home',
+  '/api/test',
+  '/api/webhook',
+  '/api/error-test',
+]
+if (process.env.DEBUG_ENDPOINTS === 'true') {
+  unauthenticatedPaths.push(new RegExp('/api/start/.*', 'i'))
+  unauthenticatedPaths.push(new RegExp('/api/send/.*', 'i'))
+}
 app.use(jwt({ secret: process.env.JWT_SECRET }).unless({
-  path: [
-    '/api/token',
-    '/api/home',
-    '/api/test',
-    '/api/webhook',
-    '/api/error-test',
-    new RegExp('/api/start/.*', 'i')
-  ]
+  path: unauthenticatedPaths,
 }))
 
 // routes

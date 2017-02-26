@@ -1,19 +1,22 @@
-const { User } = require('../models')
 const botReply = require('../utilities/botkit').botReply
+const { UserConversation } = require('../models')
+const { logMessage } = require('../utilities/logHelper')
 
 
-var startUpdateConversation = function(fbId, updateMessage) {
-  User.findOne({fbId: fbId}).exec().then(function (user) {
-    const fakeMessage = {
-      channel: fbId,
-      user: fbId
-    }
-    updateConvo1(user, fakeMessage, updateMessage)
-  })
+var startUpdateConversation = function(user, userConversation, campaignUpdate) {
+  // save that message has been sent
+  UserConversation.update({ _id: userConversation._id }, { active: true }).exec()
+  const logPromise = logMessage(
+    `++ sending campaignUpdate (${campaignUpdate._id}) to: ${user.firstName} ${user.lastName} (${user.fbId})`
+  )
+  return logPromise.then(() =>
+    updateConvo1(user, campaignUpdate.message)
+  )
+
 }
 
-function updateConvo1(user, message, updateMessage) {
-  botReply(message, updateMessage)
+function updateConvo1(user, updateMessage) {
+  botReply(user, updateMessage)
 }
 
 module.exports = {
