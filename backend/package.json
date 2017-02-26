@@ -5,8 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "mocha",
-    "server": "node server.js",
-    "worker": "node worker.js"
+    "server": "node server.js"
   },
   "author": "",
   "license": "ISC",

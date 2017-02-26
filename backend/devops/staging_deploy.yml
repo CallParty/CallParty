@@ -13,7 +13,8 @@
         - quick
 
     - include: deploy_tasks.yml
-
+      tags:
+        - quick
 
   handlers:
 
