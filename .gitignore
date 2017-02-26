@@ -7,3 +7,4 @@ secret_files*
 *.DS_Store
 *.retry
 static*
+*npm-debug.log

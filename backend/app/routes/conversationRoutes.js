@@ -4,19 +4,43 @@ const Promise = require('es6-promise')
 const {
   User,
   CampaignCall,
+  CampaignUpdate,
   Reps,
   UserConversation
 } = require('../models')
 
-const startCallConversation = require('../conversations/callConvo').startCallConversation
-const startUpdateConversation = require('../conversations/updateConvo').startUpdateConversation
-const startSignupConversation = require('../conversations/signupConvo').startSignupConversation
-const startTestConversation = require('../conversations/testConvo').startTestConversation
+const { startCallConversation } = require('../conversations/callConvo')
+const { startUpdateConversation } = require('../conversations/updateConvo')
+const { startSignupConversation } = require('../conversations/signupConvo')
+const { startTestConversation } = require('../conversations/testConvo')
+const { initConvos } = require('../conversations/initConversations')
 
 mongoose.Promise = Promise
 const ObjectId = mongoose.Types.ObjectId
 
 module.exports = function(apiRouter) {
+
+  apiRouter.post('/send/campaignCall/:id', function(req, res) {
+    const campaignCallId = req.params.id
+    const campaignCallPromise = CampaignCall.findById(ObjectId(campaignCallId))
+      .populate('campaign').populate({ path: 'userConversations', populate: { path: 'user' } }).exec()
+    campaignCallPromise.then(campaignCall => {
+      return initConvos(campaignCall, campaignCall.userConversations)
+    })
+    // send response
+    res.send('ok')
+  })
+
+  apiRouter.post('/send/campaignUpdate/:id', function(req, res) {
+    const campaignUpdateId = req.params.id
+    const campaignUpdatePromise = CampaignUpdate.findById(ObjectId(campaignUpdateId))
+      .populate('campaign').populate({ path: 'userConversations', populate: { path: 'user' } }).exec()
+    campaignUpdatePromise.then(campaignUpdate => {
+      return initConvos(campaignUpdate, campaignUpdate.userConversations)
+    })
+    // send response
+    res.send('ok')
+  })
 
   apiRouter.post('/start/callConvo', function(req, res) {
     const fbId = req.body.fbId

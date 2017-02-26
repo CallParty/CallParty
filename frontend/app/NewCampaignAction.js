@@ -83,7 +83,8 @@ class NewCampaignUpdate extends Component {
     API.newCampaignUpdate(
       this.state.campaign.id,
       this.state.update,
-      () => {
+      (campaignUpdate) => {
+        API.sendCampaignUpdate(campaignUpdate.id)
         this.context.notify({
           message: 'Update created',
           level: 'success',
@@ -274,11 +275,14 @@ class NewCampaignCall extends Component {
     API.newCampaignCall(
       this.state.campaign.id,
       this.state.campaignCall,
-      () => {
+      (campaignCall) => {
+        // start the CampaignCall after it has been created (this can be async, we don't need to wait for response)
+        API.sendCampaignCall(campaignCall.id)
         this.context.notify({
           message: 'Action created',
           level: 'success',
           autoDismiss: 1,
+          // TODO: redirect to CampaignActionDetail page for newly created CampaignAction
           onRemove: () => {
             this.props.router.push(`/${this.state.campaign.id}`)
           }
@@ -348,6 +352,7 @@ class NewCampaignCall extends Component {
           <fieldset>
             <label>Message</label>
             <textarea
+              maxLength="640" 
               value={this.state.campaignCall.message}
               onChange={this.onInputChange.bind(this, 'message')}
               ref={(input) => { this.inputs.message = input }} />
@@ -355,6 +360,7 @@ class NewCampaignCall extends Component {
           <fieldset>
             <label>Link</label>
             <input
+              maxLength="640" 
               type="text"
               value={this.state.campaignCall.link}
               onChange={this.onInputChange.bind(this, 'link')}
@@ -363,6 +369,7 @@ class NewCampaignCall extends Component {
           <fieldset>
             <label>Subject</label>
             <input
+              maxLength="640" 
               type="text"
               value={this.state.campaignCall.subject}
               onChange={this.onInputChange.bind(this, 'subject')}
@@ -371,6 +378,7 @@ class NewCampaignCall extends Component {
           <fieldset>
             <label>Task</label>
             <input
+              maxLength="640" 
               type="text"
               value={this.state.campaignCall.task}
               onChange={this.onInputChange.bind(this, 'task')}

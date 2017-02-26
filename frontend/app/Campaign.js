@@ -185,6 +185,7 @@ class NewCampaign extends Component {
         <fieldset>
           <label>Title</label>
           <input
+            maxLength="640" 
             type="text"
             value={this.state.title}
             onChange={this.onInputChange.bind(this, 'title')} />
@@ -192,6 +193,7 @@ class NewCampaign extends Component {
         <fieldset>
           <label>Description</label>
           <input
+            maxLength="640"
             type="text"
             value={this.state.description}
             onChange={this.onInputChange.bind(this, 'description')} />
