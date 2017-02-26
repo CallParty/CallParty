@@ -5,6 +5,7 @@ const Schema = mongoose.Schema
 const campaignActionSchema = new Schema({
   title: String,
   createdAt: { type: Date, default: () => moment.utc().toDate() },
+  sentAt: Date,
   campaign: { type: Schema.Types.ObjectId, ref: 'Campaign' }
 }, {
   toObject: { virtuals: true },
