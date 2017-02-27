@@ -38,7 +38,8 @@ const unauthenticatedPaths = [
   '/api/home',
   '/api/test',
   '/api/webhook',
-  '/api/error-test',
+  '/api/error',
+  '/api/slack',
 ]
 if (process.env.DEBUG_ENDPOINTS === 'true') {
   unauthenticatedPaths.push(new RegExp('/api/start/.*', 'i'))
