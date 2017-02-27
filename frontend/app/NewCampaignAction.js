@@ -64,7 +64,7 @@ class NewCampaignUpdate extends Component {
       campaignCall: 'Call to Action Reference'
     }
 
-    const fieldsToValidate = ['subject', 'message']
+    const fieldsToValidate = ['campaignCall', 'message']
     for (let k of fieldsToValidate) {
       if (update[k] === undefined || update[k] === null || update[k] === '') {
         this.context.notify({
