@@ -23,23 +23,9 @@ function logMessage (message, channel, noSuffix) {
   })
 }
 
-var stringifyError = function(err) {
-  /* helper function to stringify an error */
-  var plainObject = {};
-  Object.getOwnPropertyNames(err).forEach(function(key) {
-    if (key !== 'stack') {
-      plainObject[key] = err[key]
-    }
-  });
-  const stringifiedError = JSON.stringify(plainObject, '\t');
-  return stringifiedError
-}
-
 function captureException(e, params) {
   // log error to slack
-  logMessage(`++ error: ${stringifyError(e)}`, '#_error').then(() => {
-    return logMessage(`++ stack trace: ${e.stack}`, '#_error')
-  }).then(() => {
+  logMessage(`++ error: ${e.stack}`, '#_error').then(() => {
     if (params) {
       return logMessage(`++ with error params: ${params}`)
     }
