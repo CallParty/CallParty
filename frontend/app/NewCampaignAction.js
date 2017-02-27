@@ -64,7 +64,8 @@ class NewCampaignUpdate extends Component {
       campaignCall: 'Call to Action Reference'
     }
 
-    for (let k of Object.keys(update)) {
+    const fieldsToValidate = ['subject', 'message']
+    for (let k of fieldsToValidate) {
       if (update[k] === undefined || update[k] === null || update[k] === '') {
         this.context.notify({
           message: `${validationLabels[k]} can't be blank`,
@@ -252,7 +253,8 @@ class NewCampaignCall extends Component {
     ev.preventDefault()
 
     const campaignCall = this.state.campaignCall
-    for (let k of Object.keys(campaignCall)) {
+    const fieldsToValidate = ['subject', 'message', 'task', 'issueLink', 'shareLink']
+    for (let k of fieldsToValidate) {
       if (campaignCall[k] === undefined || campaignCall[k] === null || campaignCall[k] === '') {
         this.context.notify({
           message: `${k} can't be blank`,
@@ -352,7 +354,7 @@ class NewCampaignCall extends Component {
           <fieldset>
             <label>Message</label>
             <textarea
-              maxLength="640" 
+              maxLength="640"
               value={this.state.campaignCall.message}
               onChange={this.onInputChange.bind(this, 'message')}
               ref={(input) => { this.inputs.message = input }} />
@@ -360,7 +362,7 @@ class NewCampaignCall extends Component {
           <fieldset>
             <label>Link</label>
             <input
-              maxLength="640" 
+              maxLength="640"
               type="text"
               value={this.state.campaignCall.link}
               onChange={this.onInputChange.bind(this, 'link')}
@@ -369,7 +371,7 @@ class NewCampaignCall extends Component {
           <fieldset>
             <label>Subject</label>
             <input
-              maxLength="640" 
+              maxLength="640"
               type="text"
               value={this.state.campaignCall.subject}
               onChange={this.onInputChange.bind(this, 'subject')}
@@ -378,7 +380,7 @@ class NewCampaignCall extends Component {
           <fieldset>
             <label>Task</label>
             <input
-              maxLength="640" 
+              maxLength="640"
               type="text"
               value={this.state.campaignCall.task}
               onChange={this.onInputChange.bind(this, 'task')}
