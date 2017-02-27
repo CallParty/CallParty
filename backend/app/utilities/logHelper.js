@@ -23,17 +23,36 @@ function logMessage (message, channel, noSuffix) {
   })
 }
 
-function captureException(e, params) {
-  if (process.env.SENTRY_BACKEND_DSN) {
-    params = params || {}
-    Raven.captureException(e, params)
-  }
-  else {
-    console.log(e)
-    if (params) {
-      console.log(params)
+var stringifyError = function(err) {
+  /* helper function to stringify an error */
+  var plainObject = {};
+  Object.getOwnPropertyNames(err).forEach(function(key) {
+    if (key !== 'stack') {
+      plainObject[key] = err[key]
     }
-  }
+  });
+  const stringifiedError = JSON.stringify(plainObject, '\t');
+  return stringifiedError
+}
+
+function captureException(e, params) {
+  // log error to slack
+  logMessage(`++ error: ${stringifyError(e)}`, '#_error').then(() => {
+    return logMessage(`++ stack trace: ${e.stack}`, '#_error')
+  }).then(() => {
+    if (params) {
+      return logMessage(`++ with error params: ${params}`)
+    }
+    else {
+      return Promise.resolve()
+    }
+  }).then(() => {
+    // finally log error with sentry
+    if (process.env.SENTRY_BACKEND_DSN) {
+      params = params || {}
+      Raven.captureException(e, params)
+    }
+  })
 }
 
 module.exports = {
