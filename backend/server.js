@@ -109,8 +109,6 @@ if (process.env.SENTRY_BACKEND_DSN) {
   Raven.config(process.env.SENTRY_BACKEND_DSN).install()
   // The request handler must be the first middleware on the app
   app.use(Raven.requestHandler())
-  // The error handler must be before any other error middleware
-  // app.use(Raven.errorHandler())
 }
 
 // START ===================================================
