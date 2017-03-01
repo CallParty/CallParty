@@ -41,18 +41,13 @@ function startCallConversation(user, userConversation, representatives, campaign
     user.convoData = convoData
 
     return user.save().then(() => {
-      // start the conversation
-      const fakeMessage = {
-        channel: user.fbId,
-        user: user.fbId
-      }
-      return callPart1Convo(user, fakeMessage)
+      return areYouReadyConvo(user, null)
     })
   })
 }
 
 // part 1
-function callPart1Convo(user, message) {
+function areYouReadyConvo(user, message) {
   // set that the conversation has been intialized
   // (we could consider putting this after the first set of messages instead of before)
   UserConversation.update({ _id: user.convoData.userConversationId }, { active: true }).exec()
@@ -65,57 +60,117 @@ function callPart1Convo(user, message) {
         `You can find out more about the issue here ${user.convoData.issueLink}.`
       )
     }).then(() => {
-      const msgToSend = stripIndent`
+      const msg_attachment = {
+        attachment: {
+          type: 'template',
+          payload: {
+            template_type: 'button',
+            text: "Are you ready to call now?",
+            buttons: [
+              {
+                type: 'postback',
+                title: 'Yes send me the info',
+                payload: ACTION_TYPE_PAYLOADS.isReady
+              },
+              {
+                type: 'postback',
+                title: 'I don\'t want to call',
+                payload: ACTION_TYPE_PAYLOADS.noCall
+              },
+            ]
+          }
+        }
+      }
+      return botReply(user, msg_attachment).then(() =>
+        setUserCallback(user, '/calltoaction/readyResponse')
+      )
+    })
+}
+
+function readyResponseConvo(user, message) {
+  this.user = user
+  return UserAction.create({
+    actionType: message.text,
+    campaignAction: this.user.convoData.campaignCall,
+    user: this.user,
+  })
+    .then(() => {
+      if (message.text === ACTION_TYPE_PAYLOADS.isReady) {
+        return readyToCallConvo(user, message)
+      }
+      else if (message.text === ACTION_TYPE_PAYLOADS.noCall) {
+        return noCallConvo(user, message)
+      }
+      else {
+        throw new Error('Received unexpected message at path /calltoaction/readyResponse: ' + message.text)
+      }
+    })
+}
+
+function readyToCallConvo(user, message) {
+  const msgToSend = stripIndent`
         You'll be calling ${user.convoData.repType} ${user.convoData.repName}. ` +
-        `When you call you'll talk to a staff member, or you'll leave a voicemail. ` +
-        `Let them know:
+    `When you call you'll talk to a staff member, or you'll leave a voicemail. ` +
+    `Let them know:
         *  You're a constituent calling about ${user.convoData.issueSubject}.
         *  The call to action: "I'd like ${user.convoData.repType} ${user.convoData.repName} to ${user.convoData.issueTask}."
         *  Share any personal feelings or stories.
         *  If taking the wrong stance on this issue would endanger your vote, let them know.
         *  Answer any questions the staffer has, and be friendly!`
-      return botReply(user, msgToSend)
-    }).then(() => {
-      const msgAttachment = {
-        attachment: {
-          type: 'template',
-          payload: {
-            template_type: 'generic',
-            elements: [
-              {
-                title: `${user.convoData.repType} ${user.convoData.repName}`,
-                image_url: user.convoData.repImage,
-                // TODO: for some reason facebook is throwing error with this default_action included
-                // default_action: {
-                //   type: 'phone_number',
-                //   title: user.convoData.repPhoneNumber,
-                //   payload: user.convoData.repPhoneNumber
-                // },
-                buttons: [
-                  {
-                    type: 'phone_number',
-                    title: user.convoData.repPhoneNumber,
-                    payload: user.convoData.repPhoneNumber
-                  },
-                  {
-                    type: 'web_url',
-                    url: user.convoData.repWebsite,
-                    title: 'View Website'
-                  }
-                ]
-              }
-            ]
-          }
+  return botReply(user, msgToSend).then(() => {
+    const msgAttachment = {
+      attachment: {
+        type: 'template',
+        payload: {
+          template_type: 'generic',
+          elements: [
+            {
+              title: `${user.convoData.repType} ${user.convoData.repName}`,
+              image_url: user.convoData.repImage,
+              // TODO: for some reason facebook is throwing error with this default_action included
+              // default_action: {
+              //   type: 'phone_number',
+              //   title: user.convoData.repPhoneNumber,
+              //   payload: user.convoData.repPhoneNumber
+              // },
+              buttons: [
+                {
+                  type: 'phone_number',
+                  title: user.convoData.repPhoneNumber,
+                  payload: user.convoData.repPhoneNumber
+                },
+                {
+                  type: 'web_url',
+                  url: user.convoData.repWebsite,
+                  title: 'View Website'
+                }
+              ]
+            }
+          ]
         }
       }
-      return botReply(user, msgAttachment)
-    })
+    }
+    return botReply(user, msgAttachment)
+  })
     .then(() => botReply(user, 'Give me a thumbs up once you’ve tried to call!'))
-    .then(() => setUserCallback(user, '/calltoaction/part2'))
+    .then(() => setUserCallback(user, '/calltoaction/howDidItGo'))
 }
 
-// part 2
-function callPart2Convo(user, message) {
+function noCallConvo(user, message) {
+  return botReply(user, 'That\'s okay! Want to tell me why?').then(() => {
+    return setUserCallback(user, '/calltoaction/tellMeWhyResponse')
+  })
+}
+
+function tellMeWhyResponseConvo(user, message) {
+  // this log line logs the user feedback to the _feedback channel in slack
+  logMessage(`++ ${user.firstName} ${user.lastName} (${user.fbId}) said in response to I don't want to call: ${message}`, '#_feedback', true)
+  return botReply(user, 'Got it – I\'ll let you know when there\'s another issue to call about.').then(() => {
+    return setUserCallback(user, null)
+  })
+}
+
+function howDidItGoConvo(user, message) {
   const msg_attachment = {
     attachment: {
       type: 'template',
@@ -143,12 +198,11 @@ function callPart2Convo(user, message) {
     }
   }
   return botReply(user, msg_attachment).then(() =>
-    setUserCallback(user, '/calltoaction/part3')
+    setUserCallback(user, '/calltoaction/howDidItGoResponse')
   )
 }
 
-// part 3
-function callPart3Convo(user, message) {
+function howDidItGoResponseConvo(user, message) {
   this.user = user
   return UserAction.create({
     actionType: message.text,
@@ -219,6 +273,7 @@ function callPart3Convo(user, message) {
 
 // thanks for sharing
 function thanksForSharingConvo(user, message) {
+  logMessage(`++ ${user.firstName} ${user.lastName} (${user.fbId}) said in response to something went wrong: ${message}`, '#_feedback', true)
   return UserConversation.update({ _id: user.convoData.userConversationId }, { dateCompleted: moment.utc().toDate() }).exec()
     .then(() => botReply(user, 'Thanks for sharing! We’ll reach back out if we can be helpful.'))
     .then(function () {
@@ -231,8 +286,9 @@ function thanksForSharingConvo(user, message) {
 
 module.exports = {
   startCallConversation,
-  callPart1Convo,
-  callPart2Convo,
-  callPart3Convo,
+  readyResponseConvo,
+  tellMeWhyResponseConvo,
+  howDidItGoConvo,
+  howDidItGoResponseConvo,
   thanksForSharingConvo,
 }
