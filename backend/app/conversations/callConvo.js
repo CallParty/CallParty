@@ -165,7 +165,7 @@ function noCallConvo(user, message) {
 
 function tellMeWhyResponseConvo(user, message) {
   // this log line logs the user feedback to the _feedback channel in slack
-  logMessage(`++ ${user.firstName} ${user.lastName} (${user.fbId}) said in response to I don't want to call: ${message}`, '#_feedback', true)
+  logMessage(`++ ${user.firstName} ${user.lastName} (${user.fbId}) said in response to I don't want to call: ${message.text}`, '#_feedback', true)
   return botReply(user, 'Got it – I\'ll let you know when there\'s another issue to call about.').then(() => {
     return setUserCallback(user, null)
   })
@@ -274,7 +274,7 @@ function howDidItGoResponseConvo(user, message) {
 
 // thanks for sharing
 function thanksForSharingConvo(user, message) {
-  logMessage(`++ ${user.firstName} ${user.lastName} (${user.fbId}) said in response to something went wrong: ${message}`, '#_feedback', true)
+  logMessage(`++ ${user.firstName} ${user.lastName} (${user.fbId}) said in response to something went wrong: ${message.text}`, '#_feedback', true)
   return UserConversation.update({ _id: user.convoData.userConversationId }, { dateCompleted: moment.utc().toDate() }).exec()
     .then(() => botReply(user, 'Thanks for sharing! We’ll reach back out if we can be helpful.'))
     .then(function () {
