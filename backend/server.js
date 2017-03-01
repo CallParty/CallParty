@@ -2,7 +2,7 @@
 // load environment variables,
 const dotenv = require('dotenv')
 dotenv.load()
-const logMessage = require('./app/utilities/logHelper').logMessage
+const { logMessage, captureException } = require('./app/utilities/logHelper')
 const express = require('express') // framework d'appli
 const app = express()
 const Raven = require('raven')
@@ -38,7 +38,8 @@ const unauthenticatedPaths = [
   '/api/home',
   '/api/test',
   '/api/webhook',
-  '/api/error-test',
+  '/api/error',
+  '/api/slack',
 ]
 if (process.env.DEBUG_ENDPOINTS === 'true') {
   unauthenticatedPaths.push(new RegExp('/api/start/.*', 'i'))
@@ -95,6 +96,12 @@ else {
   logMessage('++ staging database connected')
 }
 
+// exception error handler
+app.use(function (err, req, res, next) {
+  captureException(err)
+  next(err)
+})
+
 // configure error logging (needs to be at the bottom of server.js for some reason)
 if (process.env.SENTRY_BACKEND_DSN) {
   logMessage('++ using Sentry for error logging')
@@ -102,8 +109,6 @@ if (process.env.SENTRY_BACKEND_DSN) {
   Raven.config(process.env.SENTRY_BACKEND_DSN).install()
   // The request handler must be the first middleware on the app
   app.use(Raven.requestHandler())
-  // The error handler must be before any other error middleware
-  app.use(Raven.errorHandler())
 }
 
 // START ===================================================

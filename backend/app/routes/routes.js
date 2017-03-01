@@ -1,4 +1,5 @@
 var facebook_handler = require('../botkit_controller/botkitSetup').handler
+const { logMessage } = require('../utilities/logHelper')
 
 module.exports = function (apiRouter) {
   // public pages=============================================
@@ -26,8 +27,13 @@ module.exports = function (apiRouter) {
     res.send('ok')
   })
 
-  apiRouter.get('/error-test', function (req, res) {
+  apiRouter.get('/error', function (req, res) {
     throw new Error('Testing error handling')
+  })
+
+  apiRouter.get('/slack', function (req, res) {
+    logMessage('++ slack test')
+    res.send('slack test')
   })
 
 }
