@@ -264,7 +264,7 @@ function howDidItGoResponseConvo(user, message) {
               'We’re sorry to hear that, but good on you for trying! Want to tell us about it?'
             )
           })
-          .then(() => setUserCallback(user, '/calltoaction/thanksforsharing'))
+          .then(() => setUserCallback(user, '/calltoaction/thanksForSharing'))
       }
       else {
         throw new Error('Received unexpected message at path /calltoaction/part3: ' + message.text)
