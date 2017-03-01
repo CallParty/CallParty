@@ -63,7 +63,8 @@ exports.newCampaignCall = function(req, res) {
   const campaignCall = new CampaignCall({
     title: data.subject,
     message: data.message,
-    link: data.link,
+    issueLink: data.issueLink,
+    shareLink: data.shareLink,
     task: data.task,
     active: false,
     type: data.type,
