@@ -4,7 +4,7 @@
 
 ### Data Collections:
 
-[Data Map for Call Party](./datamap.md)
+[Data Map for Call Party](datamap.md)
 
 - Campaigns - Top level campaign information
 - Campaign Actions - Specific and targeted messaging/data for a bot conversation

@@ -22,14 +22,14 @@
     become: yes
     become_user: ubuntu
 
-  - name: install node version 7.4.0
-    command: sudo -iu ubuntu nvm install v7.4.0
+  - name: install node version 7.6.0
+    command: sudo -iu ubuntu nvm install v7.6.0
 
-  - name: set default node version to 7.4.0
-    command: sudo -iu ubuntu nvm alias default v7.4.0
+  - name: set default node version to 7.6.0
+    command: sudo -iu ubuntu nvm alias default v7.6.0
 
   - name: create symlink from nvm node to /usr/local/bin/node
-    file: src=/home/ubuntu/.nvm/versions/node/v7.4.0/bin/{{item}} dest=/usr/local/bin/{{item}} state=link
+    file: src=/home/ubuntu/.nvm/versions/node/v7.6.0/bin/{{item}} dest=/usr/local/bin/{{item}} state=link
     with_items:
       - node
       - npm

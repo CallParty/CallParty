@@ -1,7 +1,7 @@
 // CONFIG===============================================
 var Botkit = require('botkit')
 var mongoUri = process.env.MONGODB_URI || 'mongodb://localhost/botkit-demo'
-var db = require('../../config/db')({mongoUri: mongoUri})
+var db = require('./db')({mongoUri: mongoUri})
 
 // set DEBUG_TICK based on .env
 var DEBUG_TICK = process.env.DEBUG_TICK === 'true'
