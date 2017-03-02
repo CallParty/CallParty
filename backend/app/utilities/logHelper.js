@@ -16,11 +16,12 @@ function logMessage (message, channel, noSuffix) {
   if (noSuffix !== true && process.env.SLACK_CHANNEL_SUFFIX) {
     channel = channel + process.env.SLACK_CHANNEL_SUFFIX
   }
+  const sendSlackNotifications = process.env.SLACK_SEND_NOTIFICATIONS === 'true'
   return slack.send({
     text: message,
     channel: channel,
     username: 'Bot',
-    link_names: true,
+    link_names: sendSlackNotifications,
   })
 }
 
