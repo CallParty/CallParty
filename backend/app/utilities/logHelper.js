@@ -28,7 +28,7 @@ function captureException(e, params) {
   // log error to slack
   logMessage(`++ error: ${e.stack}`, '#_error').then(() => {
     if (params) {
-      return logMessage(`++ with error params: ${params}`)
+      return logMessage(`++ with error params: ${params}`, '#_error')
     }
     else {
       return Promise.resolve()
