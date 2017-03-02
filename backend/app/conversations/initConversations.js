@@ -26,17 +26,15 @@ async function initConvos(campaignAction, userConversations) {
           await logMessage(`++ skipping user ${user.firstName} ${user.lastName} (${user._id})`)
         }
         else {
-          // create a sendPromise which sends the user conversation, and then logs success or failure to slack
           await sendUserConversation(campaignAction, userConversation)
           await logMessage(`+ (${user.fbId}) success: :small_blue_diamond:`)
-          convoPromises.push(sendPromise)
         }
       } catch (e) {
         captureException(e)
         await logMessage(`+ (${user.fbId}) error: :x: @here`)
       }
   }
-    // finally save that the campaignAction finished sending
+  // finally save that the campaignAction finished sending
   campaignAction.sentAt = moment.utc().toDate()
   await campaignAction.save()
   // and log this to slack
