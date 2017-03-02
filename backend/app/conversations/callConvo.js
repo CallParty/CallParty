@@ -17,7 +17,7 @@ function startCallConversation(user, userConversation, representatives, campaign
   const repId = representatives[0]
   const repPromise = Reps.findOne({_id: repId}).exec()
   // then begin the conversation
-  return repPromise.then(([unusedLog, representative]) => {
+  return repPromise.then((representative) => {
     const convoData = {
       firstName: user.firstName,
       issueMessage: campaignCall.campaign.description,
