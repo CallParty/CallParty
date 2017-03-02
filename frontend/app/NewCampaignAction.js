@@ -64,7 +64,8 @@ class NewCampaignUpdate extends Component {
       campaignCall: 'Call to Action Reference'
     }
 
-    for (let k of Object.keys(update)) {
+    const fieldsToValidate = ['campaignCall', 'message']
+    for (let k of fieldsToValidate) {
       if (update[k] === undefined || update[k] === null || update[k] === '') {
         this.context.notify({
           message: `${validationLabels[k]} can't be blank`,
@@ -194,7 +195,8 @@ class NewCampaignCall extends Component {
       committees: [],
       campaignCall: {
         message: '',
-        link: '',
+        issueLink: '',
+        shareLink: '',
         subject: '',
         task: '',
         memberTypes: [],
@@ -252,7 +254,8 @@ class NewCampaignCall extends Component {
     ev.preventDefault()
 
     const campaignCall = this.state.campaignCall
-    for (let k of Object.keys(campaignCall)) {
+    const fieldsToValidate = ['subject', 'message', 'task', 'issueLink', 'shareLink']
+    for (let k of fieldsToValidate) {
       if (campaignCall[k] === undefined || campaignCall[k] === null || campaignCall[k] === '') {
         this.context.notify({
           message: `${k} can't be blank`,
@@ -297,7 +300,7 @@ class NewCampaignCall extends Component {
   previewTemplate(campaignCall) {
     return <div>
       <p>Hi <span className="user-var">[firstName]</span>! We’ve got an issue to call about.</p>
-      <p><span className="action-var" onClick={this.focusInput.bind(this, 'message')}>{campaignCall.desc}</span>. You can find out more about the issue here: <span className="action-var" onClick={this.focusInput.bind(this, 'link')}>{campaignCall.link}</span>.</p>
+      <p><span className="action-var" onClick={this.focusInput.bind(this, 'message')}>{campaignCall.desc}</span>. You can find out more about the issue here: <span className="action-var" onClick={this.focusInput.bind(this, 'issueLink')}>{campaignCall.issueLink}</span>.</p>
       <p>You’ll be calling <span className="user-var">[repType]</span> <span className="user-var">[repName]</span>. When you call you’ll talk to a staff member, or you’ll leave a voicemail. Let them know:</p>
       <p>* You’re a constituent calling about <span className="action-var" onClick={this.focusInput.bind(this, 'subject')}>{campaignCall.subject}</span>.</p>
       <p>* The call to action: “I’d like <span className="user-var">[repType]</span> <span className="user-var">[repName]</span> to <span className="action-var" onClick={this.focusInput.bind(this, 'task')}>{campaignCall.task}</span>.”</p>
@@ -352,24 +355,33 @@ class NewCampaignCall extends Component {
           <fieldset>
             <label>Message</label>
             <textarea
-              maxLength="640" 
+              maxLength="640"
               value={this.state.campaignCall.message}
               onChange={this.onInputChange.bind(this, 'message')}
               ref={(input) => { this.inputs.message = input }} />
           </fieldset>
           <fieldset>
-            <label>Link</label>
+            <label>Issue Link</label>
             <input
-              maxLength="640" 
+              maxLength="640"
               type="text"
-              value={this.state.campaignCall.link}
-              onChange={this.onInputChange.bind(this, 'link')}
-              ref={(input) => { this.inputs.link = input }} />
+              value={this.state.campaignCall.issueLink}
+              onChange={this.onInputChange.bind(this, 'issueLink')}
+              ref={(input) => { this.inputs.issueLink = input }} />
+          </fieldset>
+          <fieldset>
+            <label>Share Link</label>
+            <input
+              maxLength="640"
+              type="text"
+              value={this.state.campaignCall.shareLink}
+              onChange={this.onInputChange.bind(this, 'shareLink')}
+              ref={(input) => { this.inputs.shareLink = input }} />
           </fieldset>
           <fieldset>
             <label>Subject</label>
             <input
-              maxLength="640" 
+              maxLength="640"
               type="text"
               value={this.state.campaignCall.subject}
               onChange={this.onInputChange.bind(this, 'subject')}
@@ -378,7 +390,7 @@ class NewCampaignCall extends Component {
           <fieldset>
             <label>Task</label>
             <input
-              maxLength="640" 
+              maxLength="640"
               type="text"
               value={this.state.campaignCall.task}
               onChange={this.onInputChange.bind(this, 'task')}
@@ -390,7 +402,7 @@ class NewCampaignCall extends Component {
           <h4>Preview</h4>
           <div className="preview-message">{this.previewTemplate({
             desc: this.state.campaignCall.message,
-            link: this.state.campaignCall.link,
+            issueLink: this.state.campaignCall.issueLink,
             subject: this.state.campaignCall.subject,
             task: this.state.campaignCall.task
           })}</div>

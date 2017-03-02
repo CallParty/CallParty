@@ -11,10 +11,11 @@ const callbackRoutes = {
   '/signup/finishSignup1':  signupConvo.finishSignup1Convo,
   '/signup/finishSignup2': signupConvo.finishSignup2Convo,
 
-  '/calltoaction/part1': callConvo.callPart1Convo,
-  '/calltoaction/part2': callConvo.callPart2Convo,
-  '/calltoaction/part3': callConvo.callPart3Convo,
-  '/calltoaction/thanksforsharing': callConvo.thanksForSharingConvo,
+  '/calltoaction/readyResponse': callConvo.readyResponseConvo,
+  '/calltoaction/tellMeWhyResponse': callConvo.tellMeWhyResponseConvo,
+  '/calltoaction/howDidItGo': callConvo.howDidItGoConvo,
+  '/calltoaction/howDidItGoResponse': callConvo.howDidItGoResponseConvo,
+  '/calltoaction/thanksForSharing': callConvo.thanksForSharingConvo,
 
 }
 

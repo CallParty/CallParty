@@ -5,7 +5,9 @@ const Schema = mongoose.Schema
 const ACTION_TYPE_PAYLOADS = {
   error: 'error',
   staffer: 'staffer',
-  voicemail: 'voicemail'
+  voicemail: 'voicemail',
+  isReady: 'isReady',
+  noCall: 'noCall,'
 }
 
 const userActionsSchema = new Schema({

@@ -24,16 +24,21 @@ function logMessage (message, channel, noSuffix) {
 }
 
 function captureException(e, params) {
-  if (process.env.SENTRY_BACKEND_DSN) {
-    params = params || {}
-    Raven.captureException(e, params)
-  }
-  else {
-    console.log(e)
+  // log error to slack
+  logMessage(`++ error: ${e.stack}`, '#_error').then(() => {
     if (params) {
-      console.log(params)
+      return logMessage(`++ with error params: ${params}`)
     }
-  }
+    else {
+      return Promise.resolve()
+    }
+  }).then(() => {
+    // finally log error with sentry
+    if (process.env.SENTRY_BACKEND_DSN) {
+      params = params || {}
+      Raven.captureException(e, params)
+    }
+  })
 }
 
 module.exports = {
