@@ -4,7 +4,7 @@ const { logMessage, captureException } = require('../utilities/logHelper')
 const { startCallConversation } = require('./callConvo')
 const { startUpdateConversation } = require('./updateConvo')
 
-function initConvos(campaignAction, userConversations) {
+async function initConvos(campaignAction, userConversations) {
   /*
    An idempotent function for sending a campaignAction to all the users it should go to.
 
@@ -13,47 +13,34 @@ function initConvos(campaignAction, userConversations) {
    - note that each userConversation should have a convoData field which has any data necessary for sending the conversation
    */
   // make an initial log statement to indicate we are about to start conversations for this campaignAction
-  const logPromise = logMessage(
+  await logMessage(
     `++++ initialize conversations for ${campaignAction.type}: ${campaignAction.title} (${campaignAction._id})`
   )
-  return logPromise.then(() => {
-    let convoPromises = []
-    // now loop through the users and send any conversations which have not already been sent
-    for (let i = 0; i < userConversations.length; i++) {
+  // now loop through the users and send any conversations which have not already been sent
+  for (let i = 0; i < userConversations.length; i++) {
       const userConversation = userConversations[i]
       const user = userConversation.user
       try {
         // to make this function idempotent, check if this conversation has already been initialized and if not then skip it
         if (userConversation.active === true) {
-          convoPromises.push(logMessage(`++ skipping user ${user.firstName} ${user.lastName} (${user._id})`))
+          await logMessage(`++ skipping user ${user.firstName} ${user.lastName} (${user._id})`)
         }
         else {
           // create a sendPromise which sends the user conversation, and then logs success or failure to slack
-          const sendPromise = sendUserConversation(campaignAction, userConversation).then(() => {
-            return logMessage(
-              `+ (${user.fbId}) success: :small_blue_diamond:`
-            )
-          })
-          // add sendPromise to the list of convoPromises
+          await sendUserConversation(campaignAction, userConversation)
+          await logMessage(`+ (${user.fbId}) success: :small_blue_diamond:`)
           convoPromises.push(sendPromise)
         }
       } catch (e) {
         captureException(e)
-        convoPromises.push(logMessage(`+ (${user.fbId}) error: :x: @here`))
+        await logMessage(`+ (${user.fbId}) error: :x: @here`)
       }
-    }
-    // finally return a log statement saying that all conversations have been initialized
-    return Promise.all(convoPromises).then(() => {
-      campaignAction.sentAt = moment.utc().toDate()
-      return campaignAction.save()
-    })
-      .then(() => {
-        return logMessage(`++++ finished initializing conversations for ${campaignAction.type}: ${campaignAction.title} (${campaignAction._id})`)
-      }).catch(function(err) {
-        captureException(err)
-        return logMessage(`++++ (with errors) finished initializing conversations for ${campaignAction.type}: ${campaignAction.title} (${campaignAction._id})`)
-      })
-  })
+  }
+    // finally save that the campaignAction finished sending
+  campaignAction.sentAt = moment.utc().toDate()
+  await campaignAction.save()
+  // and log this to slack
+  await logMessage(`++++ finished initializing conversations for ${campaignAction.type}: ${campaignAction.title} (${campaignAction._id})`)
 }
 
 function sendUserConversation(campaignAction, userConversation) {
