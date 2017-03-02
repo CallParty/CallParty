@@ -90,6 +90,7 @@ function readyResponseConvo(user, message) {
   return UserAction.create({
     actionType: message.text,
     campaignAction: user.convoData.campaignCall,
+    representative: user.convoData.representatives[user.convoData.currentRepresentativeIndex].repId,
     user: user,
   })
   .then(() => {
@@ -255,6 +256,7 @@ function howDidItGoResponseConvo(user, message) {
   return UserAction.create({
     actionType: message.text,
     campaignAction: user.convoData.campaignCall,
+    representative: user.convoData.representatives[user.convoData.currentRepresentativeIndex].repId,
     user: user,
   })
   .then(() => {
@@ -415,7 +417,7 @@ function howDidItGoMultipleRepsResponseConvo(user, message) {
                 {
                   type: 'postback',
                   title: 'Yes',
-                  payload: ACTION_TYPE_PAYLOADS.isReady
+                  payload: ACTION_TYPE_PAYLOADS.tryNextRep
                 },
                 {
                   type: 'postback',
@@ -440,15 +442,23 @@ function howDidItGoMultipleRepsResponseConvo(user, message) {
 }
 
 function tryNextRepResponseConvo(user, message) {
-  if (message.text === ACTION_TYPE_PAYLOADS.isReady) {
-    return multipleRepsCallNextRepConvo(user, message)
-  }
-  else if (message.text === ACTION_TYPE_PAYLOADS.noCall) {
-    return noCallConvo(user, message)
-  }
-  else {
-    throw new Error('Received unexpected message at path /calltoaction/tryNextRepResponse: ' + message.text)
-  }
+  return UserAction.create({
+    actionType: message.text,
+    campaignAction: user.convoData.campaignCall,
+    representative: user.convoData.representatives[user.convoData.currentRepresentativeIndex].repId,
+    user: user,
+  })
+  .then(() => {
+    if (message.text === ACTION_TYPE_PAYLOADS.tryNextRep) {
+      return multipleRepsCallNextRepConvo(user, message)
+    }
+    else if (message.text === ACTION_TYPE_PAYLOADS.noCall) {
+      return noCallConvo(user, message)
+    }
+    else {
+      throw new Error('Received unexpected message at path /calltoaction/tryNextRepResponse: ' + message.text)
+    }
+  })
 }
 
 // thanks for sharing
