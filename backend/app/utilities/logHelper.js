@@ -19,7 +19,8 @@ function logMessage (message, channel, noSuffix) {
   return slack.send({
     text: message,
     channel: channel,
-    username: 'Bot'
+    username: 'Bot',
+    link_names: true,
   })
 }
 
