@@ -14,29 +14,24 @@ function initConvos(campaignAction, userConversations) {
    */
   // make an initial log statement to indicate we are about to start conversations for this campaignAction
   const logPromise = logMessage(
-    `+++++++ initialize conversations for ${campaignAction.type}: ${campaignAction.title} (${campaignAction._id})`
+    `++++ initialize conversations for ${campaignAction.type}: ${campaignAction.title} (${campaignAction._id})`
   )
   return logPromise.then(() => {
     let convoPromises = []
     // now loop through the users and send any conversations which have not already been sent
     for (let i = 0; i < userConversations.length; i++) {
+      const userConversation = userConversations[i]
+      const user = userConversation.user
       try {
-        const userConversation = userConversations[i]
         // to make this function idempotent, check if this conversation has already been initialized and if not then skip it
         if (userConversation.active === true) {
-          const user = userConversation.user
           convoPromises.push(logMessage(`++ skipping user ${user.firstName} ${user.lastName} (${user._id})`))
         }
         else {
           // create a sendPromise which sends the user conversation, and then logs success or failure to slack
           const sendPromise = sendUserConversation(campaignAction, userConversation).then(() => {
             return logMessage(
-              `success (${user.fbId})`
-            )
-          }).catch((e) => {
-            captureException(e)
-            return logMessage(
-              `error (${user.fbId})`
+              `+ (${user.fbId}) success: :small_blue_diamond:`
             )
           })
           // add sendPromise to the list of convoPromises
@@ -44,6 +39,7 @@ function initConvos(campaignAction, userConversations) {
         }
       } catch (e) {
         captureException(e)
+        convoPromises.push(logMessage(`+ (${user.fbId}) error: :x: @here`))
       }
     }
     // finally return a log statement saying that all conversations have been initialized
@@ -52,10 +48,10 @@ function initConvos(campaignAction, userConversations) {
       return campaignAction.save()
     })
       .then(() => {
-        return logMessage(`+++++++ finished initializing conversations for ${campaignAction.type}: ${campaignAction.title} (${campaignAction._id})`)
+        return logMessage(`++++ finished initializing conversations for ${campaignAction.type}: ${campaignAction.title} (${campaignAction._id})`)
       }).catch(function(err) {
         captureException(err)
-        return logMessage(`+++++++ (with some errors) finished initializing conversations for ${campaignAction.type}: ${campaignAction.title} (${campaignAction._id})`)
+        return logMessage(`++++ (with errors) finished initializing conversations for ${campaignAction.type}: ${campaignAction.title} (${campaignAction._id})`)
       })
   })
 }

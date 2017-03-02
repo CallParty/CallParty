@@ -10,7 +10,7 @@ const logMessage = require('../utilities/logHelper').logMessage
 function startCallConversation(user, userConversation, representatives, campaignCall) {
 
   const logPromise = logMessage(
-    `++ initializing callConvo ${campaignCall.title} for: ${user.firstName} ${user.lastName} (${user.fbId})`
+    `+ (${user.fbId}) initializing callConvo ${campaignCall.title} for: ${user.firstName} ${user.lastName}`
   )
 
   // for testing so that we can ensure that an error on one user, does not botch the whole run
