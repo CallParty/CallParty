@@ -28,7 +28,19 @@ function initConvos(campaignAction, userConversations) {
           convoPromises.push(logMessage(`++ skipping user ${user.firstName} ${user.lastName} (${user._id})`))
         }
         else {
-          convoPromises.push(sendUserConversation(campaignAction, userConversation))
+          // create a sendPromise which sends the user conversation, and then logs success or failure to slack
+          const sendPromise = sendUserConversation(campaignAction, userConversation).then(() => {
+            return logMessage(
+              `success (${user.fbId})`
+            )
+          }).catch((e) => {
+            captureException(e)
+            return logMessage(
+              `error (${user.fbId})`
+            )
+          })
+          // add sendPromise to the list of convoPromises
+          convoPromises.push(sendPromise)
         }
       } catch (e) {
         captureException(e)
@@ -39,19 +51,19 @@ function initConvos(campaignAction, userConversations) {
       campaignAction.sentAt = moment.utc().toDate()
       return campaignAction.save()
     })
-    .then(() => {
-      return logMessage(`+++++++ finished initializing conversations for ${campaignAction.type}: ${campaignAction.title} (${campaignAction._id})`)
-    }).catch(function(err) {
-      captureException(err)
-      return logMessage(`+++++++ (with some errors) finished initializing conversations for ${campaignAction.type}: ${campaignAction.title} (${campaignAction._id})`)
-    })
+      .then(() => {
+        return logMessage(`+++++++ finished initializing conversations for ${campaignAction.type}: ${campaignAction.title} (${campaignAction._id})`)
+      }).catch(function(err) {
+        captureException(err)
+        return logMessage(`+++++++ (with some errors) finished initializing conversations for ${campaignAction.type}: ${campaignAction.title} (${campaignAction._id})`)
+      })
   })
 }
 
 function sendUserConversation(campaignAction, userConversation) {
   /*
-    Switch statement based on campaignAction.type and sends UserConversation to the correct user
-    passing data as necessary
+   Switch statement based on campaignAction.type and sends UserConversation to the correct user
+   passing data as necessary
    */
   const user = userConversation.user
   const convoData = userConversation.convoData
