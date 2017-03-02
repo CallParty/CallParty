@@ -9,10 +9,6 @@ const logMessage = require('../utilities/logHelper').logMessage
 
 function startCallConversation(user, userConversation, representatives, campaignCall) {
 
-  const logPromise = logMessage(
-    `+ (${user.fbId}) initializing callConvo ${campaignCall.title} for: ${user.firstName} ${user.lastName}`
-  )
-
   // for testing so that we can ensure that an error on one user, does not botch the whole run
   if (campaignCall.title === 'TestErrorLogging' && user.firstName === 'Max' && user.lastName === 'Fowler') {
     throw new Error('Testing error logging within conversation initiation')
@@ -21,7 +17,7 @@ function startCallConversation(user, userConversation, representatives, campaign
   const repId = representatives[0]
   const repPromise = Reps.findOne({_id: repId}).exec()
   // then begin the conversation
-  return Promise.all([logPromise, repPromise]).then(([unusedLog, representative]) => {
+  return repPromise.then(([unusedLog, representative]) => {
     const convoData = {
       firstName: user.firstName,
       issueMessage: campaignCall.campaign.description,

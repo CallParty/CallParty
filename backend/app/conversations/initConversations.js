@@ -26,6 +26,9 @@ async function initConvos(campaignAction, userConversations) {
           await logMessage(`++ skipping user ${user.firstName} ${user.lastName} (${user._id})`)
         }
         else {
+          await logMessage(
+            `+ (${user.fbId}) initializing ${campaignAction.type} ${campaignAction.title} for: ${user.firstName} ${user.lastName}`
+          )
           await sendUserConversation(campaignAction, userConversation)
           await logMessage(`+ (${user.fbId}) success: :small_blue_diamond:`)
         }
