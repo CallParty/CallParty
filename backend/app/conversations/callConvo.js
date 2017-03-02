@@ -96,7 +96,32 @@ function readyResponseConvo(user, message) {
   .then(() => {
     if (message.text === ACTION_TYPE_PAYLOADS.isReady) {
       const hasOneRep = user.convoData.representatives.length === 1
-      return hasOneRep ? readyToCallSingleRepConvo(user, message) : readyToCallMultipleRepsConvo(user, message)
+      const representative = user.convoData.representatives[0]
+      let msgToSend
+      if (hasOneRep) {
+        msgToSend = stripIndent`
+              You'll be calling ${representative.repType} ${representative.repName}. ` +
+          `When you call you'll talk to a staff member, or you'll leave a voicemail. ` +
+          `Let them know:
+              *  You're a constituent calling about ${user.convoData.issueSubject}.
+              *  The call to action: "I'd like ${representative.repType} ${representative.repName} to ${user.convoData.issueTask}."
+              *  Share any personal feelings or stories.
+              *  If taking the wrong stance on this issue would endanger your vote, let them know.
+              *  Answer any questions the staffer has, and be friendly!`
+      } else {
+        msgToSend = stripIndent`
+          You'll be calling ${user.convoData.representatives.length} Congress Members. When you call, you'll talk to a staff member, or you'll leave a voicemail. Let them know:
+            *  You're a constituent calling about ${user.convoData.issueSubject}.
+            *  The call to action: "I'd like the Congress Member to ${user.convoData.issueTask}."
+            *  Share any personal feelings or stories.
+            *  If taking the wrong stance on this issue would endanger your vote, let them know.
+            *  Answer any questions the staffer has, and be friendly!
+
+          Let's go! Your first call is ${representative.repType} ${representative.repName}:
+        `
+      }
+      return botReply(user, msgToSend)
+        .then(() => sendRepCard(user, message))
     }
     else if (message.text === ACTION_TYPE_PAYLOADS.noCall) {
       return noCallConvo(user, message)
@@ -107,73 +132,7 @@ function readyResponseConvo(user, message) {
   })
 }
 
-function readyToCallSingleRepConvo(user, message) {
-  const representative = user.convoData.representatives[0]
-  const msgToSend = stripIndent`
-        You'll be calling ${representative.repType} ${representative.repName}. ` +
-    `When you call you'll talk to a staff member, or you'll leave a voicemail. ` +
-    `Let them know:
-        *  You're a constituent calling about ${user.convoData.issueSubject}.
-        *  The call to action: "I'd like ${representative.repType} ${representative.repName} to ${user.convoData.issueTask}."
-        *  Share any personal feelings or stories.
-        *  If taking the wrong stance on this issue would endanger your vote, let them know.
-        *  Answer any questions the staffer has, and be friendly!`
-  return botReply(user, msgToSend).then(() => {
-    const msgAttachment = {
-      attachment: {
-        type: 'template',
-        payload: {
-          template_type: 'generic',
-          elements: [
-            {
-              title: `${representative.repType} ${representative.repName}`,
-              image_url: representative.repImage,
-              // TODO: for some reason facebook is throwing error with this default_action included
-              // default_action: {
-              //   type: 'phone_number',
-              //   title: user.convoData.repPhoneNumber,
-              //   payload: user.convoData.repPhoneNumber
-              // },
-              buttons: [
-                {
-                  type: 'phone_number',
-                  title: representative.repPhoneNumber,
-                  payload: representative.repPhoneNumber
-                },
-                {
-                  type: 'web_url',
-                  url: representative.repWebsite,
-                  title: 'View Website'
-                }
-              ]
-            }
-          ]
-        }
-      }
-    }
-    return botReply(user, msgAttachment)
-  })
-  .then(() => botReply(user, 'Give me a thumbs up once you’ve tried to call!'))
-  .then(() => setUserCallback(user, '/calltoaction/howDidItGo'))
-}
-
-function readyToCallMultipleRepsConvo(user, message) {
-  const firstRep = user.convoData.representatives[0]
-  const msgToSend = stripIndent`
-    You'll be calling ${user.convoData.representatives.length} Congress Members. When you call, you'll talk to a staff member, or you'll leave a voicemail. Let them know:
-      *  You're a constituent calling about ${user.convoData.issueSubject}.
-      *  The call to action: "I'd like the Congress Member to ${user.convoData.issueTask}."
-      *  Share any personal feelings or stories.
-      *  If taking the wrong stance on this issue would endanger your vote, let them know.
-      *  Answer any questions the staffer has, and be friendly!
-
-    Let's go! Your first call is ${firstRep.repType} ${firstRep.repName}:
-  `
-  return botReply(user, msgToSend)
-    .then(() => multipleRepsCallNextRepConvo(user, message))
-}
-
-function multipleRepsCallNextRepConvo(user, message) {
+function sendRepCard(user, message) {
   const representative = user.convoData.representatives[user.convoData.currentRepresentativeIndex]
 
   return botReply(user, {
@@ -185,6 +144,12 @@ function multipleRepsCallNextRepConvo(user, message) {
           {
             title: `${representative.repType} ${representative.repName}`,
             image_url: representative.repImage,
+            // TODO: for some reason facebook is throwing error with this default_action included
+            // default_action: {
+            //   type: 'phone_number',
+            //   title: user.convoData.repPhoneNumber,
+            //   payload: user.convoData.repPhoneNumber
+            // },
             buttons: [
               {
                 type: 'phone_number',
@@ -355,7 +320,7 @@ function howDidItGoMultipleRepsResponseConvo(user, message) {
               Excellent, we're at ${numCalls + 1} calls! Next is ${nextRep.repType} ${nextRep.repName}.
             `)
           }
-          return botReplyPromise.then(() => multipleRepsCallNextRepConvo(user, message))
+          return botReplyPromise.then(() => sendRepCard(user, message))
         } else {
           return botReply(user, {
             attachment: {
@@ -448,7 +413,7 @@ function tryNextRepResponseConvo(user, message) {
   })
   .then(() => {
     if (message.text === ACTION_TYPE_PAYLOADS.tryNextRep) {
-      return multipleRepsCallNextRepConvo(user, message)
+      return sendRepCard(user, message)
     }
     else if (message.text === ACTION_TYPE_PAYLOADS.noCall) {
       return noCallConvo(user, message)
