@@ -71,25 +71,25 @@ campaignCallSchema.methods.getMatchingUsersWithRepresentatives = function () {
     this.getMatchingRepresentatives(),
     this.model('User').find({ active: true, unsubscribed: false }).exec(),
   ])
-    .then(function([matchingRepresentatives, users]) {
-      const repsByUser = users.reduce(function(repsByUser, user) {
-        for (let rep of matchingRepresentatives) {
-          const matchesSenator = (rep.legislator_type === 'sen' && rep.state === user.state)
-          const matchesHouseRep = (
-            rep.legislator_type === 'rep' &&
-            rep.state === user.state &&
-            rep.district === user.congressionalDistrict
-          )
-          if (matchesSenator || matchesHouseRep) {
-            repsByUser[user._id] = repsByUser[user._id] || { user, representatives: [] }
-            repsByUser[user._id].representatives.push(rep)
-          }
+  .then(function([matchingRepresentatives, users]) {
+    const repsByUser = users.reduce(function(repsByUser, user) {
+      for (let rep of matchingRepresentatives) {
+        const matchesSenator = (rep.legislator_type === 'sen' && rep.state === user.state)
+        const matchesHouseRep = (
+          rep.legislator_type === 'rep' &&
+          rep.state === user.state &&
+          rep.district === user.congressionalDistrict
+        )
+        if (matchesSenator || matchesHouseRep) {
+          repsByUser[user._id] = repsByUser[user._id] || { user, representatives: [] }
+          repsByUser[user._id].representatives.push(rep)
         }
-        return repsByUser
-      }, {})
+      }
+      return repsByUser
+    }, {})
 
-      return Object.values(repsByUser)
-    })
+    return Object.values(repsByUser)
+  })
 }
 
 module.exports = CampaignAction.discriminator('CampaignCall', campaignCallSchema)
