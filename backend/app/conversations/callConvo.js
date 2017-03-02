@@ -278,7 +278,6 @@ function howDidItGoSingleRepResponseConvo(user, message) {
     .then(() => {
       return UserAction.count({
         campaignAction: user.convoData.campaignCall,
-        active: true,
         actionType: {
           $in: [
             ACTION_TYPE_PAYLOADS.voicemail,
@@ -328,7 +327,6 @@ function howDidItGoMultipleRepsResponseConvo(user, message) {
   if ([ACTION_TYPE_PAYLOADS.voicemail, ACTION_TYPE_PAYLOADS.staffer].indexOf(message.text) >= 0) {
     const userActionCountPromise = UserAction.count({
       campaignAction: user.convoData.campaignCall,
-      active: true,
       actionType: {
         $in: [
           ACTION_TYPE_PAYLOADS.voicemail,
