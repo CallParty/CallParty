@@ -255,8 +255,8 @@ describe('CampaignCall', function() {
           parties: ['Democrat', 'Republican'],
           committees: committees.map(c => c._id)
         })
-          .then(campaignCall => campaignCall.getMatchingUsersWithRepresentatives())
-          .then(matchingTestUsers => matchingUsersWithRepresentatives = matchingTestUsers)
+        .then(campaignCall => campaignCall.getMatchingUsersWithRepresentatives())
+        .then(matchingTestUsers => matchingUsersWithRepresentatives = matchingTestUsers)
       })
 
       it('should return the correct users', function() {

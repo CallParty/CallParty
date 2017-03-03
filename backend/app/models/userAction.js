@@ -7,7 +7,8 @@ const ACTION_TYPE_PAYLOADS = {
   staffer: 'staffer',
   voicemail: 'voicemail',
   isReady: 'isReady',
-  noCall: 'noCall,'
+  noCall: 'noCall',
+  tryNextRep: 'tryNextRep'
 }
 
 const userActionsSchema = new Schema({
@@ -16,6 +17,7 @@ const userActionsSchema = new Schema({
     enum: Object.values(ACTION_TYPE_PAYLOADS)
   },
   campaignCall: { type: Schema.Types.ObjectId, ref: 'CampaignCall' },
+  representative: { type: Schema.Types.ObjectId, ref: 'Reps' },
   datePerformed:  { type: Date, default: () => moment.utc().toDate() },
   user: { type: Schema.Types.ObjectId, ref: 'User' },
 })
