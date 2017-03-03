@@ -7,30 +7,50 @@ import RequireAuthenticationContainer from './RequireAuthenticationContainer'
 import Login from './Login'
 import API from './API'
 
-function logout() {
-  window.localStorage.removeItem('callparty_session_token')
-  browserHistory.push('/login')
-}
-function refreshReps(e) {
-  e.preventDefault()
-  API.updateReps()
-}
 
-const Container = (props) => {
-  const logoutButton = props.location.pathname !== '/login' ? <a onClick={logout} href=""><button>Sign Out</button></a> : null
+class Container extends Component {
+  constructor(props) {
+    super(props)
+    this.refreshReps = this.refreshReps.bind(this)
+  }
 
-  const refreshButton = props.location.pathname !== '/login' ? <a onClick={refreshReps} href=""><button className="warn">Refresh Rep Data</button></a> : null
+  static get contextTypes() {
+    return { notify: React.PropTypes.func.isRequired }
+  }
 
-  return <div>
-    <header className="main-header">
-      <Link to="/">CallParty</Link>
-      <div className="main-header-nav">
-        {refreshButton}
-        {logoutButton}
+  logout() {
+    window.localStorage.removeItem('callparty_session_token')
+    browserHistory.push('/login')
+  }
+
+  refreshReps(e) {
+    e.preventDefault()
+    API.updateReps(() => {
+      this.context.notify({
+        message: `Representative and Committee data refreshed.`,
+        level: 'success'
+      })
+    })
+  }
+
+  render() {
+    const logoutButton = this.props.location.pathname !== '/login' ? <a onClick={this.logout} href=""><button>Sign Out</button></a> : null
+
+    const refreshButton = this.props.location.pathname !== '/login' ? <a onClick={this.refreshReps} href=""><button className="warn">Refresh Rep Data</button></a> : null
+
+    return (
+      <div>
+        <header className="main-header">
+          <Link to="/">CallParty</Link>
+          <div className="main-header-nav">
+            {refreshButton}
+            {logoutButton}
+          </div>
+        </header>
+        {this.props.children}
       </div>
-    </header>
-    {props.children}
-  </div>
+    )
+  }
 }
 
 const NotFound = () => <h1>404.. This page is not found!</h1>

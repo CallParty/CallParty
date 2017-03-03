@@ -1,4 +1,5 @@
 import { browserHistory } from 'react-router'
+import Raven from 'raven-js'
 
 const parse = {
   call: function(c) {
@@ -65,7 +66,7 @@ function redirectToLogin() {
   })
 }
 
-function get(endpoint, cb = () => {}, onErr = () => {}) {
+function get(endpoint, cb = () => {}, onErr = Raven.captureException.bind(Raven)) {
   const sessionToken = window.localStorage.getItem('callparty_session_token')
 
   fetch(endpoint, {
@@ -88,7 +89,7 @@ function get(endpoint, cb = () => {}, onErr = () => {}) {
   })
 }
 
-function post(endpoint, data = {}, cb = () => {}, onErr = () => {}) {
+function post(endpoint, data = {}, cb = () => {}, onErr = Raven.captureException.bind(Raven)) {
   const sessionToken = window.localStorage.getItem('callparty_session_token')
 
   fetch(endpoint, {
@@ -143,11 +144,11 @@ export default {
   },
 
   sendCampaignCall: function(id) {
-    post(`/api/send/campaignCall/${id}/`, {}, data => {})
+    post(`/api/send/campaignCall/${id}/`)
   },
 
   sendCampaignUpdate: function(id) {
-    post(`/api/send/campaignUpdate/${id}/`, {}, data => {})
+    post(`/api/send/campaignUpdate/${id}/`)
   },
 
   newCampaignUpdate: function(id, data, cb) {
@@ -179,7 +180,7 @@ export default {
     .catch(onErr)
   },
 
-  updateReps: function() {
-    post('/api/representatives/refresh')
+  updateReps: function(cb) {
+    post('/api/representatives/refresh', {}, cb)
   },
 }

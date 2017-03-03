@@ -3,6 +3,13 @@ const jwt = require('jsonwebtoken')
 const campaignMethods = require('../methods/campaignMethods')
 const committeeMethods = require('../methods/committeeMethods')
 const campaignCallMethods = require('../methods/campaignCallMethods')
+const { logMessage } = require('../utilities/logHelper')
+const { downloadRepsYamlFile, loadRepsFromFile } = require('../utilities/representatives')
+const {
+  downloadCommitteeYamlFile,
+  downloadCommitteeMembershipYamlFile,
+  loadCommitteesFromFiles
+} = require('../utilities/committees')
 
 function handleTokenRequest(req, res) {
   const user = auth(req)
@@ -19,7 +26,7 @@ function handleTokenRequest(req, res) {
   res.json({ token: token })
 }
 
-module.exports = function (apiRouter) {
+module.exports = function(apiRouter) {
   apiRouter.get('/campaigns', campaignMethods.getCampaigns)
   apiRouter.get('/campaigns/:id', campaignMethods.getCampaign)
   apiRouter.post('/campaigns', campaignMethods.newCampaign)
@@ -29,6 +36,16 @@ module.exports = function (apiRouter) {
   apiRouter.get('/campaign_calls/:id', campaignCallMethods.getCampaignCall)
 
   apiRouter.get('/committees', committeeMethods.getCommittees)
+
+  apiRouter.post('/representatives/refresh', function(req, res) {
+    logMessage('++ updating representatives with latest data')
+    downloadRepsYamlFile().then(loadRepsFromFile)
+
+    logMessage('++ updating committees with latest data')
+    Promise.all([downloadCommitteeYamlFile(), downloadCommitteeMembershipYamlFile()]).then(loadCommitteesFromFiles)
+
+    res.json({ success: true })
+  })
 
   apiRouter.get('/token', handleTokenRequest)
   apiRouter.post('/token', handleTokenRequest)
