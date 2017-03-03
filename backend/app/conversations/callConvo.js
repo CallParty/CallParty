@@ -20,7 +20,7 @@ function startCallConversation(user, userConversation, representatives, campaign
   return repPromise.then((representative) => {
     const convoData = {
       firstName: user.firstName,
-      issueMessage: campaignCall.campaign.description,
+      issueMessage: campaignCall.message,
       issueLink: campaignCall.issueLink,
       shareLink: campaignCall.shareLink,
       issueSubject: campaignCall.title,
