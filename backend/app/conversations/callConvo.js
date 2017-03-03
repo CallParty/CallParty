@@ -100,14 +100,15 @@ function readyResponseConvo(user, message) {
       let msgToSend
       if (hasOneRep) {
         msgToSend = stripIndent`
-              You'll be calling ${representative.repType} ${representative.repName}. ` +
-          `When you call you'll talk to a staff member, or you'll leave a voicemail. ` +
-          `Let them know:
-              *  You're a constituent calling about ${user.convoData.issueSubject}.
-              *  The call to action: "I'd like ${representative.repType} ${representative.repName} to ${user.convoData.issueTask}."
-              *  Share any personal feelings or stories.
-              *  If taking the wrong stance on this issue would endanger your vote, let them know.
-              *  Answer any questions the staffer has, and be friendly!`
+          You'll be calling ${representative.repType} ${representative.repName}.
+          When you call you'll talk to a staff member, or you'll leave a voicemail.
+          Let them know:
+            *  You're a constituent calling about ${user.convoData.issueSubject}.
+            *  The call to action: "I'd like ${representative.repType} ${representative.repName} to ${user.convoData.issueTask}."
+            *  Share any personal feelings or stories.
+            *  If taking the wrong stance on this issue would endanger your vote, let them know.
+            *  Answer any questions the staffer has, and be friendly!
+        `
       } else {
         msgToSend = stripIndent`
           You'll be calling ${user.convoData.representatives.length} Congress Members. When you call, you'll talk to a staff member, or you'll leave a voicemail. Let them know:
