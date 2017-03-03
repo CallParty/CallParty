@@ -225,23 +225,8 @@ function howDidItGoResponseConvo(user, message) {
     user: user,
   })
   .then(() => {
-    const hasOneRep = user.convoData.representatives.length === 1
-    return hasOneRep ? howDidItGoSingleRepResponseConvo(user, message) : howDidItGoMultipleRepsResponseConvo(user, message)
-  })
-}
-
-function howDidItGoSingleRepResponseConvo(user, message) {
-  if ([ACTION_TYPE_PAYLOADS.voicemail, ACTION_TYPE_PAYLOADS.staffer].indexOf(message.text) >= 0) {
-    return botReply(user, {
-      attachment: {
-        type: 'image',
-        payload: {
-          url: 'https://storage.googleapis.com/callparty/success.gif'
-        }
-      }
-    })
-    .then(() => {
-      return UserAction.count({
+    if ([ACTION_TYPE_PAYLOADS.voicemail, ACTION_TYPE_PAYLOADS.staffer].indexOf(message.text) >= 0) {
+      const userActionCountPromise = UserAction.count({
         campaignAction: user.convoData.campaignCall,
         actionType: {
           $in: [
@@ -250,158 +235,107 @@ function howDidItGoSingleRepResponseConvo(user, message) {
           ]
         }
       }).exec()
-    })
-    .then((numCalls) => {
-      if (numCalls !== 0) {
-        return botReply(user, stripIndent`
-          Woo thanks for your work! We’ve had ${numCalls} other calls so far. We’ll reach out when we have updates and an outcome on the issue.
-        `)
-      } else if (numCalls === 0) {
-        return botReply(user, stripIndent`
-          Congrats, you’re the first caller on this issue! You’ve joined the ranks of other famous firsts in American History. We'll reach out when we have updates and an outcome on the issue.
-        `)
-      }
-    })
-    .then(() => {
-      return botReply(user, stripIndent`
-        Share this action with your friends to make it a party ${user.convoData.shareLink}
-      `)
-    })
-    .then(() => setUserCallback(user, null))
-  } else if (message.text === ACTION_TYPE_PAYLOADS.error) {
-    return botReply(user, {
-      attachment: {
-        type: 'image',
-        payload: {
-          url: 'https://storage.googleapis.com/callparty/bummer.gif'
-        }
-      }
-    })
-    .then(() => {
-      botReply(user,
-        'We’re sorry to hear that, but good on you for trying! Want to tell us about it?'
-      )
-    })
-    .then(() => setUserCallback(user, '/calltoaction/thanksForSharing'))
-  } else {
-    throw new Error('Received unexpected message at path /calltoaction/part3: ' + message.text)
-  }
-}
 
-function howDidItGoMultipleRepsResponseConvo(user, message) {
-  if ([ACTION_TYPE_PAYLOADS.voicemail, ACTION_TYPE_PAYLOADS.staffer].indexOf(message.text) >= 0) {
-    const userActionCountPromise = UserAction.count({
-      campaignAction: user.convoData.campaignCall,
-      actionType: {
-        $in: [
-          ACTION_TYPE_PAYLOADS.voicemail,
-          ACTION_TYPE_PAYLOADS.staffer
-        ]
-      }
-    }).exec()
+      user.convoData.currentRepresentativeIndex++
+      user.markModified('convoData')
+      const updateUserPromise = user.save()
 
-    user.convoData.currentRepresentativeIndex++
-    user.markModified('convoData')
-    const updateUserPromise = user.save()
-
-    return Promise.all([userActionCountPromise, updateUserPromise])
-      .then(([numCalls, user]) => {
-        const hasNextRep = user.convoData.currentRepresentativeIndex < user.convoData.representatives.length
-
-        if (hasNextRep) {
-          const nextRep = user.convoData.representatives[user.convoData.currentRepresentativeIndex]
-          let botReplyPromise
-          if (numCalls === 0) {
-            botReplyPromise = botReply(user, stripIndent`
-              Congrats, you're the first caller on this issue! Next is ${nextRep.repType} ${nextRep.repName}.
-            `)
-          } else {
-            botReplyPromise = botReply(user, stripIndent`
-              Excellent, we're at ${numCalls + 1} calls! Next is ${nextRep.repType} ${nextRep.repName}.
-            `)
-          }
-          return botReplyPromise.then(() => sendRepCard(user, message))
-        } else {
-          return botReply(user, {
-            attachment: {
-              type: 'image',
-              payload: {
-                url: 'https://storage.googleapis.com/callparty/success.gif'
+      return Promise.all([userActionCountPromise, updateUserPromise])
+        .then(([numCalls, user]) => {
+          const hasNextRep = user.convoData.currentRepresentativeIndex < user.convoData.representatives.length
+          if (!hasNextRep) {
+            return botReply(user, {
+              attachment: {
+                type: 'image',
+                payload: {
+                  url: 'https://storage.googleapis.com/callparty/success.gif'
+                }
               }
-            }
-          })
-          .then(() => {
-            let promise
-            if (numCalls !== 0) {
-              promise = botReply(user, stripIndent`
-                Woo thanks for your work! We’ve had ${numCalls} other calls so far. We’ll reach out when we have updates and an outcome on the issue.
+            })
+            .then(() => {
+              if (numCalls === 0) {
+                return botReply(user, stripIndent`
+                  Congrats, you’re the first caller on this issue! You’ve joined the ranks of other famous firsts in American History. We'll reach out when we have updates and an outcome on the issue.
+                `)
+              } else {
+                return botReply(user, stripIndent`
+                  Woo thanks for your work! We’ve had ${numCalls} other calls so far. We’ll reach out when we have updates and an outcome on the issue.
+                `)
+              }
+            })
+            .then(() => botReply(user, stripIndent`
+              Share this action with your friends to make it a party ${user.convoData.shareLink}
+            `))
+            .then(() => setUserCallback(user, null))
+          } else {
+            const nextRep = user.convoData.representatives[user.convoData.currentRepresentativeIndex]
+            let botReplyPromise
+            if (numCalls === 0) {
+              botReplyPromise = botReply(user, stripIndent`
+                Congrats, you're the first caller on this issue! Next is ${nextRep.repType} ${nextRep.repName}.
               `)
-            } else if (numCalls === 0) {
-              promise = botReply(user, stripIndent`
-                Congrats, you’re the first caller on this issue! You’ve joined the ranks of other famous firsts in American History. We'll reach out when we have updates and an outcome on the issue.
+            } else {
+              botReplyPromise = botReply(user, stripIndent`
+                Excellent, we're at ${numCalls + 1} calls! Next is ${nextRep.repType} ${nextRep.repName}.
               `)
             }
-            return promise
-          })
-          .then(() => botReply(user, stripIndent`
-            Share this action with your friends to make it a party ${user.convoData.shareLink}
-          `))
-          .then(() => setUserCallback(user, null))
+            return botReplyPromise.then(() => sendRepCard(user, message))
+          }
+        })
+    } else if (message.text === ACTION_TYPE_PAYLOADS.error) {
+      const messagePromise = botReply(user, {
+        attachment: {
+          type: 'image',
+          payload: {
+            url: 'https://storage.googleapis.com/callparty/bummer.gif'
+          }
         }
       })
-  } else if (message.text === ACTION_TYPE_PAYLOADS.error) {
-    const messagePromise = botReply(user, {
-      attachment: {
-        type: 'image',
-        payload: {
-          url: 'https://storage.googleapis.com/callparty/bummer.gif'
-        }
-      }
-    })
 
-    user.convoData.currentRepresentativeIndex++
-    user.markModified('convoData')
-    const updateUserPromise = user.save()
+      user.convoData.currentRepresentativeIndex++
+      user.markModified('convoData')
+      const updateUserPromise = user.save()
 
-    return Promise.all([updateUserPromise, messagePromise])
-    .then(([user]) => {
-      const hasNextRep = user.convoData.currentRepresentativeIndex < user.convoData.representatives.length
-      if (hasNextRep) {
-        return botReply(user, stripIndent`
-          We're sorry to hear that, but good on you for trying!
-        `)
-        .then(() => botReply(user, {
-          attachment: {
-            type: 'template',
-            payload: {
-              template_type: 'button',
-              text: ' Do you want to try your next Congress Member?',
-              buttons: [
-                {
-                  type: 'postback',
-                  title: 'Yes',
-                  payload: ACTION_TYPE_PAYLOADS.tryNextRep
-                },
-                {
-                  type: 'postback',
-                  title: 'No',
-                  payload: ACTION_TYPE_PAYLOADS.noCall
+      return Promise.all([updateUserPromise, messagePromise])
+        .then(() => {
+          const hasNextRep = user.convoData.currentRepresentativeIndex < user.convoData.representatives.length
+          if (hasNextRep) {
+            return botReply(user, stripIndent`
+              We're sorry to hear that, but good on you for trying!
+            `)
+            .then(() => botReply(user, {
+              attachment: {
+                type: 'template',
+                payload: {
+                  template_type: 'button',
+                  text: ' Do you want to try your next Congress Member?',
+                  buttons: [
+                    {
+                      type: 'postback',
+                      title: 'Yes',
+                      payload: ACTION_TYPE_PAYLOADS.tryNextRep
+                    },
+                    {
+                      type: 'postback',
+                      title: 'No',
+                      payload: ACTION_TYPE_PAYLOADS.noCall
+                    }
+                  ]
                 }
-              ]
-            }
+              }
+            }))
+            .then(() => setUserCallback(user, '/calltoaction/tryNextRepResponse'))
+          } else {
+            return botReply(user,
+              'We’re sorry to hear that, but good on you for trying! Want to tell us about it?'
+            )
+            .then(() => setUserCallback(user, '/calltoaction/thanksForSharing'))
           }
-        }))
-        .then(() => setUserCallback(user, '/calltoaction/tryNextRepResponse'))
-      } else {
-        return botReply(user,
-          'We’re sorry to hear that, but good on you for trying! Want to tell us about it?'
-        )
-        .then(() => setUserCallback(user, '/calltoaction/thanksForSharing'))
-      }
-    })
-  } else {
-    throw new Error('Received unexpected message at path /calltoaction/part3: ' + message.text)
-  }
+        })
+    } else {
+      throw new Error('Received unexpected message at path /calltoaction/howDidItGoResponse: ' + message.text)
+    }
+  })
 }
 
 function tryNextRepResponseConvo(user, message) {
