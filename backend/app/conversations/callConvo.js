@@ -88,9 +88,9 @@ function areYouReadyConvo(user, message) {
 function readyResponseConvo(user, message) {
   return UserAction.create({
     actionType: message.text,
-    campaignAction: user.convoData.campaignCall,
+    campaignCall: user.convoData.campaignCall._id,
     representative: user.convoData.representatives[user.convoData.currentRepresentativeIndex].repId,
-    user: user,
+    user: user._id,
   })
   .then(() => {
     if (message.text === ACTION_TYPE_PAYLOADS.isReady) {
@@ -220,14 +220,14 @@ function howDidItGoConvo(user, message) {
 function howDidItGoResponseConvo(user, message) {
   return UserAction.create({
     actionType: message.text,
-    campaignAction: user.convoData.campaignCall,
+    campaignCall: user.convoData.campaignCall._id,
     representative: user.convoData.representatives[user.convoData.currentRepresentativeIndex].repId,
-    user: user,
+    user: user._id,
   })
   .then(() => {
     if ([ACTION_TYPE_PAYLOADS.voicemail, ACTION_TYPE_PAYLOADS.staffer].indexOf(message.text) >= 0) {
       const userActionCountPromise = UserAction.count({
-        campaignAction: user.convoData.campaignCall,
+        campaignCall: user.convoData.campaignCall._id,
         actionType: {
           $in: [
             ACTION_TYPE_PAYLOADS.voicemail,
@@ -341,9 +341,9 @@ function howDidItGoResponseConvo(user, message) {
 function tryNextRepResponseConvo(user, message) {
   return UserAction.create({
     actionType: message.text,
-    campaignAction: user.convoData.campaignCall,
+    campaignCall: user.convoData.campaignCall._id,
     representative: user.convoData.representatives[user.convoData.currentRepresentativeIndex].repId,
-    user: user,
+    user: user._id,
   })
   .then(() => {
     if (message.text === ACTION_TYPE_PAYLOADS.tryNextRep) {
