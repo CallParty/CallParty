@@ -217,7 +217,7 @@ function howDidItGoConvo(user, message) {
   )
 }
 
-function noNextRepResponse(user, message) {
+function noNextRepResponse(user, message, numCalls) {
   return botReply(user, {
     attachment: {
       type: 'image',
@@ -252,7 +252,7 @@ function noNextRepResponse(user, message) {
     .then(() => setUserCallback(user, null))
 }
 
-function hasNextRepResponse(user, message) {
+function hasNextRepResponse(user, message, numCalls) {
   const nextRep = user.convoData.representatives[user.convoData.currentRepresentativeIndex]
   let botReplyPromise
   if (numCalls <= 1) {
@@ -291,9 +291,9 @@ function userMadeCallResponse(user, message) {
       // but continue regardless
       const hasNextRep = user.convoData.currentRepresentativeIndex < user.convoData.representatives.length
       if (!hasNextRep) {
-        return noNextRepResponse(user, message)
+        return noNextRepResponse(user, message, numCalls)
       } else {
-        return hasNextRepResponse(user, message)
+        return hasNextRepResponse(user, message, numCalls)
       }
     })
 }
