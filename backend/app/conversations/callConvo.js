@@ -264,7 +264,7 @@ function howDidItGoResponseConvo(user, message) {
                 `)
               } else {
                 return botReply(user, stripIndent`
-                  Woo thanks for your work! We’ve had ${numCalls} other calls so far. We’ll reach out when we have updates and an outcome on the issue.
+                  Woo thanks for your work! We’ve had ${numCalls} calls so far. We’ll reach out when we have updates and an outcome on the issue.
                 `)
               }
             })
