@@ -258,7 +258,7 @@ function howDidItGoResponseConvo(user, message) {
               }
             })
             .then(() => {
-              if (numCalls === 1) {
+              if (numCalls <= 1) {
                 return botReply(user, stripIndent`
                   Congrats, you’re the first caller on this issue! You’ve joined the ranks of other famous firsts in American History. We'll reach out when we have updates and an outcome on the issue.
                 `)
@@ -275,7 +275,7 @@ function howDidItGoResponseConvo(user, message) {
           } else {
             const nextRep = user.convoData.representatives[user.convoData.currentRepresentativeIndex]
             let botReplyPromise
-            if (numCalls === 1) {
+            if (numCalls <= 1) {
               botReplyPromise = botReply(user, stripIndent`
                 Congrats, you're the first caller on this issue! Next is ${nextRep.repType} ${nextRep.repName}.
               `)
