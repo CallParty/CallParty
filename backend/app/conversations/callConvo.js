@@ -234,7 +234,7 @@ function noNextRepResponse(user, message) {
                 `)
       }
       // if the user is only person who has made calls, then it's weird to tell them how many calls so far so remove that part
-      else if (numCalls == user.convoData.currentRepresentativeIndex + 1) {
+      else if (numCalls <= user.convoData.currentRepresentativeIndex + 1) {
         return botReply(user, stripIndent`
                   Woo thanks for your work! We’ll reach out when we have updates and an outcome on the issue.
                 `)
