@@ -8,3 +8,4 @@ secret_files*
 *.retry
 static*
 *npm-debug.log
+run.sh

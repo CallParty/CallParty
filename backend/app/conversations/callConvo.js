@@ -242,6 +242,11 @@ function howDidItGoResponseConvo(user, message) {
 
       return Promise.all([userActionCountPromise, updateUserPromise])
         .then(([numCalls, user]) => {
+          // log message in case we reached invalid state
+          if (numCalls < 1) {
+            logMessage('++ @here: this if clause is only executed if the user made a call. So if there are 0 calls something is weird')
+          }
+          // but continue regardless
           const hasNextRep = user.convoData.currentRepresentativeIndex < user.convoData.representatives.length
           if (!hasNextRep) {
             return botReply(user, {
@@ -253,7 +258,7 @@ function howDidItGoResponseConvo(user, message) {
               }
             })
             .then(() => {
-              if (numCalls === 0) {
+              if (numCalls <= 1) {
                 return botReply(user, stripIndent`
                   Congrats, you’re the first caller on this issue! You’ve joined the ranks of other famous firsts in American History. We'll reach out when we have updates and an outcome on the issue.
                 `)
@@ -270,13 +275,13 @@ function howDidItGoResponseConvo(user, message) {
           } else {
             const nextRep = user.convoData.representatives[user.convoData.currentRepresentativeIndex]
             let botReplyPromise
-            if (numCalls === 0) {
+            if (numCalls <= 1) {
               botReplyPromise = botReply(user, stripIndent`
                 Congrats, you're the first caller on this issue! Next is ${nextRep.repType} ${nextRep.repName}.
               `)
             } else {
               botReplyPromise = botReply(user, stripIndent`
-                Excellent, we're at ${numCalls + 1} calls! Next is ${nextRep.repType} ${nextRep.repName}.
+                Excellent, we're at ${numCalls} calls! Next is ${nextRep.repType} ${nextRep.repName}.
               `)
             }
             return botReplyPromise.then(() => sendRepCard(user, message))
