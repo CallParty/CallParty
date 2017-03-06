@@ -33,7 +33,8 @@ function startCallConversation(user, userConversation, representatives, campaign
         repPhoneNumber: representative.phone,
         repWebsite: representative.url,
       })),
-      currentRepresentativeIndex: 0
+      currentRepresentativeIndex: 0,
+      numUserCalls: 0,  // the number of calls this user has made for this campaignCall
     }
     // save params as convoData
     user.convoData = convoData
@@ -234,7 +235,7 @@ function noNextRepResponse(user, message, numCalls) {
       `)
     }
     // if the user is only person who has made calls, then it's weird to tell them how many calls so far so remove that part
-    else if (numCalls <= user.convoData.currentRepresentativeIndex + 1) {
+    else if (numCalls == user.convoData.numUserCalls) {
       return botReply(user, stripIndent`
         Woo thanks for your work! We’ll reach out when we have updates and an outcome on the issue.
       `)
@@ -279,6 +280,7 @@ function userMadeCallResponse(user, message) {
   }).exec()
 
   user.convoData.currentRepresentativeIndex++
+  user.convoData.numUserCalls++
   user.markModified('convoData')
   const updateUserPromise = user.save()
 
