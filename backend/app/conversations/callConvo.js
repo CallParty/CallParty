@@ -53,36 +53,36 @@ function areYouReadyConvo(user, message) {
   return botReply(user,
     `Hi ${user.convoData.firstName}. We've got an issue to call about.`
   )
-    .then(() => {
-      return botReply(user, `${user.convoData.issueMessage}. ` +
-        `You can find out more about the issue here ${user.convoData.issueLink}.`
-      )
-    }).then(() => {
-      const msg_attachment = {
-        attachment: {
-          type: 'template',
-          payload: {
-            template_type: 'button',
-            text: 'Are you ready to call now?',
-            buttons: [
-              {
-                type: 'postback',
-                title: 'Yes send me the info',
-                payload: ACTION_TYPE_PAYLOADS.isReady
-              },
-              {
-                type: 'postback',
-                title: "I don't want to call",
-                payload: ACTION_TYPE_PAYLOADS.noCall
-              },
-            ]
-          }
+  .then(() => {
+    return botReply(user, `${user.convoData.issueMessage}. ` +
+      `You can find out more about the issue here ${user.convoData.issueLink}.`
+    )
+  }).then(() => {
+    const msg_attachment = {
+      attachment: {
+        type: 'template',
+        payload: {
+          template_type: 'button',
+          text: 'Are you ready to call now?',
+          buttons: [
+            {
+              type: 'postback',
+              title: 'Yes send me the info',
+              payload: ACTION_TYPE_PAYLOADS.isReady
+            },
+            {
+              type: 'postback',
+              title: "I don't want to call",
+              payload: ACTION_TYPE_PAYLOADS.noCall
+            },
+          ]
         }
       }
-      return botReply(user, msg_attachment).then(() =>
-        setUserCallback(user, '/calltoaction/readyResponse')
-      )
-    })
+    }
+    return botReply(user, msg_attachment).then(() =>
+      setUserCallback(user, '/calltoaction/readyResponse')
+    )
+  })
 }
 
 function readyResponseConvo(user, message) {
@@ -92,44 +92,44 @@ function readyResponseConvo(user, message) {
     representative: user.convoData.representatives[user.convoData.currentRepresentativeIndex].repId,
     user: user._id,
   })
-    .then(() => {
-      if (message.text === ACTION_TYPE_PAYLOADS.isReady) {
-        const hasOneRep = user.convoData.representatives.length === 1
-        const representative = user.convoData.representatives[0]
-        let msgToSend
-        if (hasOneRep) {
-          msgToSend = stripIndent`
-          You'll be calling ${representative.repType} ${representative.repName}.
-          When you call you'll talk to a staff member, or you'll leave a voicemail.
-          Let them know:
-            *  You're a constituent calling about ${user.convoData.issueSubject}.
-            *  The call to action: "I'd like ${representative.repType} ${representative.repName} to ${user.convoData.issueTask}."
-            *  Share any personal feelings or stories.
-            *  If taking the wrong stance on this issue would endanger your vote, let them know.
-            *  Answer any questions the staffer has, and be friendly!
-        `
-        } else {
-          msgToSend = stripIndent`
-          You'll be calling ${user.convoData.representatives.length} Congress Members. When you call, you'll talk to a staff member, or you'll leave a voicemail. Let them know:
-            *  You're a constituent calling about ${user.convoData.issueSubject}.
-            *  The call to action: "I'd like the Congress Member to ${user.convoData.issueTask}."
-            *  Share any personal feelings or stories.
-            *  If taking the wrong stance on this issue would endanger your vote, let them know.
-            *  Answer any questions the staffer has, and be friendly!
+  .then(() => {
+    if (message.text === ACTION_TYPE_PAYLOADS.isReady) {
+      const hasOneRep = user.convoData.representatives.length === 1
+      const representative = user.convoData.representatives[0]
+      let msgToSend
+      if (hasOneRep) {
+        msgToSend = stripIndent`
+        You'll be calling ${representative.repType} ${representative.repName}.
+        When you call you'll talk to a staff member, or you'll leave a voicemail.
+        Let them know:
+          *  You're a constituent calling about ${user.convoData.issueSubject}.
+          *  The call to action: "I'd like ${representative.repType} ${representative.repName} to ${user.convoData.issueTask}."
+          *  Share any personal feelings or stories.
+          *  If taking the wrong stance on this issue would endanger your vote, let them know.
+          *  Answer any questions the staffer has, and be friendly!
+      `
+      } else {
+        msgToSend = stripIndent`
+        You'll be calling ${user.convoData.representatives.length} Congress Members. When you call, you'll talk to a staff member, or you'll leave a voicemail. Let them know:
+          *  You're a constituent calling about ${user.convoData.issueSubject}.
+          *  The call to action: "I'd like the Congress Member to ${user.convoData.issueTask}."
+          *  Share any personal feelings or stories.
+          *  If taking the wrong stance on this issue would endanger your vote, let them know.
+          *  Answer any questions the staffer has, and be friendly!
 
-          Let's go! Your first call is ${representative.repType} ${representative.repName}:
-        `
-        }
-        return botReply(user, msgToSend)
-          .then(() => sendRepCard(user, message))
+        Let's go! Your first call is ${representative.repType} ${representative.repName}:
+      `
       }
-      else if (message.text === ACTION_TYPE_PAYLOADS.noCall) {
-        return noCallConvo(user, message)
-      }
-      else {
-        throw new Error('Received unexpected message at path /calltoaction/readyResponse: ' + message.text)
-      }
-    })
+      return botReply(user, msgToSend)
+        .then(() => sendRepCard(user, message))
+    }
+    else if (message.text === ACTION_TYPE_PAYLOADS.noCall) {
+      return noCallConvo(user, message)
+    }
+    else {
+      throw new Error('Received unexpected message at path /calltoaction/readyResponse: ' + message.text)
+    }
+  })
 }
 
 function sendRepCard(user, message) {
@@ -167,8 +167,8 @@ function sendRepCard(user, message) {
       }
     }
   })
-    .then(() => botReply(user, 'Give me a thumbs up once you’ve tried to call!'))
-    .then(() => setUserCallback(user, '/calltoaction/howDidItGo'))
+  .then(() => botReply(user, 'Give me a thumbs up once you’ve tried to call!'))
+  .then(() => setUserCallback(user, '/calltoaction/howDidItGo'))
 }
 
 function noCallConvo(user, message) {
@@ -226,30 +226,30 @@ function noNextRepResponse(user, message, numCalls) {
       }
     }
   })
-    .then(() => {
-      // if the user is the first caller
-      if (numCalls <= 1) {
-        return botReply(user, stripIndent`
-                  Congrats, you’re the first caller on this issue! You’ve joined the ranks of other famous firsts in American History. We'll reach out when we have updates and an outcome on the issue.
-                `)
-      }
-      // if the user is only person who has made calls, then it's weird to tell them how many calls so far so remove that part
-      else if (numCalls <= user.convoData.currentRepresentativeIndex + 1) {
-        return botReply(user, stripIndent`
-                  Woo thanks for your work! We’ll reach out when we have updates and an outcome on the issue.
-                `)
-      }
-      // otherwise tell them how many calls have been made so far
-      else {
-        return botReply(user, stripIndent`
-                  Woo thanks for your work! We’ve had ${numCalls} calls so far. We’ll reach out when we have updates and an outcome on the issue.
-                `)
-      }
-    })
-    .then(() => botReply(user, stripIndent`
-              Share this action with your friends to make it a party ${user.convoData.shareLink}
-            `))
-    .then(() => setUserCallback(user, null))
+  .then(() => {
+    // if the user is the first caller
+    if (numCalls <= 1) {
+      return botReply(user, stripIndent`
+        Congrats, you’re the first caller on this issue! You’ve joined the ranks of other famous firsts in American History. We'll reach out when we have updates and an outcome on the issue.
+      `)
+    }
+    // if the user is only person who has made calls, then it's weird to tell them how many calls so far so remove that part
+    else if (numCalls <= user.convoData.currentRepresentativeIndex + 1) {
+      return botReply(user, stripIndent`
+        Woo thanks for your work! We’ll reach out when we have updates and an outcome on the issue.
+      `)
+    }
+    // otherwise tell them how many calls have been made so far
+    else {
+      return botReply(user, stripIndent`
+        Woo thanks for your work! We’ve had ${numCalls} calls so far. We’ll reach out when we have updates and an outcome on the issue.
+      `)
+    }
+  })
+  .then(() => botReply(user, stripIndent`
+    Share this action with your friends to make it a party ${user.convoData.shareLink}
+  `))
+  .then(() => setUserCallback(user, null))
 }
 
 function hasNextRepResponse(user, message, numCalls) {
@@ -257,12 +257,12 @@ function hasNextRepResponse(user, message, numCalls) {
   let botReplyPromise
   if (numCalls <= 1) {
     botReplyPromise = botReply(user, stripIndent`
-                Congrats, you're the first caller on this issue! Next is ${nextRep.repType} ${nextRep.repName}.
-              `)
+      Congrats, you're the first caller on this issue! Next is ${nextRep.repType} ${nextRep.repName}.
+    `)
   } else {
     botReplyPromise = botReply(user, stripIndent`
-                Excellent, we're at ${numCalls} calls! Next is ${nextRep.repType} ${nextRep.repName}.
-              `)
+      Excellent, we're at ${numCalls} calls! Next is ${nextRep.repType} ${nextRep.repName}.
+    `)
   }
   return botReplyPromise.then(() => sendRepCard(user, message))
 }
@@ -317,35 +317,35 @@ function somethingWentWrongResponse(user, message) {
       const hasNextRep = user.convoData.currentRepresentativeIndex < user.convoData.representatives.length
       if (hasNextRep) {
         return botReply(user, stripIndent`
-              We're sorry to hear that, but good on you for trying!
-            `)
-          .then(() => botReply(user, {
-            attachment: {
-              type: 'template',
-              payload: {
-                template_type: 'button',
-                text: ' Do you want to try your next Congress Member?',
-                buttons: [
-                  {
-                    type: 'postback',
-                    title: 'Yes',
-                    payload: ACTION_TYPE_PAYLOADS.tryNextRep
-                  },
-                  {
-                    type: 'postback',
-                    title: 'No',
-                    payload: ACTION_TYPE_PAYLOADS.noCall
-                  }
-                ]
-              }
+          We're sorry to hear that, but good on you for trying!
+        `)
+        .then(() => botReply(user, {
+          attachment: {
+            type: 'template',
+            payload: {
+              template_type: 'button',
+              text: ' Do you want to try your next Congress Member?',
+              buttons: [
+                {
+                  type: 'postback',
+                  title: 'Yes',
+                  payload: ACTION_TYPE_PAYLOADS.tryNextRep
+                },
+                {
+                  type: 'postback',
+                  title: 'No',
+                  payload: ACTION_TYPE_PAYLOADS.noCall
+                }
+              ]
             }
-          }))
-          .then(() => setUserCallback(user, '/calltoaction/tryNextRepResponse'))
+          }
+        }))
+        .then(() => setUserCallback(user, '/calltoaction/tryNextRepResponse'))
       } else {
         return botReply(user,
           'We’re sorry to hear that, but good on you for trying! Want to tell us about it?'
         )
-          .then(() => setUserCallback(user, '/calltoaction/thanksForSharing'))
+        .then(() => setUserCallback(user, '/calltoaction/thanksForSharing'))
       }
     })
 }
@@ -357,15 +357,15 @@ function howDidItGoResponseConvo(user, message) {
     representative: user.convoData.representatives[user.convoData.currentRepresentativeIndex].repId,
     user: user._id,
   })
-    .then(() => {
-      if ([ACTION_TYPE_PAYLOADS.voicemail, ACTION_TYPE_PAYLOADS.staffer].indexOf(message.text) >= 0) {
-        return userMadeCallResponse(user, message)
-      } else if (message.text === ACTION_TYPE_PAYLOADS.error) {
-        return somethingWentWrongResponse(user, message)
-      } else {
-        throw new Error('Received unexpected message at path /calltoaction/howDidItGoResponse: ' + message.text)
-      }
-    })
+  .then(() => {
+    if ([ACTION_TYPE_PAYLOADS.voicemail, ACTION_TYPE_PAYLOADS.staffer].indexOf(message.text) >= 0) {
+      return userMadeCallResponse(user, message)
+    } else if (message.text === ACTION_TYPE_PAYLOADS.error) {
+      return somethingWentWrongResponse(user, message)
+    } else {
+      throw new Error('Received unexpected message at path /calltoaction/howDidItGoResponse: ' + message.text)
+    }
+  })
 }
 
 function tryNextRepResponseConvo(user, message) {
@@ -375,17 +375,17 @@ function tryNextRepResponseConvo(user, message) {
     representative: user.convoData.representatives[user.convoData.currentRepresentativeIndex].repId,
     user: user._id,
   })
-    .then(() => {
-      if (message.text === ACTION_TYPE_PAYLOADS.tryNextRep) {
-        return sendRepCard(user, message)
-      }
-      else if (message.text === ACTION_TYPE_PAYLOADS.noCall) {
-        return noCallConvo(user, message)
-      }
-      else {
-        throw new Error('Received unexpected message at path /calltoaction/tryNextRepResponse: ' + message.text)
-      }
-    })
+  .then(() => {
+    if (message.text === ACTION_TYPE_PAYLOADS.tryNextRep) {
+      return sendRepCard(user, message)
+    }
+    else if (message.text === ACTION_TYPE_PAYLOADS.noCall) {
+      return noCallConvo(user, message)
+    }
+    else {
+      throw new Error('Received unexpected message at path /calltoaction/tryNextRepResponse: ' + message.text)
+    }
+  })
 }
 
 // thanks for sharing
