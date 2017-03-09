@@ -37,48 +37,4 @@ module.exports = function (controller) {
       console.log('CTA added', body)
     }
   })
-
-  // set up persistent menu
-  var form2 = {
-    'setting_type': 'call_to_actions',
-    'thread_state': 'existing_thread',
-    'call_to_actions': [
-      {
-        'type': 'postback',
-        'title': 'Item 1',
-        'payload': 'Item 1'
-      },
-      {
-        'type': 'postback',
-        'title': 'Item 2',
-        'payload': 'Item 2'
-      }
-    ]
-  }
-
-  Request.post(url, {form: form2}, function (err, response, body) {
-    if (err) {
-      console.log(err)
-    }
-    else {
-      console.log('permanent menu added', body)
-    }
-  })
-
-  // set up greetings
-  var form3 = {
-    'setting_type': 'greeting',
-    'greeting': {
-      'text': 'Your greetings message'
-    }
-  }
-
-  Request.post(url, {form: form3}, function (err, response, body) {
-    if (err) {
-      console.log(err)
-    }
-    else {
-      console.log('greetings added', body)
-    }
-  })
 }
