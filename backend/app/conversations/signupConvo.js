@@ -67,7 +67,7 @@ function handleAddressResponseConvo(user, message) {
     })
     .catch(function() {
       // log this exception somehow
-      botReply(message,
+      botReply(user,
         'Hm, something isn’t right. Make sure to include your street address, city, state, and zip code like this: ' +
         '123 Party Street, Brooklyn, NY 11206'
       )
