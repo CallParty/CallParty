@@ -60,6 +60,9 @@
       hour: 0
       minute: 0
 
+  - name: run database migrations
+    command: "{{backend_dir}}/bash/run_migrations.sh"
+
   - name: Start pm2 (auto-restarts if already started)
     command: "{{node_bin}}/pm2 start {{config_dir}}/pm2.json"
     become: true
