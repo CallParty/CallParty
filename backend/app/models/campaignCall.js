@@ -43,7 +43,6 @@ campaignCallSchema.methods.getMatchingRepresentatives = function() {
       state: { $first: '$state' },
       district: { $first: '$district' },
       committees: { $push: '$committees' },
-      state_district: { $first: '$state_district'}
     })
 
   // add matchParams to repsQuery if they are supplied
@@ -63,7 +62,7 @@ campaignCallSchema.methods.getMatchingRepresentatives = function() {
   }
   if (hasDistrictsFilter) {
     matchParams['$or'] = [
-      {state_district: { $in: this.districts} }, // either its a rep with matching state_district
+      {district: { $in: this.districts} }, // either its a rep with matching district
       {legislator_type: 'sen'}  // or its a senator
     ]
   }
@@ -86,8 +85,7 @@ campaignCallSchema.methods.getMatchingUsersWithRepresentatives = function () {
         const matchesSenator = (rep.legislator_type === 'sen' && rep.state === user.state)
         const matchesHouseRep = (
           rep.legislator_type === 'rep' &&
-          rep.state === user.state &&
-          rep.district === user.congressionalDistrict
+          rep.district === user.district
         )
         if (matchesSenator || matchesHouseRep) {
           repsByUser[user._id] = repsByUser[user._id] || { user, representatives: [] }

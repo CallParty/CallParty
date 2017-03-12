@@ -210,14 +210,14 @@ describe('CampaignCall', function() {
         Promise.all([
           Reps.create({ official_full: 'Sherrod Brown', bioguide: 'B000944', legislator_type: 'sen', party: 'Democrat', state: 'OH' }),
           Reps.create({ official_full: 'Bernard Sanders', bioguide: 'S000033', legislator_type: 'sen', party: 'Independent', state: 'VT' }),
-          Reps.create({ official_full: 'Paul Ryan', bioguide: 'R000570', legislator_type: 'rep', party: 'Republican', state: 'WI', district: 1 })
+          Reps.create({ official_full: 'Paul Ryan', bioguide: 'R000570', legislator_type: 'rep', party: 'Republican', state: 'WI', district: 'WI-1' })
         ]),
         Promise.all([
-          User.create({ active: true, state: 'OH', congressionalDistrict: 2 }),
-          User.create({ active: true, state: 'VT', congressionalDistrict: 4 }),
-          User.create({ active: true, state: 'WI', congressionalDistrict: 1 }),
-          User.create({ active: true, state: 'WI', congressionalDistrict: 3 }),
-          User.create({ active: true, state: 'NY', congressionalDistrict: 5 })
+          User.create({ active: true, state: 'OH', district: 'OH-2' }),
+          User.create({ active: true, state: 'VT', district: 'VT-4' }),
+          User.create({ active: true, state: 'WI', district: 'WI-1' }),
+          User.create({ active: true, state: 'WI', district: 'WI-3' }),
+          User.create({ active: true, state: 'NY', district: 'NY-5' })
         ])
       ])
         .then(function([testCommittees, testReps, testUsers]) {

@@ -71,7 +71,7 @@ exports.newCampaignCall = function(req, res) {
     memberTypes: data.memberTypes,
     parties: data.parties,
     committees: data.committees,
-    districts: data.districts.map((c) => String(c)),
+    districts: data.districts,
     campaign: ObjectId(req.params.id)
   })
   campaignCall.save()
