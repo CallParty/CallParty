@@ -104,21 +104,21 @@ function readyResponseConvo(user, message) {
         You'll either talk to a staff member or leave a voicemail.
         When you call:
 
-        \u2022  Be sure to say youre a constituent calling about ${user.convoData.issueSubject}
-        \u2022  Let them know "I'd like ${representative.repType} ${representative.repName} to ${user.convoData.issueTask}"
-        \u2022  Share any personal feelings or stories you have on the issue
-        \u2022  Answer any questions the staffer has, and be friendly!
+        \u2022 Be sure to say you're a constituent calling about ${user.convoData.issueSubject}
+        \u2022 Let them know "I'd like ${representative.repType} ${representative.repName} to ${user.convoData.issueTask}"
+        \u2022 Share any personal feelings or stories you have on the issue
+        \u2022 Answer any questions the staffer has, and be friendly!
       `
       } else {
         msgToSend = stripIndent`
         Great! You'll be calling ${user.convoData.representatives.length} Congress Members. You'll either talk to a staff member or leave a voicemail. When you call:
 
-        \u2022  Be sure to say youre a constituent calling about ${user.convoData.issueSubject}
-        \u2022  Let them know: "I'd like the Congress Member to ${user.convoData.issueTask}"
-        \u2022  Share any personal feelings or stories you have on the issue
-        \u2022  Answer any questions the staffer has, and be friendly!
+        \u2022 Be sure to say you're a constituent calling about ${user.convoData.issueSubject}
+        \u2022 Let them know: "I'd like the Congress Member to ${user.convoData.issueTask}"
+        \u2022 Share any personal feelings or stories you have on the issue
+        \u2022 Answer any questions the staffer has, and be friendly!
 
-        Let's go! Your first call is ${representative.repType} ${representative.repName}:
+        Your first call is ${representative.repType} ${representative.repName}:
       `
       }
       return botReply(user, msgToSend)
