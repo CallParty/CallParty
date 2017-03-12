@@ -61,10 +61,5 @@ representativeSchema.virtual('legislatorTitle').get(function() {
   return legislatorTypeLabels[this.legislator_type]
 })
 
-representativeSchema.virtual('stateDistrict').get(function() {
-  if (!this.state || !this.district) { return '' }
-  return `${this.state}-${this.district}`
-})
-
 var Reps = mongoose.model('Reps', representativeSchema)
 module.exports = Reps
