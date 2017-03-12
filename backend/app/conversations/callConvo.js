@@ -43,6 +43,7 @@ function startCallConversation(user, userConversation, representatives, campaign
         })),
         currentRepresentativeIndex: 0,
         numUserCalls: 0,  // the number of calls this user has made for this campaignCall
+        isFirstTimeCaller: isFirstTimeCaller
       }
       // save params as convoData
       user.convoData = convoData
