@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -e
 BASEDIR=$( cd $(dirname $(dirname $0)) ; pwd -P )
-cd $BASEDIR/../
-source $BASEDIR/../.env
+cd $BASEDIR
+source $BASEDIR/.env
 
 MIGRATION_NAME=$1
 if [ -z "$MIGRATION_NAME" ]; then
