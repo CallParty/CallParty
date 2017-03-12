@@ -37,13 +37,13 @@ function askForAddressConvo(user, message) {
   const organization = 'CallParty' // this should be looked up from the db eventually
   return botReply(user,
     `Hi there! Nice to meet you. ` +
-    `I’m a bot made to send you calls to action from the people at ${organization}, ` +
+    `I'm a bot made by the people at ${organization} to send you important issues to call Congress about, ` +
     `because taking civic action is way more effective in large groups. ` +
-    `You can unsubscribe any time by just saying ‘stop’ or ‘unsubscribe’.`
+    `You can unsubscribe any time by just saying ‘Stop’ or ‘Unsubscribe’.`
   ).then(function() {
     return botReply(user,
-      'First thing’s first: What’s the address of your voting registration? ' +
-      'I’ll use this to identify who your reps are – don’t worry, I won’t be holding onto it.'
+      `First thing, what's the address of your voting registration? ` +
+      `I need this to identify who your reps are, but won't be holding onto it.`
     )
   }).then(() => setUserCallback(user, '/signup/handleAddressResponse'))
 }
@@ -54,7 +54,7 @@ function handleAddressResponseConvo(user, message) {
       if (!geocodingResult) {
         throw new Error('++ failed to find district from address: ' + message.text)
       }
-      return Promise.all([geocodingResult, botReply(user, 'Great!')])
+      return Promise.all([geocodingResult, botReply(user, `Great!`)])
     })
     .then(function([geocodingResult]) {
       user.state = geocodingResult.state
@@ -68,8 +68,8 @@ function handleAddressResponseConvo(user, message) {
     .catch(function() {
       // log this exception somehow
       botReply(user,
-        'Hm, something isn’t right. Make sure to include your street address, city, state, and zip code like this: ' +
-        '123 Party Street, Brooklyn, NY 11206'
+        `Hm, something isn't right. Make sure to include your street address, city, state, and zip code like this: ` +
+        `123 Party Street, Brooklyn, NY 11206`
       )
       return setUserCallback(user, '/signup/handleAddressResponse')
     })
@@ -77,15 +77,15 @@ function handleAddressResponseConvo(user, message) {
 
 function finishSignup1Convo(user, message) {
   return botReply(user,
-    'Now that that’s sorted, we’ll reach out when there’s an issue that you can take an action about, ' +
-    'including the rep for you to call and how to talk to them. ' +
-    'We’ll also send updates and outcomes on the issues we send. Sound fun?'
+    `Thanks! Now that that's sorted, whenever there's an issue that needs action, ` +
+    `I'll send you information including contact info for your rep and how to talk to them. ` +
+    `I'll also send updates and outcomes on the issues. Sound fun?`
   )
   .then(() => setUserCallback(user, '/signup/finishSignup2'))
 }
 
 function finishSignup2Convo(user, message) {
-  return botReply(user, 'Excellent. Have a nice day, and talk soon!')
+  return botReply(user, `Excellent. Have a nice day, and talk soon!`)
     .then(() => setUserCallback(user, null))
 }
 

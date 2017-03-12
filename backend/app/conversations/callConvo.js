@@ -52,11 +52,11 @@ function areYouReadyConvo(user, message) {
   UserConversation.update({ _id: user.convoData.userConversationId }, { active: true }).exec()
   // begin the conversation
   return botReply(user,
-    `Hi ${user.convoData.firstName}. We've got an issue to call about.`
+    `Hi ${user.convoData.firstName}. We've got an issue that needs your action.`
   )
   .then(() => {
     return botReply(user, `${user.convoData.issueMessage}. ` +
-      `You can find out more about the issue here ${user.convoData.issueLink}.`
+      `You can find out more about it here ${user.convoData.issueLink}.`
     )
   }).then(() => {
     const msg_attachment = {
@@ -100,23 +100,23 @@ function readyResponseConvo(user, message) {
       let msgToSend
       if (hasOneRep) {
         msgToSend = stripIndent`
-        You'll be calling ${representative.repType} ${representative.repName}.
-        When you call you'll talk to a staff member, or you'll leave a voicemail.
-        Let them know:
-          *  You're a constituent calling about ${user.convoData.issueSubject}.
-          *  The call to action: "I'd like ${representative.repType} ${representative.repName} to ${user.convoData.issueTask}."
-          *  Share any personal feelings or stories.
-          *  If taking the wrong stance on this issue would endanger your vote, let them know.
-          *  Answer any questions the staffer has, and be friendly!
+        Great! You'll be calling ${representative.repType} ${representative.repName}.
+        You'll either talk to a staff member or leave a voicemail.
+        When you call:
+
+        \u2022  Be sure to say youre a constituent calling about ${user.convoData.issueSubject}
+        \u2022  Let them know "I'd like ${representative.repType} ${representative.repName} to ${user.convoData.issueTask}"
+        \u2022  Share any personal feelings or stories you have on the issue
+        \u2022  Answer any questions the staffer has, and be friendly!
       `
       } else {
         msgToSend = stripIndent`
-        You'll be calling ${user.convoData.representatives.length} Congress Members. When you call, you'll talk to a staff member, or you'll leave a voicemail. Let them know:
-          *  You're a constituent calling about ${user.convoData.issueSubject}.
-          *  The call to action: "I'd like the Congress Member to ${user.convoData.issueTask}."
-          *  Share any personal feelings or stories.
-          *  If taking the wrong stance on this issue would endanger your vote, let them know.
-          *  Answer any questions the staffer has, and be friendly!
+        Great! You'll be calling ${user.convoData.representatives.length} Congress Members. You'll either talk to a staff member or leave a voicemail. When you call:
+
+        \u2022  Be sure to say youre a constituent calling about ${user.convoData.issueSubject}
+        \u2022  Let them know: "I'd like the Congress Member to ${user.convoData.issueTask}"
+        \u2022  Share any personal feelings or stories you have on the issue
+        \u2022  Answer any questions the staffer has, and be friendly!
 
         Let's go! Your first call is ${representative.repType} ${representative.repName}:
       `
@@ -168,20 +168,20 @@ function sendRepCard(user, message) {
       }
     }
   })
-  .then(() => botReply(user, 'Give me a thumbs up once you’ve tried to call!'))
-  .then(() => setUserCallback(user, '/calltoaction/howDidItGo'))
+  .then(() => botReply(user, `Give me a thumbs up once you've tried to call!`))
+  .then(() => setUserCallback(user, `/calltoaction/howDidItGo`))
 }
 
 function noCallConvo(user, message) {
-  return botReply(user, 'That\'s okay! Want to tell me why?').then(() => {
-    return setUserCallback(user, '/calltoaction/tellMeWhyResponse')
+  return botReply(user, `That's okay! Want to tell me why?`).then(() => {
+    return setUserCallback(user, `/calltoaction/tellMeWhyResponse`)
   })
 }
 
 function tellMeWhyResponseConvo(user, message) {
   // this log line logs the user feedback to the _feedback channel in slack
   logMessage(`++ ${user.firstName} ${user.lastName} (${user.fbId}) said in response to I don't want to call: ${message.text}`, '#_feedback', true)
-  return botReply(user, 'Got it – I\'ll let you know when there\'s another issue to call about.').then(() => {
+  return botReply(user, `Got it – I'll let you know when there's another issue to call about.`).then(() => {
     return setUserCallback(user, null)
   })
 }
@@ -231,19 +231,19 @@ function noNextRepResponse(user, message, numCalls) {
     // if the user is the first caller
     if (numCalls <= 1) {
       return botReply(user, stripIndent`
-        Congrats, you’re the first caller on this issue! You’ve joined the ranks of other famous firsts in American History. We'll reach out when we have updates and an outcome on the issue.
+        Congrats, you're the first caller on this issue! I'll reach out with updates and an outcome on this issue. Thanks for your work!
       `)
     }
     // if the user is only person who has made calls, then it's weird to tell them how many calls so far so remove that part
     else if (numCalls === user.convoData.numUserCalls) {
       return botReply(user, stripIndent`
-        Woo thanks for your work! We’ll reach out when we have updates and an outcome on the issue.
+        Woo thanks for your work! We'll reach out when we have updates and an outcome on the issue.
       `)
     }
     // otherwise tell them how many calls have been made so far
     else {
       return botReply(user, stripIndent`
-        Woo thanks for your work! We’ve had ${numCalls} calls so far. We’ll reach out when we have updates and an outcome on the issue.
+        Woo thanks for your work! We've had ${numCalls} calls so far. We'll reach out when we have updates and an outcome on the issue.
       `)
     }
   })
@@ -394,7 +394,7 @@ function tryNextRepResponseConvo(user, message) {
 function thanksForSharingConvo(user, message) {
   logMessage(`++ ${user.firstName} ${user.lastName} (${user.fbId}) said in response to something went wrong: ${message.text}`, '#_feedback', true)
   return UserConversation.update({ _id: user.convoData.userConversationId }, { dateCompleted: moment.utc().toDate() }).exec()
-    .then(() => botReply(user, 'Thanks for sharing! We’ll reach back out if we can be helpful.'))
+    .then(() => botReply(user, `Thanks for sharing! We'll reach back out if we can be helpful.`))
     .then(function () {
       // Should be logged to sentry and then slack.
       console.log(message.text)
