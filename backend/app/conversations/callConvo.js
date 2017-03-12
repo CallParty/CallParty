@@ -246,11 +246,52 @@ function noNextRepResponse(user, message, numCalls) {
         Woo thanks for your work! We’ve had ${numCalls} calls so far. We’ll reach out when we have updates and an outcome on the issue.
       `)
     }
+  }).then(() => {
+    const share_msg = {
+      attachment: {
+        type: 'template',
+        payload: {
+          template_type: 'generic',
+          elements: [{
+            title: 'Great!',
+            subtitle: 'Share this action with your friends to make it a party',
+            buttons: [
+              {
+                type: 'element_share',
+                share_contents: {
+                  attachment: {
+                    type: 'template',
+                    payload: {
+                      template_type: 'generic',
+                      elements: [{
+                        title: user.convoData.issueSubject,
+                        subtitle: user.convoData.issueSubject,
+                        default_action: {
+                          type: 'web_url',
+                          url: user.convoData.issueLink
+                        },
+                        buttons: [{
+                          type: 'web_url',
+                          url: user.convoData.issueLink, 
+                          title: 'View More Info'
+                        }]
+                      }]
+                    }
+                  }
+                }
+              },
+              {
+                type: 'web_url',
+                url: user.convoData.issueLink, 
+                title: 'View More Info'
+              },
+            ]
+          }]
+        }
+      }
+    }
+    return botReply(user, share_msg).then(() => setUserCallback(user, null))
   })
-  .then(() => botReply(user, stripIndent`
-    Share this action with your friends to make it a party ${user.convoData.shareLink}
-  `))
-  .then(() => setUserCallback(user, null))
 }
 
 function hasNextRepResponse(user, message, numCalls) {
