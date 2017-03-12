@@ -16,7 +16,9 @@ const callbackRoutes = {
   '/calltoaction/howDidItGo': callConvo.howDidItGoConvo,
   '/calltoaction/howDidItGoResponse': callConvo.howDidItGoResponseConvo,
   '/calltoaction/thanksForSharing': callConvo.thanksForSharingConvo,
-  '/calltoaction/tryNextRepResponse': callConvo.tryNextRepResponseConvo
+  '/calltoaction/tryNextRepResponse': callConvo.tryNextRepResponseConvo,
+  '/calltoaction/firstTimeAreYouReady': callConvo.firstTimeAreYouReadyConvo,
+  '/calltoaction/firstTimeReadyResponse': callConvo.firstTimeReadyResponseConvo
 
 }
 
