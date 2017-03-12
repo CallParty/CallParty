@@ -255,7 +255,7 @@ function noNextRepResponse(user, message, numCalls) {
           elements: [{
             title: 'Share this issue with your friends to make it a party',
             subtitle: user.convoData.issueSubject,
-            image_url: 'https://s-media-cache-ak0.pinimg.com/736x/bf/4e/40/bf4e4067252227bd3f758bba7dcee2ff.jpg',
+            image_url: 'https://storage.googleapis.com/callparty/cpshare.jpg',
             buttons: [
               {
                 type: 'element_share',
@@ -267,7 +267,7 @@ function noNextRepResponse(user, message, numCalls) {
                       elements: [{
                         title: 'Call your Congress Members and join the CallParty!',
                         subtitle: user.convoData.issueSubject,
-                        image_url: 'https://s-media-cache-ak0.pinimg.com/736x/bf/4e/40/bf4e4067252227bd3f758bba7dcee2ff.jpg',
+                        image_url: 'https://storage.googleapis.com/callparty/cpshare.jpg',
                         default_action: {
                           type: 'web_url',
                           url: user.convoData.issueLink
