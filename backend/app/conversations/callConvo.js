@@ -253,8 +253,9 @@ function noNextRepResponse(user, message, numCalls) {
         payload: {
           template_type: 'generic',
           elements: [{
-            title: 'Great!',
-            subtitle: 'Share this action with your friends to make it a party',
+            title: 'Share this issue with your friends to make it a party',
+            subtitle: user.convoData.issueSubject,
+            image_url: 'https://s-media-cache-ak0.pinimg.com/736x/bf/4e/40/bf4e4067252227bd3f758bba7dcee2ff.jpg',
             buttons: [
               {
                 type: 'element_share',
@@ -264,17 +265,20 @@ function noNextRepResponse(user, message, numCalls) {
                     payload: {
                       template_type: 'generic',
                       elements: [{
-                        title: user.convoData.issueSubject,
+                        title: 'Call your Congress Members and join the CallParty!',
                         subtitle: user.convoData.issueSubject,
+                        image_url: 'https://s-media-cache-ak0.pinimg.com/736x/bf/4e/40/bf4e4067252227bd3f758bba7dcee2ff.jpg',
                         default_action: {
                           type: 'web_url',
                           url: user.convoData.issueLink
                         },
-                        buttons: [{
-                          type: 'web_url',
-                          url: user.convoData.issueLink, 
-                          title: 'View More Info'
-                        }]
+                        buttons: [
+                          {
+                            type: 'web_url',
+                            url: user.convoData.issueLink, 
+                            title: 'View More Info'
+                          }
+                        ]
                       }]
                     }
                   }
