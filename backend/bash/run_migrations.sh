@@ -6,7 +6,7 @@ source $BASEDIR/../.env
 
 MIGRATION_NAME=$1
 if [ -z "$MIGRATION_NAME" ]; then
-  ./node_modules/.bin/migrate -d $MONGODB_URI --es6 --autosync up --es6 --autosync
+  ./node_modules/.bin/migrate -d $MONGODB_URI --es6 --autosync up --es6 --autosync || :
 else
-  ./node_modules/.bin/migrate -d $MONGODB_URI up $MIGRATION_NAME --es6 --autosync
+  ./node_modules/.bin/migrate -d $MONGODB_URI up $MIGRATION_NAME --es6 --autosync || :
 fi
