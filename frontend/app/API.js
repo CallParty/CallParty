@@ -16,6 +16,7 @@ const parse = {
       memberTypes: c.memberTypes,
       parties: c.parties,
       committees: c.committees,
+      districts: c.districts,
       createdAt: c.createdAt,
       sentAt: c.sentAt
     }
@@ -53,7 +54,8 @@ const parse = {
     }
   },
 
-  committee: c => c
+  committee: c => c,
+  districts: d => d,
 }
 
 function redirectToLogin() {
@@ -166,6 +168,12 @@ export default {
   committees: function(cb) {
     get('/api/committees', data => {
       cb(parse.committee(data))
+    })
+  },
+
+  districts: function(cb) {
+    get('/api/districts', data => {
+      cb(parse.districts(data))
     })
   },
 

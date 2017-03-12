@@ -18,6 +18,7 @@ const representativeSchema = new Schema({
   contact_form: String,
   state_rank: String,
   district: String,
+  state_district: String,
   bioguide: { type: String, unique: true },
   govtrack: String,
   wikipedia: String,
@@ -58,6 +59,11 @@ representativeSchema.virtual('legislatorTitle').get(function() {
     sen: 'Senator'
   }
   return legislatorTypeLabels[this.legislator_type]
+})
+
+representativeSchema.virtual('stateDistrict').get(function() {
+  if (!this.state || !this.district) { return '' }
+  return `${this.state}-${this.district}`
 })
 
 var Reps = mongoose.model('Reps', representativeSchema)

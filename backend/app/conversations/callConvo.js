@@ -99,7 +99,7 @@ function areYouReadyConvo(user, message) {
   })
 }
 
-function firstTimeIntroConvo(user, message) {
+function firstTimeIntroConvo(user) {
   UserConversation.update({ _id: user.convoData.userConversationId }, { active: true }).exec()
 
   return botReply(user,
@@ -112,7 +112,7 @@ function firstTimeIntroConvo(user, message) {
   .then(() => setUserCallback(user, '/calltoaction/firstTimeAreYouReady'))
 }
 
-function firstTimeAreYouReadyConvo(user, message) {
+function firstTimeAreYouReadyConvo(user) {
   return botReply(user, {
     attachment: {
       type: 'image',
@@ -280,7 +280,7 @@ function tellMeWhyResponseConvo(user, message) {
   })
 }
 
-function howDidItGoConvo(user, message) {
+function howDidItGoConvo(user) {
   const msg_attachment = {
     attachment: {
       type: 'template',
@@ -394,7 +394,7 @@ function userMadeCallResponse(user, message) {
     })
 }
 
-function somethingWentWrongResponse(user, message) {
+function somethingWentWrongResponse(user) {
   const messagePromise = botReply(user, {
     attachment: {
       type: 'image',

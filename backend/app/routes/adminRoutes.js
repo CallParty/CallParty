@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken')
 const campaignMethods = require('../methods/campaignMethods')
 const committeeMethods = require('../methods/committeeMethods')
 const campaignCallMethods = require('../methods/campaignCallMethods')
+const { getDistricts } = require('../utilities/getDistricts')
 const { logMessage } = require('../utilities/logHelper')
 const { downloadRepsYamlFile, loadRepsFromFile } = require('../utilities/representatives')
 const {
@@ -36,6 +37,10 @@ module.exports = function(apiRouter) {
   apiRouter.get('/campaign_calls/:id', campaignCallMethods.getCampaignCall)
 
   apiRouter.get('/committees', committeeMethods.getCommittees)
+  apiRouter.get('/districts', async function(req, res) {
+    const districts = await getDistricts()
+    res.json(districts)
+  })
 
   apiRouter.post('/representatives/refresh', function(req, res) {
     logMessage('++ updating representatives with latest data')

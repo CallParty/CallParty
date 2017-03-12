@@ -29,6 +29,7 @@ module.exports = {
       "single",
       { "avoidEscape": true, "allowTemplateLiterals": true }
     ],
+    "react/prop-types": 0,
     "semi": [
       "error",
       "never"

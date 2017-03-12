@@ -13,7 +13,8 @@ const campaignCallSchema = new Schema({
   active: Boolean,
   memberTypes: [{ type: String, enum: ['rep', 'sen'] }],
   parties: [{ type: String, enum: ['Democrat', 'Republican', 'Independent'] }],
-  committees: Array
+  committees: Array,
+  districts: Array,
 }, {
   toObject: { virtuals: true },
   toJSON: { virtuals: true },
@@ -41,7 +42,8 @@ campaignCallSchema.methods.getMatchingRepresentatives = function() {
       party: { $first: '$party' },
       state: { $first: '$state' },
       district: { $first: '$district' },
-      committees: { $push: '$committees' }
+      committees: { $push: '$committees' },
+      state_district: { $first: '$state_district'}
     })
 
   // add matchParams to repsQuery if they are supplied
@@ -49,6 +51,7 @@ campaignCallSchema.methods.getMatchingRepresentatives = function() {
   const hasMemberTypesFilter = this.memberTypes && this.memberTypes.length > 0
   const hasPartiesFilter = this.parties && this.parties.length > 0
   const hasCommitteesFilter = this.committees && this.committees.length > 0
+  const hasDistrictsFilter = this.districts && this.districts.length > 0
   if (hasMemberTypesFilter) {
     matchParams.legislator_type = { $in: this.memberTypes }
   }
@@ -58,7 +61,13 @@ campaignCallSchema.methods.getMatchingRepresentatives = function() {
   if (hasCommitteesFilter) {
     matchParams['committees._id'] = { $in: this.committees.map(ObjectId) }
   }
-  if (hasMemberTypesFilter || hasPartiesFilter || hasCommitteesFilter) {
+  if (hasDistrictsFilter) {
+    matchParams['$or'] = [
+      {state_district: { $in: this.districts} }, // either its a rep with matching state_district
+      {legislator_type: 'sen'}  // or its a senator
+    ]
+  }
+  if (hasMemberTypesFilter || hasPartiesFilter || hasCommitteesFilter || hasDistrictsFilter) {
     repsQuery = repsQuery.match(matchParams)
   }
 
