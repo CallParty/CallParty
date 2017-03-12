@@ -1,7 +1,6 @@
 var path = require('path')
 var webpack = require('webpack')
 var ExtractTextPlugin = require('extract-text-webpack-plugin')
-var Dotenv = require('dotenv-webpack')
 
 
 const params = {}
