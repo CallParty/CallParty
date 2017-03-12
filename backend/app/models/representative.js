@@ -17,7 +17,8 @@ const representativeSchema = new Schema({
   phone: String,
   contact_form: String,
   state_rank: String,
-  district: String,
+  district_number: String,
+  district: String,   // this is represented as state-district_number
   bioguide: { type: String, unique: true },
   govtrack: String,
   wikipedia: String,

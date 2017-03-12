@@ -46,7 +46,8 @@ function loadRepsFromFile() {
         legislator_type: lastTerm.type,
         term_start: lastTerm.term_start,
         term_end: lastTerm.term_end,
-        district: lastTerm.district,
+        district_number: lastTerm.district,
+        district: lastTerm.state && lastTerm.district ? `${lastTerm.state}-${lastTerm.district}` : '',
         wikipedia: repFromYaml.wikipedia,
         wikidata: repFromYaml.wikidata,
         image_url: `https://theunitedstates.io/images/congress/225x275/${repFromYaml.id.bioguide}.jpg`

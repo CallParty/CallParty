@@ -58,7 +58,8 @@ function handleAddressResponseConvo(user, message) {
     })
     .then(function([geocodingResult]) {
       user.state = geocodingResult.state
-      user.congressionalDistrict = geocodingResult.congressional_district.district_number
+      user.districtNumber = geocodingResult.congressional_district.district_number
+      user.district = `${geocodingResult.state}-${geocodingResult.congressional_district.district_number}`
       user.active = true
       return user.save()
     })

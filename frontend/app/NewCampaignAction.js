@@ -193,6 +193,7 @@ class NewCampaignCall extends Component {
     this.state = {
       campaign: {},
       committees: [],
+      districts: [],
       campaignCall: {
         message: '',
         issueLink: '',
@@ -201,7 +202,8 @@ class NewCampaignCall extends Component {
         task: '',
         memberTypes: [],
         parties: [],
-        committees: []
+        committees: [],
+        districts: [],
       },
       confirmationModalIsOpen: false
     }
@@ -222,6 +224,7 @@ class NewCampaignCall extends Component {
       })
     })
     API.committees(data => this.setState({ committees: data }))
+    API.districts(data => this.setState({ districts: data }))
     this.inputs = {}
 
     // if a cloneId param was passed, then pre-populate fields based on that campaignAction
@@ -312,6 +315,7 @@ class NewCampaignCall extends Component {
 
   render() {
     const committeeOptions = this.state.committees.map(c => ({ value: c._id, label: c.name }))
+    const districtOptions = this.state.districts.map(c => ({ value: c, label: c }))
 
     return (
       <div>
@@ -347,6 +351,15 @@ class NewCampaignCall extends Component {
                 value={this.state.campaignCall.committees}
                 options={committeeOptions}
                 onChange={this.onSelectChange.bind(this, 'committees')}
+                clearable={false}
+                multi
+              />
+              <Select
+                name="districts"
+                placeholder="District"
+                value={this.state.campaignCall.districts}
+                options={districtOptions}
+                onChange={this.onSelectChange.bind(this, 'districts')}
                 clearable={false}
                 multi
               />

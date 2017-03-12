@@ -90,12 +90,12 @@ And navigate to [http://localhost:8082](http://localhost:8082) to verify the pag
 
 ## staging
 ```bash
-./backend/bash/staging_deploy.sh
+git checkout -b staging origin/staging; ./backend/bash/staging_deploy.sh
 ```
 
 ## production
 ```bash
-./backend/bash/prod_deploy.sh
+git checkout -b prod origin/prod; ./backend/bash/prod_deploy.sh
 ```
 
 
