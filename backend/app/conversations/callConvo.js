@@ -15,34 +15,46 @@ function startCallConversation(user, userConversation, representatives, campaign
   }
 
   // then begin the conversation
-  return Reps.find({ _id: { $in: representatives } }).exec().then(representatives => {
-    const convoData = {
-      firstName: user.firstName,
-      issueMessage: campaignCall.message,
-      issueLink: campaignCall.issueLink,
-      shareLink: campaignCall.shareLink,
-      issueSubject: campaignCall.title,
-      issueTask: campaignCall.task,
-      campaignCall: campaignCall.toObject({ virtuals: false }), // without toObject mongoose goes into an infinite loop on insert
-      userConversationId: userConversation._id,
-      representatives: representatives.map(representative => ({
-        repType: representative.legislatorTitle,
-        repName: representative.official_full,
-        repId: representative._id,
-        repImage: representative.image_url,
-        repPhoneNumber: representative.phone,
-        repWebsite: representative.url,
-      })),
-      currentRepresentativeIndex: 0,
-      numUserCalls: 0,  // the number of calls this user has made for this campaignCall
-    }
-    // save params as convoData
-    user.convoData = convoData
+  const repsPromise = Reps.find({ _id: { $in: representatives } }).exec()
+  const userConversationCountPromise = UserConversation.count({ user: user._id, active: true }).exec()
+  return Promise.all([repsPromise, userConversationCountPromise])
+    .then(([representatives, userConversationCount]) => {
+      const isFirstTimeCaller = userConversationCount === 0
+      // only send one representative if it's the user's first time calling
+      if (isFirstTimeCaller) {
+        representatives = representatives.slice(0, 1)
+      }
+      const convoData = {
+        firstName: user.firstName,
+        issueMessage: campaignCall.message,
+        issueLink: campaignCall.issueLink,
+        shareLink: campaignCall.shareLink,
+        issueSubject: campaignCall.title,
+        issueTask: campaignCall.task,
+        campaignCall: campaignCall.toObject({ virtuals: false }), // without toObject mongoose goes into an infinite loop on insert
+        userConversationId: userConversation._id,
+        representatives: representatives.map(representative => ({
+          repType: representative.legislatorTitle,
+          repName: representative.official_full,
+          repId: representative._id,
+          repImage: representative.image_url,
+          repPhoneNumber: representative.phone,
+          repWebsite: representative.url,
+        })),
+        currentRepresentativeIndex: 0,
+        numUserCalls: 0,  // the number of calls this user has made for this campaignCall
+      }
+      // save params as convoData
+      user.convoData = convoData
 
-    return user.save().then(() => {
-      return areYouReadyConvo(user, null)
+      return user.save().then(() => {
+        if (isFirstTimeCaller) {
+          return firstTimeIntroConvo(user, null)
+        } else {
+          return areYouReadyConvo(user, null)
+        }
+      })
     })
-  })
 }
 
 // part 1
@@ -83,6 +95,87 @@ function areYouReadyConvo(user, message) {
     return botReply(user, msg_attachment).then(() =>
       setUserCallback(user, '/calltoaction/readyResponse')
     )
+  })
+}
+
+function firstTimeIntroConvo(user, message) {
+  UserConversation.update({ _id: user.convoData.userConversationId }, { active: true }).exec()
+
+  return botReply(user,
+    `Hi ${user.convoData.firstName}. We've got an issue to call about. This is your first time calling, so let’s walk you through the steps and talk about some best practices.`
+  )
+  .then(() => {
+    return botReply(user, `When you call your Congress Member's office, you'll either talk to a staff member or leave a voicemail. The staff member is there to listen to you and pass your concerns on to the Congress Member. They're your buddy, and you'll probably talk to them again so be friendly.`)
+  })
+  .then(() => botReply(user, `Give me a thumbs up if that sounds good!`))
+  .then(() => setUserCallback(user, '/calltoaction/firstTimeAreYouReady'))
+}
+
+function firstTimeAreYouReadyConvo(user, message) {
+  return botReply(user, {
+    attachment: {
+      type: 'image',
+      payload: {
+        url: 'https://storage.googleapis.com/callparty/thumbsup.gif'
+      }
+    }
+  })
+  .then(() => botReply(user, stripIndent`
+    Awesome. When you call you’re going to tell them your name, that you’re a constituent (because you only want to be calling your own Congress Members), and why you’re calling. Always include a specific action you’d like the representative to take to be productive, and feel free to share any personal feelings or stories you have so they understand why it matters to you.
+  `))
+  .then(() => botReply(user, stripIndent`
+     They’ll probably ask for your address or phone number to confirm you’re a constituent, and that’s it! Thank them and continue on with your day.
+  `))
+  .then(() => {
+    const msg_attachment = {
+      attachment: {
+        type: 'template',
+        payload: {
+          template_type: 'button',
+          text: 'Ready to make your first call?',
+          buttons: [
+            {
+              type: 'postback',
+              title: 'Yes send me the info',
+              payload: ACTION_TYPE_PAYLOADS.isReady
+            },
+            {
+              type: 'postback',
+              title: "I don't want to call",
+              payload: ACTION_TYPE_PAYLOADS.noCall
+            }
+          ]
+        }
+      }
+    }
+    return botReply(user, msg_attachment).then(() =>
+      setUserCallback(user, '/calltoaction/firstTimeReadyResponse')
+    )
+  })
+}
+
+function firstTimeReadyResponseConvo(user, message) {
+  return UserAction.create({
+    actionType: message.text,
+    campaignCall: user.convoData.campaignCall._id,
+    representative: user.convoData.representatives[user.convoData.currentRepresentativeIndex].repId,
+    user: user._id,
+  })
+  .then(() => {
+    if (message.text === ACTION_TYPE_PAYLOADS.isReady) {
+      const representative = user.convoData.representatives[0]
+      return botReply(user, `${user.convoData.issueMessage}. ` +
+        `You can find out more about it here ${user.convoData.issueLink}.`
+      )
+      .then(() => botReply(user, `Here’s your first script and the information for your representative: "Hello, my name is ${user.convoData.firstName} and I’m a constituent of ${representative.repName}. I’m calling about ${user.convoData.issueSubject}. I’d like to ask that ${representative.repName} ${user.convoData.issueTask}. Thanks for listening, have a good day!"`))
+      .then(() => sendRepCard(user, message))
+    }
+    else if (message.text === ACTION_TYPE_PAYLOADS.noCall) {
+      return noCallConvo(user, message)
+    }
+    else {
+      throw new Error('Received unexpected message at path /calltoaction/readyResponse: ' + message.text)
+    }
   })
 }
 
@@ -410,5 +503,7 @@ module.exports = {
   howDidItGoConvo,
   howDidItGoResponseConvo,
   thanksForSharingConvo,
-  tryNextRepResponseConvo
+  tryNextRepResponseConvo,
+  firstTimeAreYouReadyConvo,
+  firstTimeReadyResponseConvo
 }
