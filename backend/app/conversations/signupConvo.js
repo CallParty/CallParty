@@ -33,7 +33,7 @@ function startSignupConversation(fbId) {
 }
 
 
-function askForAddressConvo(user, message) {
+function askForAddressConvo(user) {
   const organization = 'CallParty' // this should be looked up from the db eventually
   return botReply(user,
     `Hi there! Nice to meet you. ` +
@@ -64,7 +64,7 @@ function handleAddressResponseConvo(user, message) {
       return user.save()
     })
     .then(function(user) {
-      finishSignup1Convo(user, message)
+      finishSignup1Convo(user)
     })
     .catch(function() {
       // log this exception somehow
@@ -76,7 +76,7 @@ function handleAddressResponseConvo(user, message) {
     })
 }
 
-function finishSignup1Convo(user, message) {
+function finishSignup1Convo(user) {
   return botReply(user,
     `Whenever there's an issue that needs action, ` +
     `I'll send you information including contact info for your rep and how to talk to them. ` +
@@ -90,5 +90,4 @@ module.exports = {
   askForAddressConvo,
   handleAddressResponseConvo,
   finishSignup1Convo,
-  finishSignup2Convo,
 }
