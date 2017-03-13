@@ -54,7 +54,7 @@ function handleAddressResponseConvo(user, message) {
       if (!geocodingResult) {
         throw new Error('++ failed to find district from address: ' + message.text)
       }
-      return Promise.all([geocodingResult, botReply(user, `Great!`)])
+      return Promise.all([geocodingResult, botReply(user, `Great, thanks!`)])
     })
     .then(function([geocodingResult]) {
       user.state = geocodingResult.state
@@ -78,16 +78,11 @@ function handleAddressResponseConvo(user, message) {
 
 function finishSignup1Convo(user, message) {
   return botReply(user,
-    `Thanks! Now that that's sorted, whenever there's an issue that needs action, ` +
+    `Whenever there's an issue that needs action, ` +
     `I'll send you information including contact info for your rep and how to talk to them. ` +
-    `I'll also send updates and outcomes on the issues. Sound fun?`
+    `I'll also send updates and outcomes on the issues. Have a nice day, and talk soon!`
   )
-  .then(() => setUserCallback(user, '/signup/finishSignup2'))
-}
-
-function finishSignup2Convo(user, message) {
-  return botReply(user, `Excellent. Have a nice day, and talk soon!`)
-    .then(() => setUserCallback(user, null))
+  .then(() => setUserCallback(user, null))
 }
 
 module.exports = {
