@@ -364,12 +364,12 @@ function noNextRepResponse(user, message, numCalls) {
                         image_url: 'https://storage.googleapis.com/callparty/cpshare.jpg',
                         default_action: {
                           type: 'web_url',
-                          url: user.convoData.issueLink
+                          url: user.convoData.shareLink
                         },
                         buttons: [
                           {
                             type: 'web_url',
-                            url: user.convoData.issueLink, 
+                            url: user.convoData.shareLink,
                             title: 'View More Info'
                           }
                         ]
@@ -380,7 +380,7 @@ function noNextRepResponse(user, message, numCalls) {
               },
               {
                 type: 'web_url',
-                url: user.convoData.issueLink, 
+                url: user.convoData.shareLink,
                 title: 'View More Info'
               },
             ]
