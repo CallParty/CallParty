@@ -9,7 +9,6 @@ const callbackRoutes = {
   '/signup/askForAddress': signupConvo.askForAddressConvo,
   '/signup/handleAddressResponse': signupConvo.handleAddressResponseConvo,
   '/signup/finishSignup1':  signupConvo.finishSignup1Convo,
-  '/signup/finishSignup2': signupConvo.finishSignup2Convo,
 
   '/calltoaction/readyResponse': callConvo.readyResponseConvo,
   '/calltoaction/tellMeWhyResponse': callConvo.tellMeWhyResponseConvo,
