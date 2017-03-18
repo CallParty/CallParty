@@ -1,6 +1,7 @@
 var defaultConvo = require('./defaultConvo')
 var signupConvo = require('./signupConvo')
 var callConvo = require('./callConvo')
+const { logMessage } = require('../utilities/logHelper')
 
 const callbackRoutes = {
 
@@ -17,7 +18,12 @@ const callbackRoutes = {
   '/calltoaction/thanksForSharing': callConvo.thanksForSharingConvo,
   '/calltoaction/tryNextRepResponse': callConvo.tryNextRepResponseConvo,
   '/calltoaction/firstTimeAreYouReady': callConvo.firstTimeAreYouReadyConvo,
-  '/calltoaction/firstTimeReadyResponse': callConvo.firstTimeReadyResponseConvo
+  '/calltoaction/firstTimeReadyResponse': callConvo.firstTimeReadyResponseConvo,
+
+  // this callbackPath allows a human to override a convo with the bot
+  '/override': (user, message) => {
+    return logMessage(`${user.firstName} ${user.lastName} said "${message}"`, '#_override')
+  },
 
 }
 
