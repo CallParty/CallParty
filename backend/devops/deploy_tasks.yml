@@ -59,6 +59,7 @@
       weekday: 0
       hour: 0
       minute: 0
+      state: present
 
   - name: run database migrations
     command: "{{backend_dir}}/bash/run_migrations.sh"
