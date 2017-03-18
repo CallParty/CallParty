@@ -90,7 +90,7 @@ And navigate to [http://localhost:8082](http://localhost:8082) to verify the pag
 
 a local web UI for interacting with the database
 
-`cd backend; ./bash/setup_mongo_admin.sh ~/Desktop/mongo-admin`
+`cd backend; ./bash/setup_mongo_admin.sh <destination_folder> # e.g. ~/Desktop/mongo-admin`
 
 
 # Deployment
