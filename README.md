@@ -86,6 +86,13 @@ cd frontend; npm start
 And navigate to [http://localhost:8082](http://localhost:8082) to verify the page is working.
 
 
+## Mongo-Admin
+
+a local web UI for interacting with the database
+
+`cd backend; ./bash/setup_mongo_admin.sh ~/Desktop/mongo-admin`
+
+
 # Deployment
 
 ## staging
