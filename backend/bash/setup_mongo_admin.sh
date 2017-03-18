@@ -14,4 +14,4 @@ rm $1/config/config.json
 ln -s $BASEDIR/backend/devops/secret_files/mongo_admin/app.json $1/config/app.json
 ln -s $BASEDIR/backend/devops/secret_files/mongo_admin/config.json $1/config/config.json
 
-echo "command to run mongo: node ${1}/app.js"
+echo "command to run mongo-admin: node ${1}/app.js"
