@@ -88,10 +88,10 @@ Then...
 After you have installed all the dependencies abover and have your .env file setup...
 
 ### Open 4 Terminal Windows
-First: `cd backend`
-Second: `cd backend`
-Third: 	For your MongoDB instance
-Fourth: `cd frontend`
+- First: `cd backend`
+- Second: `cd backend`
+- Third: 	For your MongoDB instance
+- Fourth: `cd frontend`
 
 #### Third Window (MongoDB)
 
@@ -122,17 +122,17 @@ Then...
 2. Make sure you’re admin
 3. Setup Webhooks:
 
-*Callback URL:*
-use local tunnel url but add /api/webhook
-Example: `https://callingtestX.localtunnel.me/api/webhook`
+#### Callback URL:
+- use local tunnel url but add /api/webhook
+- Example: `https://callingtestX.localtunnel.me/api/webhook`
 
-*Verify token:*
-callingcongress100
+#### Verify token:
+- callingcongress100
 
-*Subscription fields:*
-messages
-messaging_postback
-messaging_optins
+#### Subscription fields:
+- messages
+- messaging_postback
+- messaging_optins
 
 
 ## Set up Page to accept Messages
