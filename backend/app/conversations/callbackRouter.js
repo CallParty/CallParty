@@ -22,7 +22,7 @@ const callbackRoutes = {
 
   // this callbackPath allows a human to override a convo with the bot
   '/override': (user, message) => {
-    return logMessage(`${user.firstName} ${user.lastName} said "${message}"`, '#_override')
+    return logMessage(`${user.firstName} ${user.lastName} said "${message.text}"`, '#_override')
   },
 
 }
