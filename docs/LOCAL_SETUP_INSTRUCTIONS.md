@@ -5,10 +5,10 @@
 ### 1. Install System Dependencies
 
 #### OS X
-Install MongoDB, Redis, and NVM
+Install MongoDB and NVM
 
 ```bash
-brew install mongodb redis
+brew install mongodb
 
 curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.0/install.sh | bash # install nvm
 
@@ -16,7 +16,7 @@ export NVM_DIR="$HOME/.nvm"
 
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm
 
-nvm install 7.4.0
+nvm install 7.6.0 # or stable	
 ```
 
 #### Linux & Windows
@@ -55,7 +55,7 @@ cd ../
 [Message](mailto:hi@callparty.org) one of the project maintainers for
 a `backend/.env` file to connect to the staging database. 
 
-You will also need a facebook bot to test with. [You can follow instructions for making a testbot here](./docs/localsetupinstructions.md). Once you have a testbot you also need to set yourself as an admin for the bot for it to send you messages (note that there is a several minute delay for Facebook to propagate the changes once you set the admin)
+You will also need a facebook bot to test with (as outlined below). Once you have a testbot you also need to set yourself as an admin for the bot for it to send you messages (note that there is a several minute delay for Facebook to propagate the changes once you set the admin)
 
 Alternatively, if you are forking your own version of CallParty then you will need to create your own database and use `backend/.env-demo` as an example to create a `backend/.env`.
 

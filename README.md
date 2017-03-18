@@ -11,11 +11,11 @@ You can sign up for CallParty here [https://www.facebook.com/CallPartyOrg/](http
 –––
 ## Contributing to Call Party and Open Source
 
-To learn more about *contributing to CallParty* check out the [contributing guide](https://github.com/mhfowler/CallParty/blob/contributing.md/CONTRIBUTING.md).
+To learn more about *contributing to CallParty* check out the [contributing guide](https://github.com/CallParty/CallParty/CONTRIBUTING.md).
 
 ### Running Your Local Instance of Call Party
 
-[Make sure to check out the local setup instructions for how to set up Call Party the first time](./docs/localsetupinstructions.md). Below is a quickstart for *users who already have Call Party set up* on their machine.
+[Make sure to check out the local setup instructions for how to set up Call Party the first time](./docs/LOCAL_SETUP_INSTRUCTIONS.md). Below is a quickstart for *users who already have Call Party set up* on their machine.
 
 1. Open up 4 Terminal (or your preferred CLI) windows
 
@@ -66,5 +66,5 @@ npm test
 
 Example app backend was based off of: [https://github.com/mvaragnat/botkit-messenger-express-demo](https://github.com/mvaragnat/botkit-messenger-express-demo)
 
-[Call Party Admin Docs](./docs/cp-admin-notes.md)
+[Call Party Admin Docs](./docs/CP_ADMIN_NOTES.md)
 
