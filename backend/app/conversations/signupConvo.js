@@ -37,13 +37,13 @@ function askForAddressConvo(user) {
   const organization = 'CallParty' // this should be looked up from the db eventually
   return botReply(user,
     `Hi there! Nice to meet you. ` +
-    `I'm a bot made by the people at ${organization} to send you important issues to call Congress about, ` +
-    `because taking civic action is way more effective in large groups. ` +
+    `I'm a bot made by the people at ${organization} to let you know when to call Congress about important issues, ` +
+    `because civic action is way more effective in large groups. ` +
     `You can unsubscribe any time by just saying ‘Stop’ or ‘Unsubscribe’.`
   ).then(function() {
     return botReply(user,
-      `First thing, what's the address of your voting registration? ` +
-      `I need this to identify who your reps are, but won't be holding onto it.`
+      `First, what's your full address? ` +
+      `I need this to identify who your reps are, and I won’t hold onto it after that.`
     )
   }).then(() => setUserCallback(user, '/signup/handleAddressResponse'))
 }
@@ -78,8 +78,8 @@ function handleAddressResponseConvo(user, message) {
 
 function finishSignup1Convo(user) {
   return botReply(user,
-    `Whenever there's an issue that needs action, ` +
-    `I'll send you information including contact info for your rep and how to talk to them. ` +
+    `Whenever there's an issue that needs action I'll send you information, ` +
+    `including contact info for your rep and how to talk to them. ` +
     `I'll also send updates and outcomes on the issues. Have a nice day, and talk soon!`
   )
   .then(() => setUserCallback(user, null))
