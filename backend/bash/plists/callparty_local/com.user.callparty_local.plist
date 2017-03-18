@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
    <key>Label</key>
-   <string>com.user.loginscript</string>
+   <string>com.user.callparty_local</string>
    <key>Program</key>
-   <string>~/.callparty/mongo_admin_startup.sh</string>
+   <string>BASEDIR/run.sh</string>
    <key>RunAtLoad</key>
    <true/>
 </dict>
