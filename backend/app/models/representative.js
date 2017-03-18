@@ -14,7 +14,7 @@ const representativeSchema = new Schema({
   term_end: String,
   party: { type: String, enum: ['Democrat', 'Republican', 'Independent'] },
   url: String,
-  phone: String,
+  phoneNumbers: [{ officeType: { type: String, enum: ['capitol', 'district'] }, phoneNumber: String }],
   contact_form: String,
   state_rank: String,
   district_number: String,

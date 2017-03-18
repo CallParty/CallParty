@@ -15,12 +15,14 @@ const {
 
 mongoose.connect(process.env.MONGODB_URI)
 
-logMessage('++ updating representatives with latest data')
-const repsPromise = downloadRepsYamlFile().then(loadRepsFromFile)
-
-logMessage('++ updating committees with latest data')
-const committeesPromise = Promise.all([downloadCommitteeYamlFile(), downloadCommitteeMembershipYamlFile()]).then(loadCommitteesFromFiles)
-
-Promise.all([repsPromise, committeesPromise])
+logMessage('++ updating representatives with latest data', '#_cron')
+downloadRepsYamlFile()
+  .then(loadRepsFromFile)
+  .then(() => logMessage('++ updating representatives with latest data', '#_cron'))
+  .then(() => Promise.all([downloadCommitteeYamlFile(), downloadCommitteeMembershipYamlFile()]))
+  .then(loadCommitteesFromFiles)
   .then(() => process.exit())
-  .catch(() => process.exit(1))
+  .catch(err => {
+    console.error(err)
+    process.exit(1)
+  })
