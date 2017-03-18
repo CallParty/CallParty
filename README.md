@@ -1,4 +1,4 @@
-<img src="http://callparty.org/assets/images/cp_wordmark.png" alt="Call Party Logo" />
+<div style="text-align: center;><img width="350" height=""200 src="http://callparty.org/assets/images/cp_wordmark.png" alt="Call Party Logo" /></div>
 
 # CallParty
 
