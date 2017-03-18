@@ -13,85 +13,9 @@ You can sign up for CallParty here [https://www.facebook.com/CallPartyOrg/](http
 
 To learn more about *contributing to CallParty* check out the [contributing guide](https://github.com/mhfowler/CallParty/blob/contributing.md/CONTRIBUTING.md).
 
-### Setting Up Call Party Locally
-
-#### 1. Install System Dependencies
-
-##### OS X
-Install MongoDB, Redis, and NVM
-
-```bash
-brew install mongodb redis
-
-curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.0/install.sh | bash # install nvm
-
-export NVM_DIR="$HOME/.nvm"
-
-[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm
-
-nvm install 7.4.0
-```
-
-##### Linux & Windows
-(Coming soon... Feel free to contribute!!!)
-
-
-#### 2. Install App Dependencies
-
-1. Clone GitHub repository:
-```bash
-git clone https://github.com/CallParty/CallParty.git
-```
-
-2. Install Backend App Dependencies:
-```bash
-cd backend
-
-npm install
-
-npm install -g localtunnel
-
-cd ../
-```
-
-3. Install Frontend App Dependencies:
-```bash
-cd frontend
-
-npm install
-
-cd ../
-```
-
-#### Configure backend and .env
-
-[Message](mailto:hi@callparty.org) one of the project maintainers for
-a `backend/.env` file to connect to the staging database. 
-
-##### [Local Setup Instructions](./docs/localsetupinstructions.md)
-
-You will also need a facebook bot to test with. [You can follow instructions for making a testbot here](./docs/localsetupinstructions.md). Once you have a testbot you also need to set yourself as an admin for the bot for it to send you messages (note that there is a several minute delay for Facebook to propagate the changes once you set the admin)
-
-Alternatively, if you are forking your own version of CallParty then you will need to create your own database and use `backend/.env-demo` as an example to create a `backend/.env`.
-
-#### Environment Variables
-
-Secure variables are stored in this file: 
-`/backend/.env`
-
-You will have to create this file and input your own variables in here. You can see a boilerplate of this file located at `/backend/.env-demo`
-
-##### JWT_SECRET
-
-The `JWT_SECRET` environment variable is meant to be a secret cryptographic key used in generating and verifying JSON Web Tokens. `JWT_SECRET` should be set to a secret key produced according to [these instructions](https://github.com/dwyl/learn-json-web-tokens#how-to-generate-secret-key), using the following command:
-
-```bash
-node -e "console.log(require('crypto').randomBytes(32).toString('hex'));"
-```
-
 ### Running Your Local Instance of Call Party
 
-[Make sure to check out the local setup instructions for how to set up Call Party the first time](./docs/localsetupinstructions.md). Below is a quickstart for users who already have Call Party set up on their machine.
+[Make sure to check out the local setup instructions for how to set up Call Party the first time](./docs/localsetupinstructions.md). Below is a quickstart for *users who already have Call Party set up* on their machine.
 
 1. Open up 4 Terminal (or your preferred CLI) windows
 
