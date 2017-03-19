@@ -54,7 +54,15 @@ function handleAddressResponseConvo(user, message) {
       if (!geocodingResult) {
         throw new Error('++ failed to find district from address: ' + message.text)
       }
-      return Promise.all([geocodingResult, botReply(user, `Great, thanks!`)])
+      return Promise.all([geocodingResult, botReply(user, {
+          attachment: {
+            type: 'image',
+            payload: {
+              url: 'https://storage.googleapis.com/callparty/tada.gif'
+            }
+          }
+        } +
+        `Great, thanks!`)])
     })
     .then(function([geocodingResult]) {
       user.state = geocodingResult.state
