@@ -38,7 +38,10 @@ function startCallConversation(user, userConversation, representatives, campaign
           repName: representative.official_full,
           repId: representative._id,
           repImage: representative.image_url,
-          repPhoneNumber: representative.phone,
+          repPhoneNumbers: [
+            representative.phoneNumbers.filter(({ officeType }) => officeType === 'district')[0],
+            representative.phoneNumbers.filter(({ officeType }) => officeType === 'capitol')[0]
+          ].filter(Boolean), // filter out undefined values
           repWebsite: representative.url,
         })),
         currentRepresentativeIndex: 0,
@@ -230,6 +233,16 @@ function readyResponseConvo(user, message) {
 function sendRepCard(user, message) {
   const representative = user.convoData.representatives[user.convoData.currentRepresentativeIndex]
 
+  const officeTypeLabels = {
+    district: 'Local',
+    capitol: 'DC'
+  }
+  const phoneNumberButtons = representative.repPhoneNumbers.map(({ officeType, phoneNumber }) => ({
+    type: 'phone_number',
+    title: `${officeTypeLabels[officeType]}: ${phoneNumber}`,
+    payload: phoneNumber
+  }))
+
   return botReply(user, {
     attachment: {
       type: 'template',
@@ -246,11 +259,7 @@ function sendRepCard(user, message) {
             //   payload: user.convoData.repPhoneNumber
             // },
             buttons: [
-              {
-                type: 'phone_number',
-                title: representative.repPhoneNumber,
-                payload: representative.repPhoneNumber
-              },
+              ...phoneNumberButtons,
               {
                 type: 'web_url',
                 url: representative.repWebsite,
