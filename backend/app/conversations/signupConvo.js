@@ -6,6 +6,7 @@ const geocoding = require('../utilities/geocoding')
 const botReply = require('../utilities/botkit').botReply
 const { User } = require('../models')
 const { setUserCallback } = require('../methods/userMethods')
+const { logMessage } = require('../utilities/logHelper')
 
 mongoose.Promise = Promise
 
@@ -54,15 +55,19 @@ function handleAddressResponseConvo(user, message) {
       if (!geocodingResult) {
         throw new Error('++ failed to find district from address: ' + message.text)
       }
-      return Promise.all([geocodingResult, botReply(user, {
+      else {
+        const botReplyPromise = botReply(user, {
           attachment: {
             type: 'image',
             payload: {
               url: 'https://storage.googleapis.com/callparty/tada.gif'
             }
           }
-        } +
-        `Great, thanks!`)])
+        }).then(() => {
+          return botReply(user, 'Great, thanks!')
+        })
+        return Promise.all([geocodingResult, botReplyPromise])
+      }
     })
     .then(function([geocodingResult]) {
       user.state = geocodingResult.state
@@ -75,7 +80,9 @@ function handleAddressResponseConvo(user, message) {
       finishSignup1Convo(user)
     })
     .catch(function() {
-      // log this exception somehow
+      // log exception
+      logMessage(`++ failed to geocode address for user ${user.firstName} ${user.lastName} with string: ${message.text}`, '#_error')
+      // then respond to user
       botReply(user,
         `Hm, something isn't right. Make sure to include your street address, city, state, and zip code like this: ` +
         `123 Party Street, Brooklyn, NY 11206`
@@ -90,6 +97,7 @@ function finishSignup1Convo(user) {
     `including contact info for your rep and how to talk to them. ` +
     `I'll also send updates and outcomes on the issues. Have a nice day, and talk soon!`
   )
+
   .then(() => setUserCallback(user, null))
 }
 

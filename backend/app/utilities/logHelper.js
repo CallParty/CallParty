@@ -25,22 +25,21 @@ function logMessage (message, channel, noSuffix) {
   })
 }
 
-function captureException(e, params) {
+async function captureException(e, params) {
   // log error to slack
-  logMessage(`++ error: ${e.stack}`, '#_error').then(() => {
+  try {
+    await logMessage(`++ error: ${String(e.stack)}`, '#_error')
     if (params) {
-      return logMessage(`++ with error params: ${params}`, '#_error')
+      await logMessage(`++ with error params: ${params}`, '#_error')
     }
-    else {
-      return Promise.resolve()
-    }
-  }).then(() => {
-    // finally log error with sentry
-    if (process.env.SENTRY_BACKEND_DSN) {
-      params = params || {}
-      Raven.captureException(e, params)
-    }
-  })
+  } catch (e) {
+    // regardless if slack logging succeeded, continue
+  }
+  // if sentry configured, log error with sentry
+  if (process.env.SENTRY_BACKEND_DSN) {
+    params = params || {}
+    Raven.captureException(e, params)
+  }
 }
 
 module.exports = {
