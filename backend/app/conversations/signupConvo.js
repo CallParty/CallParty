@@ -6,6 +6,7 @@ const geocoding = require('../utilities/geocoding')
 const botReply = require('../utilities/botkit').botReply
 const { User } = require('../models')
 const { setUserCallback } = require('../methods/userMethods')
+const { logMessage } = require('../utilities/logHelper')
 
 mongoose.Promise = Promise
 
@@ -37,13 +38,13 @@ function askForAddressConvo(user) {
   const organization = 'CallParty' // this should be looked up from the db eventually
   return botReply(user,
     `Hi there! Nice to meet you. ` +
-    `I'm a bot made by the people at ${organization} to send you important issues to call Congress about, ` +
-    `because taking civic action is way more effective in large groups. ` +
+    `I'm a bot made by the people at ${organization} to let you know when to call Congress about important issues, ` +
+    `because civic action is way more effective in large groups. ` +
     `You can unsubscribe any time by just saying ‘Stop’ or ‘Unsubscribe’.`
   ).then(function() {
     return botReply(user,
-      `First thing, what's the address of your voting registration? ` +
-      `I need this to identify who your reps are, but won't be holding onto it.`
+      `First, what's your full address? ` +
+      `I need this to identify who your reps are, and I won’t hold onto it after that.`
     )
   }).then(() => setUserCallback(user, '/signup/handleAddressResponse'))
 }
@@ -54,7 +55,19 @@ function handleAddressResponseConvo(user, message) {
       if (!geocodingResult) {
         throw new Error('++ failed to find district from address: ' + message.text)
       }
-      return Promise.all([geocodingResult, botReply(user, `Great, thanks!`)])
+      else {
+        const botReplyPromise = botReply(user, {
+          attachment: {
+            type: 'image',
+            payload: {
+              url: 'https://storage.googleapis.com/callparty/tada.gif'
+            }
+          }
+        }).then(() => {
+          return botReply(user, 'Great, thanks!')
+        })
+        return Promise.all([geocodingResult, botReplyPromise])
+      }
     })
     .then(function([geocodingResult]) {
       user.state = geocodingResult.state
@@ -67,7 +80,9 @@ function handleAddressResponseConvo(user, message) {
       finishSignup1Convo(user)
     })
     .catch(function() {
-      // log this exception somehow
+      // log exception
+      logMessage(`++ failed to geocode address for user ${user.firstName} ${user.lastName} with string: ${message.text}`, '#_error')
+      // then respond to user
       botReply(user,
         `Hm, something isn't right. Make sure to include your street address, city, state, and zip code like this: ` +
         `123 Party Street, Brooklyn, NY 11206`
@@ -78,10 +93,11 @@ function handleAddressResponseConvo(user, message) {
 
 function finishSignup1Convo(user) {
   return botReply(user,
-    `Whenever there's an issue that needs action, ` +
-    `I'll send you information including contact info for your rep and how to talk to them. ` +
+    `Whenever there's an issue that needs action I'll send you information, ` +
+    `including contact info for your rep and how to talk to them. ` +
     `I'll also send updates and outcomes on the issues. Have a nice day, and talk soon!`
   )
+
   .then(() => setUserCallback(user, null))
 }
 
