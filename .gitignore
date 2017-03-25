@@ -9,3 +9,4 @@ secret_files*
 static*
 *npm-debug.log
 run.sh
+run.md
