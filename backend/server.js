@@ -2,7 +2,7 @@
 // load environment variables,
 const dotenv = require('dotenv')
 dotenv.load()
-const { logMessage, captureException } = require('./app/utilities/logHelper')
+const { logMessage, captureException, asyncWrap } = require('./app/utilities/logHelper')
 const express = require('express') // framework d'appli
 const app = express()
 const Raven = require('raven')

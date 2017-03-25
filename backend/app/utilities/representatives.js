@@ -6,6 +6,7 @@ const fs = require('fs')
 const mongoose = require('mongoose')
 const { Reps } = require('../models')
 const downloadFile = require('./downloadFile')
+const { logMessage } = require('../utilities/logHelper')
 
 mongoose.Promise = Promise
 
@@ -19,7 +20,7 @@ function downloadRepsYamlFile() {
 }
 
 async function loadRepsFromFile() {
-  console.log('Adding representatives to the db...')
+  logMessage('++ adding representatives to the db...')
 
   if (!fs.existsSync(REPS_FILE_NAME)) {
     throw new Error('Missing representative data YAML file!')
@@ -32,6 +33,7 @@ async function loadRepsFromFile() {
     const termLength = repFromYaml.terms.length - 1
     const lastTerm = repFromYaml.terms[termLength]
     const bioguide = repFromYaml.id.bioguide
+    logMessage(`++ updating rep ${repFromYaml.name.first} ${repFromYaml.name.last} (${bioguide})`)
 
     return Reps.findOneAndUpdate(
       { bioguide: bioguide },
