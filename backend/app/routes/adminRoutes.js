@@ -4,7 +4,7 @@ const campaignMethods = require('../methods/campaignMethods')
 const committeeMethods = require('../methods/committeeMethods')
 const campaignCallMethods = require('../methods/campaignCallMethods')
 const { getDistricts } = require('../utilities/getDistricts')
-const { captureException, logMessage } = require('../utilities/logHelper')
+const { logMessage } = require('../utilities/logHelper')
 const { downloadRepsYamlFile, loadRepsFromFile } = require('../utilities/representatives')
 const {
   downloadCommitteeYamlFile,
