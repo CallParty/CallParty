@@ -42,20 +42,7 @@ async function captureException(e, params) {
   }
 }
 
-// this wrapper lets express routes with async code capture exceptions
-// see: https://strongloop.com/strongblog/async-error-handling-expressjs-es7-promises-generators/
-function asyncWrap(fn) {
-  return (req, res, next) => {
-        const routePromise = fn(req, res, next)
-        if (routePromise.catch) {
-            routePromise.catch(err => next(err))
-        }
-    }
-}
-
-
 module.exports = {
   logMessage,
   captureException,
-  asyncWrap,
 }
