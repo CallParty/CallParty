@@ -15,8 +15,11 @@ const path = require('path')
 const mongoose = require('mongoose')
 const jwt = require('express-jwt')
 
-// log unhandled promise rejections
+// log unhandled promise rejections and uncaught exceptions
 process.on('unhandledRejection', function(err) {
+  captureException(err)
+})
+process.on('uncaughtException', function(err) {
   captureException(err)
 })
 
