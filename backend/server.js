@@ -15,6 +15,11 @@ const path = require('path')
 const mongoose = require('mongoose')
 const jwt = require('express-jwt')
 
+// log unhandled promise rejections
+process.on('unhandledRejection', function(err) {
+  captureException(err)
+})
+
 // Handle CORS
 app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*')

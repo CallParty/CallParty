@@ -42,14 +42,14 @@ module.exports = function(apiRouter) {
     res.json(districts)
   })
 
-  apiRouter.post('/representatives/refresh', asyncWrap(async function(req, res) {
+  apiRouter.post('/representatives/refresh', async function(req, res) {
     await logMessage('++ updating representatives with latest data')
     await downloadRepsYamlFile().then(loadRepsFromFile)
 
     await logMessage('++ updating committees with latest data')
     await Promise.all([downloadCommitteeYamlFile(), downloadCommitteeMembershipYamlFile()]).then(loadCommitteesFromFiles)
     res.json({ success: true })
-  }))
+  })
 
   apiRouter.get('/token', handleTokenRequest)
   apiRouter.post('/token', handleTokenRequest)
