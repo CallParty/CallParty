@@ -42,13 +42,12 @@ module.exports = function(apiRouter) {
     res.json(districts)
   })
 
-  apiRouter.post('/representatives/refresh', function(req, res) {
-    logMessage('++ updating representatives with latest data')
-    downloadRepsYamlFile().then(loadRepsFromFile)
+  apiRouter.post('/representatives/refresh', async function(req, res) {
+    await logMessage('++ updating representatives with latest data')
+    await downloadRepsYamlFile().then(loadRepsFromFile)
 
-    logMessage('++ updating committees with latest data')
-    Promise.all([downloadCommitteeYamlFile(), downloadCommitteeMembershipYamlFile()]).then(loadCommitteesFromFiles)
-
+    await logMessage('++ updating committees with latest data')
+    await Promise.all([downloadCommitteeYamlFile(), downloadCommitteeMembershipYamlFile()]).then(loadCommitteesFromFiles)
     res.json({ success: true })
   })
 
