@@ -55,7 +55,7 @@ class NewCampaignUpdate extends Component {
     })
   }
 
-  onSubmit(ev) {
+  onSubmit = (ev) => {
     ev.preventDefault()
 
     const update = this.state.update
@@ -78,7 +78,7 @@ class NewCampaignUpdate extends Component {
     this.setState({ confirmationModalIsOpen: true })
   }
 
-  createCampaignUpdate() {
+  createCampaignUpdate = () => {
     this.closeConfirmationModal()
 
     API.newCampaignUpdate(
@@ -102,7 +102,7 @@ class NewCampaignUpdate extends Component {
     this.setState({ confirmationModalIsOpen: false })
   }
 
-  onSelectChange(val) {
+  onSelectChange = (val) => {
     const update = this.state.update
     update.campaignCall = val
     this.setState({
@@ -110,7 +110,7 @@ class NewCampaignUpdate extends Component {
     })
   }
 
-  onMessageChange(ev) {
+  onMessageChange = (ev) => {
     const update = this.state.update
     update.message = ev.target.value
     this.setState({
@@ -118,7 +118,7 @@ class NewCampaignUpdate extends Component {
     })
   }
 
-  render() {
+  render = () => {
     const notUpdates = this.state.campaign.actions.filter(a => a.type !== 'CampaignUpdate')
     const options = notUpdates.map(a => ({
       value: a.id,
@@ -207,17 +207,13 @@ class NewCampaignCall extends Component {
       },
       confirmationModalIsOpen: false
     }
-
-    this.onSubmit = this.onSubmit.bind(this)
-    this.closeConfirmationModal = this.closeConfirmationModal.bind(this)
-    this.createCampaignCall = this.createCampaignCall.bind(this)
   }
 
   static get contextTypes() {
     return { notify: React.PropTypes.func.isRequired }
   }
 
-  componentWillMount() {
+  componentWillMount = () => {
     API.campaign(this.props.params.id, data => {
       this.setState({
         campaign: data
@@ -237,7 +233,7 @@ class NewCampaignCall extends Component {
     }
   }
 
-  onSelectChange(key, val) {
+  onSelectChange = (key, val) => {
     const campaignCall = this.state.campaignCall
     if (Array.isArray(val)) {
       campaignCall[key] = val.map(v => v.value)
@@ -247,13 +243,13 @@ class NewCampaignCall extends Component {
     this.setState({ campaignCall: campaignCall })
   }
 
-  onInputChange(key, ev) {
+  onInputChange = (key, ev) => {
     var campaignCall = this.state.campaignCall
     campaignCall[key] = ev.target.value
     this.setState({ campaignCall: campaignCall })
   }
 
-  onSubmit(ev) {
+  onSubmit = (ev) => {
     ev.preventDefault()
 
     const campaignCall = this.state.campaignCall
@@ -271,11 +267,11 @@ class NewCampaignCall extends Component {
     this.setState({ confirmationModalIsOpen: true })
   }
 
-  closeConfirmationModal() {
+  closeConfirmationModal = () => {
     this.setState({ confirmationModalIsOpen: false })
   }
 
-  createCampaignCall() {
+  createCampaignCall = () => {
     this.closeConfirmationModal()
 
     API.newCampaignCall(
@@ -296,11 +292,11 @@ class NewCampaignCall extends Component {
       })
   }
 
-  focusInput(input) {
+  focusInput = (input) => {
     this.inputs[input].focus()
   }
 
-  previewTemplate(campaignCall) {
+  previewTemplate = (campaignCall) => {
     return <div>
       <p>Hi <span className="user-var">[firstName]</span>! We’ve got an issue to call about.</p>
       <p><span className="action-var" onClick={this.focusInput.bind(this, 'message')}>{campaignCall.desc}</span>. You can find out more about the issue here: <span className="action-var" onClick={this.focusInput.bind(this, 'issueLink')}>{campaignCall.issueLink}</span>.</p>
@@ -313,7 +309,7 @@ class NewCampaignCall extends Component {
     </div>
   }
 
-  render() {
+  render = () => {
     const committeeOptions = this.state.committees.map(c => ({ value: c._id, label: c.name }))
     const districtOptions = this.state.districts.map(c => ({ value: c, label: c }))
 
