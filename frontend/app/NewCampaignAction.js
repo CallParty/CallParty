@@ -3,6 +3,7 @@ import React, { Component } from 'react'
 import Select from 'react-select'
 import { Link } from 'react-router'
 import Modal from 'react-modal'
+import CampaignCallPreview from './CampaignCallPreview'
 
 // used in both the NewCampaignUpdate and NewAction components
 const CONFIRMATION_MODAL_STYLE = {
@@ -296,19 +297,6 @@ class NewCampaignCall extends Component {
     this.inputs[input].focus()
   }
 
-  previewTemplate = (campaignCall) => {
-    return <div>
-      <p>Hi <span className="user-var">[firstName]</span>! We’ve got an issue to call about.</p>
-      <p><span className="action-var" onClick={this.focusInput.bind(this, 'message')}>{campaignCall.desc}</span>. You can find out more about the issue here: <span className="action-var" onClick={this.focusInput.bind(this, 'issueLink')}>{campaignCall.issueLink}</span>.</p>
-      <p>You’ll be calling <span className="user-var">[repType]</span> <span className="user-var">[repName]</span>. When you call you’ll talk to a staff member, or you’ll leave a voicemail. Let them know:</p>
-      <p>* You’re a constituent calling about <span className="action-var" onClick={this.focusInput.bind(this, 'subject')}>{campaignCall.subject}</span>.</p>
-      <p>* The call to action: “I’d like <span className="user-var">[repType]</span> <span className="user-var">[repName]</span> to <span className="action-var" onClick={this.focusInput.bind(this, 'task')}>{campaignCall.task}</span>.”</p>
-      <p>* Share any personal feelings or stories</p>
-      <p>* If taking the wrong stance on this issue would endanger your vote, let them know.</p>
-      <p>* Answer any questions the staffer has, and be friendly!</p>
-    </div>
-  }
-
   render = () => {
     const committeeOptions = this.state.committees.map(c => ({ value: c._id, label: c.name }))
     const districtOptions = this.state.districts.map(c => ({ value: c, label: c }))
@@ -408,13 +396,7 @@ class NewCampaignCall extends Component {
           <input type="submit" value="Send" />
         </form>
         <div className="preview">
-          <h4>Preview</h4>
-          <div className="preview-message">{this.previewTemplate({
-            desc: this.state.campaignCall.message,
-            issueLink: this.state.campaignCall.issueLink,
-            subject: this.state.campaignCall.subject,
-            task: this.state.campaignCall.task
-          })}</div>
+          <CampaignCallPreview campaignCall={this.state.campaignCall} focusInput={this.focusInput.bind(this)} />
         </div>
         <Modal
           isOpen={this.state.confirmationModalIsOpen}

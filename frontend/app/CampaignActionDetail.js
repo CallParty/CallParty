@@ -2,6 +2,7 @@ import React from 'react'
 import Loader from 'react-loader'
 import moment from 'moment'
 import API from './API'
+import CampaignCallPreview from './CampaignCallPreview'
 
 const DATE_FORMAT = 'h:mma on M/DD/YYYY'
 
@@ -36,6 +37,11 @@ export default class CampaignActionDetail extends React.Component {
       CampaignUpdate: 'Update'
     }
 
+    let preview = null
+    if (this.state.action.type === 'CampaignCall') {
+      preview = <CampaignCallPreview campaignCall={this.state.action} />
+    }
+
     return (
       <Loader loaded={this.state.loaded}>
         <div className="campaign-action-detail">
@@ -47,6 +53,8 @@ export default class CampaignActionDetail extends React.Component {
           <div className="meta">
             <h1>{actionTypeLabels[this.state.action.type]}</h1>
           </div>
+
+          {preview}
         </div>
       </Loader>
     )
