@@ -50,7 +50,6 @@ campaignCallSchema.methods.getMatchingRepresentatives = function() {
   const hasMemberTypesFilter = this.memberTypes && this.memberTypes.length > 0
   const hasPartiesFilter = this.parties && this.parties.length > 0
   const hasCommitteesFilter = this.committees && this.committees.length > 0
-  const hasDistrictsFilter = this.districts && this.districts.length > 0
   if (hasMemberTypesFilter) {
     matchParams.legislator_type = { $in: this.memberTypes }
   }
@@ -60,13 +59,7 @@ campaignCallSchema.methods.getMatchingRepresentatives = function() {
   if (hasCommitteesFilter) {
     matchParams['committees._id'] = { $in: this.committees.map(ObjectId) }
   }
-  if (hasDistrictsFilter) {
-    matchParams['$or'] = [
-      {district: { $in: this.districts} }, // either its a rep with matching district
-      {legislator_type: 'sen'}  // or its a senator
-    ]
-  }
-  if (hasMemberTypesFilter || hasPartiesFilter || hasCommitteesFilter || hasDistrictsFilter) {
+  if (hasMemberTypesFilter || hasPartiesFilter || hasCommitteesFilter) {
     repsQuery = repsQuery.match(matchParams)
   }
 
@@ -74,11 +67,35 @@ campaignCallSchema.methods.getMatchingRepresentatives = function() {
   return repsQuery.exec()
 }
 
+campaignCallSchema.methods.getMatchingUsers = function() {
+
+  // base query
+  let userQuery = this.model('User')
+
+  // iteratively add filters to query based on targeting criteria
+  const matchParams = { active: true, unsubscribed: false }
+  const hasDistrictsFilter = this.districts && this.districts.length > 0
+  if (hasDistrictsFilter) {
+    matchParams.district = { $in: this.districts }
+  }
+
+  // filter by matchParams
+  userQuery = userQuery.find(matchParams)
+
+  // execute query and return
+  return userQuery.exec()
+}
+
 campaignCallSchema.methods.getMatchingUsersWithRepresentatives = function () {
-  return Promise.all([
-    this.getMatchingRepresentatives(),
-    this.model('User').find({ active: true, unsubscribed: false }).exec(),
-  ])
+
+   // filter reps based on any rep filtering criteria (e.g. belongs to X committee)
+  const repsPromise = this.getMatchingRepresentatives()
+
+  // also filter users based on any user filtering criteria (e.g. user belongs to X district)
+  const usersPromise = this.getMatchingUsers()
+
+  // we take all matchingReps and matchingUsers and send to any user in matchingUsers who has a rep in matchingReps
+  return Promise.all([repsPromise, usersPromise])
   .then(function([matchingRepresentatives, users]) {
     const repsByUser = users.reduce(function(repsByUser, user) {
       for (let rep of matchingRepresentatives) {
