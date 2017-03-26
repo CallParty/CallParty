@@ -1,6 +1,7 @@
 @import 'reset'
 @import 'select.css'
 @import 'notifications'
+@import url('https://fonts.googleapis.com/css?family=Montserrat:400,700');
 
 *
   -moz-box-sizing: border-box
@@ -10,11 +11,14 @@
 html
   font-family: 'Helvetica', sans-serif
   background: #f9f9f9
-  padding: 2em
+  padding: 0 2em
 
 h1
   font-size: 2em
   font-weight: bold
+
+h1, h2, h3, h4, h5
+  font-family: 'Montserrat', sans-serif
 
 button, input[type=submit]
   border: none
@@ -22,7 +26,7 @@ button, input[type=submit]
   padding: 1em
   background: #F2205C
   text-align: center
-  font-family: 'Helvetica', sans-serif
+  font-family: 'Montserrat', sans-serif
   font-weight: bold
   color: #FFF
   cursor: pointer
@@ -67,6 +71,8 @@ button, input[type=button]
   td, th
     padding: 1em
     text-align: left
+.camp-act-container  
+  position: relative
 
 .preview-message
   background: #4080FF
@@ -85,9 +91,6 @@ form, .preview
     margin: 2em 0
 .preview
   padding: 0 0 0 4em
-  position: fixed
-  right: 1em
-  top: 16em
   h4
     margin-bottom: 1em
 
@@ -167,3 +170,6 @@ textarea, input[type=text], input[type=password]
     margin-bottom: 20px;
     a 
       margin-left: 10px;
+  img
+    width: 54px
+    height: auto

@@ -167,11 +167,10 @@ class CampaignAction extends Component {
 
   render() {
     const createdAt = moment.utc(this.props.createdAt).local().format(DATE_FORMAT)
-
     return <tr>
       <td>{this.props.num}</td>
       <td>{ACTION_TYPES[this.props.type]}</td>
-      <td>{this.props.subject}</td>
+      <td>{this.props.actionAdminLabel ? this.props.actionAdminLabel : this.props.subject}</td>
       <td>{createdAt}</td>
       {this.props.type === 'CampaignCall'
         ? <td><Link to={this.getCreateDuplicateUrl()}>Clone</Link></td>

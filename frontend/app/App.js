@@ -41,7 +41,7 @@ class Container extends Component {
     return (
       <div>
         <header className="main-header">
-          <Link to="/">CallParty</Link>
+          <Link to="/"><img src="http://callparty.org/assets/images/callparty.png" alt="Call Party Logo" /></Link>
           <div className="main-header-nav">
             {refreshButton}
             {logoutButton}
