@@ -1,12 +1,9 @@
 # Call Party Collections & Data Mapping
 
-## botkit_users
-- _id
-- id
-- created_at
+## campaigns
 
-## Campaigns
 ### campaigns
+
 Top level of campaigns which actions are nested under. 
 
 - _id
@@ -15,11 +12,15 @@ Top level of campaigns which actions are nested under.
 - createdAt
 
 ### campaignactions
+
 Campaign actions are references to a high level campaign. Campaign actions are where the actual messaging to the users is derived.
 
 - _id
 - title
 - message
+- issueLink
+- shareLink
+- task
 - active
 - type
 - campaign //object reference to campaign
@@ -27,39 +28,39 @@ Campaign actions are references to a high level campaign. Campaign actions are w
 - committees //array of committee IDs
 - parties //array of parties (rep, dem, ind)
 - memberTypes //array of member types (rep or sen)
-
-### campaignupdates
-Campaign updates are single messages sent to users who have received information about a campaign action. Campaign updates reference a campaign action.
-
-- _id
-- message
-- campaignAction //object reference to campaign action
-- campaign //object reference to campaign
-- createdAt
+- sentAt
 
 ## Representatives and Committee Data
+
 ### reps
+
 - _id
 - bioguide
 - id
 - full_name
 - first_name
-- last_name" : "Grothman
+- last_name
 - official_full
 - gender
 - state
 - party
 - url
-- phone
 - govtrack
 - legislator_type
 - term_start
 - term_end
+- district_number
 - district
 - wikipedia
 - wikidata
+- image_url
+- phoneNumbers:
+	- phoneNumber
+	- officeType
+	- district
 
 ### committees
+
 - _id
 - thomasId
 - type
@@ -74,13 +75,17 @@ Campaign updates are single messages sent to users who have received information
 - minorityUrl
 
 ### representativecommittees
+
 Join tables of reps and committees
+
 - _id
 - committee
 - representative
 
 ### representativesubcommittees
+
 Join tables of reps and subcommittees
+
 - _id
 - representative
 - subcommittee
@@ -94,33 +99,78 @@ Join tables of reps and subcommittees
 - phone
 
 ## User Data
+
 ### users
+
 - _id
 - fbId
 - firstName
 - lastName
-- firstCTA
-- unsubscribed
-- active
 - callbackPath
-- congressionalDistrict
+- district
+- districtNumber
 - state
 - convoData
-	- repWebsite
-	- repPhoneNumber
-	- repImage
-	- repName
-	- repType
-	- issueAction
 	- issueSubject
 	- issueLink
 	- issueMessage
+	- issueTask
 	- firstName
+	- shareLink
+	- task
+	- active
+	- title
+	- description
+	- campaignCall
+	- createdAt
+	- districts
+	- committees
+	- parties
+	- memberTypes
+- userConversationId
+- representatives
+	- repType
+	- repName
+	- repId
+	- repImage
+	- repPhoneNumbers
+		- _id
+		- officeType
+		- phoneNumber
+	- repWebsite
+- currentReprentativeIndex
+- numUserCalls
+- isFirstTimeCaller
 
+### useractions
 
+- _id
+- actionType
+- user
+- datePerformed
 
+### userconversations
 
+- _id
+- user
+- campaignAction
+- convoData
+- datePrompted
+- active
 
+## Admin DBs
 
+### migrations
 
+Migrations monitors integrations with external services
 
+- id
+- name
+- createdAt
+- state
+
+## botkit_users
+
+- _id
+- id
+- created_at
