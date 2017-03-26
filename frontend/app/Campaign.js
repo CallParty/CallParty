@@ -167,7 +167,6 @@ class CampaignAction extends Component {
 
   render() {
     const createdAt = moment.utc(this.props.createdAt).local().format(DATE_FORMAT)
-    console.log(this.props)
     return <tr>
       <td>{this.props.num}</td>
       <td>{ACTION_TYPES[this.props.type]}</td>
