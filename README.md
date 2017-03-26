@@ -11,7 +11,7 @@ You can sign up for CallParty here [https://www.facebook.com/CallPartyOrg/](http
 –––
 ## Contributing to Call Party and Open Source
 
-To learn more about *contributing to CallParty* check out the [contributing guide](https://github.com/CallParty/CallParty/CONTRIBUTING.md).
+To learn more about *contributing to CallParty* check out the [contributing guide](./CONTRIBUTING.md).
 
 ### Running Your Local Instance of Call Party
 
