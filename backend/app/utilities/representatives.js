@@ -33,7 +33,6 @@ async function loadRepsFromFile() {
     const termLength = repFromYaml.terms.length - 1
     const lastTerm = repFromYaml.terms[termLength]
     const bioguide = repFromYaml.id.bioguide
-    logMessage(`++ updating rep ${repFromYaml.name.first} ${repFromYaml.name.last} (${bioguide})`)
 
     return Reps.findOneAndUpdate(
       { bioguide: bioguide },
