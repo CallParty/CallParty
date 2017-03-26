@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Link } from 'react-router'
+import { Link, browserHistory } from 'react-router'
 import moment from 'moment'
 import API from './API'
 
@@ -102,13 +102,19 @@ class Campaign extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      actions: []
+      actions: [],
+      title: '',
     }
   }
+
   componentWillMount() {
     API.campaign(this.props.params.id, data => {
       this.setState(data)
     })
+  }
+
+  get breadcrumbTitle () {
+    return this.state.title || this.props.params.id
   }
 
   render() {
@@ -158,26 +164,22 @@ const ACTION_TYPES = {
   CampaignUpdate: 'update'
 }
 
-class CampaignAction extends Component {
+function CampaignAction(props) {
+  const createdAt = moment.utc(props.createdAt).local().format(DATE_FORMAT)
+  const createDuplicateUrl = `/${props.campaignId}/${ACTION_TYPES[props.type]}/new?cloneId=${props.campaignActionId}`
+  const redirectToCampaignActionPage = () => browserHistory.push(`/${props.campaignId}/actions/${props.campaignActionId}`)
 
-  getCreateDuplicateUrl() {
-
-    return `/${this.props.campaignId}/${ACTION_TYPES[this.props.type]}/new?cloneId=${this.props.campaignActionId}`
-  }
-
-  render() {
-    const createdAt = moment.utc(this.props.createdAt).local().format(DATE_FORMAT)
-
-    return <tr>
-      <td>{this.props.num}</td>
-      <td>{ACTION_TYPES[this.props.type]}</td>
-      <td>{this.props.subject}</td>
+  return (
+    <tr onClick={redirectToCampaignActionPage}>
+      <td>{props.num}</td>
+      <td>{ACTION_TYPES[props.type]}</td>
+      <td>{props.subject}</td>
       <td>{createdAt}</td>
-      {this.props.type === 'CampaignCall'
-        ? <td><Link to={this.getCreateDuplicateUrl()}>Clone</Link></td>
+      {props.type === 'CampaignCall'
+        ? <td><Link to={createDuplicateUrl} onClick={e => e.stopPropagation()}>Clone</Link></td>
         : <td></td>}
     </tr>
-  }
+  )
 }
 
 class NewCampaign extends Component {
@@ -223,7 +225,7 @@ class NewCampaign extends Component {
         <fieldset>
           <label>Title</label>
           <input
-            maxLength="640" 
+            maxLength="640"
             type="text"
             value={this.state.title}
             onChange={this.onInputChange.bind(this, 'title')} />

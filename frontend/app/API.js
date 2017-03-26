@@ -68,10 +68,10 @@ function redirectToLogin() {
   })
 }
 
-function get(endpoint, cb = () => {}, onErr = Raven.captureException.bind(Raven)) {
+function get(endpoint, cb = data => data, onErr = Raven.captureException.bind(Raven)) {
   const sessionToken = window.localStorage.getItem('callparty_session_token')
 
-  fetch(endpoint, {
+  return fetch(endpoint, {
     headers: { Authorization: `Bearer ${sessionToken}` }
   })
   .then(resp => {
@@ -91,10 +91,10 @@ function get(endpoint, cb = () => {}, onErr = Raven.captureException.bind(Raven)
   })
 }
 
-function post(endpoint, data = {}, cb = () => {}, onErr = Raven.captureException.bind(Raven)) {
+function post(endpoint, data = {}, cb = data => data, onErr = Raven.captureException.bind(Raven)) {
   const sessionToken = window.localStorage.getItem('callparty_session_token')
 
-  fetch(endpoint, {
+  return fetch(endpoint, {
     headers: {
       Authorization: `Bearer ${sessionToken}`,
       Accept: 'application/json',
@@ -121,65 +121,53 @@ function post(endpoint, data = {}, cb = () => {}, onErr = Raven.captureException
 }
 
 export default {
-  campaigns: function(cb) {
-    get('/api/campaigns', data => {
-      cb(data.map(parse.campaign))
-    })
+  campaigns: function(cb = response => response) {
+    return get('/api/campaigns').then(data => cb(data.map(parse.campaign)))
   },
 
-  campaign: function(id, cb) {
-    get(`/api/campaigns/${id}`, data => {
-      cb(parse.campaign(data))
-    })
+  campaign: function(id, cb = response => response) {
+    return get(`/api/campaigns/${id}`).then(data => cb(parse.campaign(data)))
   },
 
-  newCampaign: function(data, cb) {
-    post('/api/campaigns', data, data => {
-      cb(parse.campaign(data))
-    })
+  newCampaign: function(data, cb = response => response) {
+    return post('/api/campaigns', data).then(data => cb(parse.campaign(data)))
   },
 
-  newCampaignCall: function(id, data, cb) {
-    post(`/api/campaigns/${id}/call/new`, data, data => {
-      cb(parse.call(data))
-    })
+  newCampaignCall: function(id, data, cb = response => response) {
+    return post(`/api/campaigns/${id}/call/new`, data).then(data => cb(parse.call(data)))
   },
 
   sendCampaignCall: function(id) {
-    post(`/api/send/campaignCall/${id}/`)
+    return post(`/api/send/campaignCall/${id}/`)
   },
 
   sendCampaignUpdate: function(id) {
-    post(`/api/send/campaignUpdate/${id}/`)
+    return post(`/api/send/campaignUpdate/${id}/`)
   },
 
-  newCampaignUpdate: function(id, data, cb) {
-    post(`/api/campaigns/${id}/update/new`, data, data => {
-      cb(parse.update(data))
-    })
+  newCampaignUpdate: function(id, data, cb = response => response) {
+    return post(`/api/campaigns/${id}/update/new`, data).then(data => cb(parse.update(data)))
   },
 
-  campaignCall: function(id, cb) {
-    get(`/api/campaign_calls/${id}`, data => {
-      cb(parse.call(data))
-    })
+  campaignCall: function(id, cb = response => response) {
+    return get(`/api/campaign_calls/${id}`).then(data => cb(parse.call(data)))
   },
 
-  committees: function(cb) {
-    get('/api/committees', data => {
-      cb(parse.committee(data))
-    })
+  campaignAction: function(id, cb = response => response) {
+    return get(`/api/campaign_actions/${id}`).then(data => cb(parse.action(data)))
   },
 
-  districts: function(cb) {
-    get('/api/districts', data => {
-      cb(parse.districts(data))
-    })
+  committees: function(cb = response => response) {
+    return get('/api/committees').then(data => cb(parse.committee(data)))
+  },
+
+  districts: function(cb = response => response) {
+    return get('/api/districts').then(data => cb(parse.districts(data)))
   },
 
   login: function(username, password, cb, onErr) {
     const encodedCredentials = btoa(`${username}:${password}`)
-    fetch('/api/token', {
+    return fetch('/api/token', {
       headers: { Authorization: `Basic ${encodedCredentials}` }
     })
     .then(resp => resp.json())
@@ -188,7 +176,7 @@ export default {
     .catch(onErr)
   },
 
-  updateReps: function(cb) {
-    post('/api/representatives/refresh', {}, cb)
+  updateReps: function(cb = response => response) {
+    return post('/api/representatives/refresh', {}).then(cb)
   },
 }

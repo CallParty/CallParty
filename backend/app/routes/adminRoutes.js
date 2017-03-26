@@ -11,6 +11,7 @@ const {
   downloadCommitteeMembershipYamlFile,
   loadCommitteesFromFiles
 } = require('../utilities/committees')
+const { CampaignAction } = require('../models')
 
 function handleTokenRequest(req, res) {
   const user = auth(req)
@@ -33,6 +34,15 @@ module.exports = function(apiRouter) {
   apiRouter.post('/campaigns', campaignMethods.newCampaign)
   apiRouter.post('/campaigns/:id/call/new', campaignMethods.newCampaignCall)
   apiRouter.post('/campaigns/:id/update/new', campaignMethods.newCampaignUpdate)
+
+  apiRouter.get('/campaign_actions/:id', async function(req, res) {
+    try {
+      const campaignAction = await CampaignAction.findById(req.params.id).exec()
+      res.json(campaignAction)
+    } catch (e) {
+      res.status(404).json({ error: 'CampaignAction not found.' })
+    }
+  })
 
   apiRouter.get('/campaign_calls/:id', campaignCallMethods.getCampaignCall)
 
