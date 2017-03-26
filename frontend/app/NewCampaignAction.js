@@ -126,12 +126,14 @@ class NewCampaignUpdate extends Component {
     }))
 
     return (
-      <div>
+      <div className="camp-act-container">
         <div className="meta">
           <h1>New Update</h1>
           <h3>Campaign: <Link to={`/${this.state.campaign.id}`}>{this.state.campaign.title}</Link></h3>
         </div>
         <form onSubmit={this.onSubmit}>
+
+
           <fieldset>
             <label htmlFor="callToActionReference">Call to Action Reference</label>
             <Select
@@ -143,7 +145,11 @@ class NewCampaignUpdate extends Component {
           </fieldset>
           <fieldset>
             <label htmlFor="message">Message</label>
-            <textarea id="message" value={this.state.update.message} onChange={this.onMessageChange} />
+            <textarea 
+              id="message" 
+              value={this.state.update.message} 
+              onChange={this.onMessageChange} 
+            />
           </fieldset>
           <input type="submit" value="Send" />
         </form>
@@ -204,6 +210,7 @@ class NewCampaignCall extends Component {
         parties: [],
         committees: [],
         districts: [],
+        actionAdminLabel: []
       },
       confirmationModalIsOpen: false
     }
@@ -314,12 +321,23 @@ class NewCampaignCall extends Component {
     const districtOptions = this.state.districts.map(c => ({ value: c, label: c }))
 
     return (
-      <div>
+      <div className="camp-act-container">
         <div className="meta">
           <h1>New Action</h1>
           <h3>Campaign: <Link to={`/${this.state.campaign.id}`}>{this.state.campaign.title}</Link></h3>
         </div>
         <form onSubmit={this.onSubmit.bind(this)}>
+          <fieldset>
+            <label>Action Admin Label</label>
+            <input
+              name="actionAdminLabel"
+              maxLength="640"
+              type="text"
+              value={this.state.campaignCall.actionAdminLabel}
+              onChange={this.onInputChange.bind(this, 'actionAdminLabel')}
+              ref={(input) => { this.inputs.actionAdminLabel = input }} />
+          </fieldset>
+
           <fieldset>
             <label>Targeting</label>
             <div>

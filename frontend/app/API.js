@@ -14,6 +14,7 @@ const parse = {
       active: c.active,
       type: c.type,
       memberTypes: c.memberTypes,
+      actionAdminLabel: c.actionAdminLabel,
       parties: c.parties,
       committees: c.committees,
       districts: c.districts,
