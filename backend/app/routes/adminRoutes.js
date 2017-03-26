@@ -48,6 +48,7 @@ module.exports = function(apiRouter) {
 
     await logMessage('++ updating committees with latest data')
     await Promise.all([downloadCommitteeYamlFile(), downloadCommitteeMembershipYamlFile()]).then(loadCommitteesFromFiles)
+    await logMessage('++ finished refreshing representatives')
     res.json({ success: true })
   })
 
