@@ -27,9 +27,9 @@ const CONFIRMATION_MODAL_STYLE = {
 }
 
 function compareUserConvos(a, b) {
-  if (a.user.firstName < b.user.firstName) {
+  if (a.user.firstName > b.user.firstName) {
     return 1
-  } else if (a.user.lastName < b.user.lastName) {
+  } else if (a.user.lastName > b.user.lastName) {
     return 1
   } else {
     return -1
@@ -174,7 +174,8 @@ export default class CampaignActionDetail extends React.Component {
     const userConversations = this.state.action.userConversations
     let userConvos = null
     if (userConversations) {
-      userConvos = this.state.action.userConversations.sort(compareUserConvos).map((userConvo, i) => {
+      const sortedUserConversations = this.state.action.userConversations.sort(compareUserConvos)
+      userConvos = sortedUserConversations.map((userConvo, i) => {
         return <UserConvoItem
           key={i}
           num={i}
