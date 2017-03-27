@@ -62,7 +62,7 @@ exports.getCampaigns = function(req, res) {
 exports.newCampaignCall = function(req, res) {
   const data = req.body
   const campaignCall = new CampaignCall({
-    title: data.subject,
+    title: data.title,
     message: data.message,
     issueLink: data.issueLink,
     shareLink: data.shareLink,
