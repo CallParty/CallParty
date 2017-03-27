@@ -1,6 +1,6 @@
 const { CampaignUpdate } = require('../models')
 
-function getCampaignUpdate(req, res) {
+function getCampaignUpdateDetail(req, res) {
   return CampaignUpdate
     .findById(req.params.id)
     .populate({
@@ -31,5 +31,5 @@ function getCampaignUpdate(req, res) {
 }
 
 module.exports = {
-  getCampaignUpdate
+  getCampaignUpdateDetail
 }

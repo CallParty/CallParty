@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const { Campaign, CampaignCall, CampaignUpdate, UserConversation } = require('../models')
+const USER_CONVO_STATUS = UserConversation.USER_CONVO_STATUS
 
 const ObjectId = mongoose.Types.ObjectId
 
@@ -89,7 +90,8 @@ exports.newCampaignCall = function(req, res) {
           campaignAction: ObjectId(savedCampaignCall._id),
           convoData: {
             representatives: repIds,
-          }
+          },
+          status: USER_CONVO_STATUS.pending,
         })
         userConvoPromises.push(userConvoPromise)
       }
@@ -130,7 +132,8 @@ exports.newCampaignUpdate = function(req, res) {
         const user = users[i]
         const userConvoPromise = UserConversation.create({
           user: ObjectId(user._id),
-          campaignAction: ObjectId(savedCampaignUpdate._id)
+          campaignAction: ObjectId(savedCampaignUpdate._id),
+          status: USER_CONVO_STATUS.pending,
         })
         userConvoPromises.push(userConvoPromise)
       }

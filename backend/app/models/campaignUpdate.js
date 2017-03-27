@@ -6,7 +6,7 @@ const campaignUpdateSchema = new Schema({
   message: String,
   campaignCall: { type: Schema.Types.ObjectId, ref: 'CampaignCall' }
 }, {
-  discriminatorKey: 'type'
+  discriminatorKey: 'type',
 })
 
 module.exports = CampaignAction.discriminator('CampaignUpdate', campaignUpdateSchema)
