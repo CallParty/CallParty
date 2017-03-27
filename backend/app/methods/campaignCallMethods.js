@@ -3,7 +3,7 @@ const { CampaignCall } = require('../models')
 function getCampaignCall(req, res) {
   return CampaignCall
     .findById(req.params.id)
-    .populate('campaignUpdates')
+    .populate('campaignUpdates userActions')
     .populate({
       path: 'userConversations',
       populate: {
@@ -11,7 +11,14 @@ function getCampaignCall(req, res) {
       }
     })
     .exec()
-    .then(campaignCall => res.json(campaignCall))
+    .then(async function(campaignCall) {
+      return Object.assign(
+        {},
+        campaignCall.toObject(),
+        { matchingRepresentatives: await campaignCall.getMatchingRepresentatives() }
+      )
+    })
+    .then(campaignCallObject => res.json(campaignCallObject))
     .catch(err => res.send(err))
 }
 

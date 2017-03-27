@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken')
 const campaignMethods = require('../methods/campaignMethods')
 const committeeMethods = require('../methods/committeeMethods')
 const campaignCallMethods = require('../methods/campaignCallMethods')
+const campaignUpdateMethods = require('../methods/campaignUpdateMethods')
 const { getDistricts } = require('../utilities/getDistricts')
 const { logMessage } = require('../utilities/logHelper')
 const { downloadRepsYamlFile, loadRepsFromFile } = require('../utilities/representatives')
@@ -11,6 +12,7 @@ const {
   downloadCommitteeMembershipYamlFile,
   loadCommitteesFromFiles
 } = require('../utilities/committees')
+const { CampaignAction } = require('../models')
 
 function handleTokenRequest(req, res) {
   const user = auth(req)
@@ -33,6 +35,19 @@ module.exports = function(apiRouter) {
   apiRouter.post('/campaigns', campaignMethods.newCampaign)
   apiRouter.post('/campaigns/:id/call/new', campaignMethods.newCampaignCall)
   apiRouter.post('/campaigns/:id/update/new', campaignMethods.newCampaignUpdate)
+
+  apiRouter.get('/campaign_actions/:id', async function(req, res) {
+    const { type } = await CampaignAction.findById(req.params.id).select({ type: 1, _id: 0 }).exec()
+    if (!type) {
+      return res.status(404).json({ error: 'CampaignAction not found.' })
+    }
+
+    if (type === 'CampaignCall') {
+      return campaignCallMethods.getCampaignCall(req, res)
+    } else {
+      return campaignUpdateMethods.getCampaignUpdate(req, res)
+    }
+  })
 
   apiRouter.get('/campaign_calls/:id', campaignCallMethods.getCampaignCall)
 

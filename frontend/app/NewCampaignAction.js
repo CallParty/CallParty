@@ -3,6 +3,7 @@ import React, { Component } from 'react'
 import Select from 'react-select'
 import { Link } from 'react-router'
 import Modal from 'react-modal'
+import CampaignCallPreview from './CampaignCallPreview'
 
 // used in both the NewCampaignUpdate and NewAction components
 const CONFIRMATION_MODAL_STYLE = {
@@ -119,10 +120,10 @@ class NewCampaignUpdate extends Component {
   }
 
   render = () => {
-    const notUpdates = this.state.campaign.actions.filter(a => a.type !== 'CampaignUpdate')
+    const notUpdates = this.state.campaign.campaignActions.filter(a => a.type !== 'CampaignUpdate')
     const options = notUpdates.map(a => ({
       value: a.id,
-      label: a.subject
+      label: a.title
     }))
 
     return (
@@ -198,7 +199,7 @@ class NewCampaignCall extends Component {
         message: '',
         issueLink: '',
         shareLink: '',
-        subject: '',
+        title: '',
         task: '',
         memberTypes: [],
         parties: [],
@@ -253,7 +254,7 @@ class NewCampaignCall extends Component {
     ev.preventDefault()
 
     const campaignCall = this.state.campaignCall
-    const fieldsToValidate = ['subject', 'message', 'task', 'issueLink', 'shareLink']
+    const fieldsToValidate = ['title', 'message', 'task', 'issueLink', 'shareLink']
     for (let k of fieldsToValidate) {
       if (campaignCall[k] === undefined || campaignCall[k] === null || campaignCall[k] === '') {
         this.context.notify({
@@ -294,19 +295,6 @@ class NewCampaignCall extends Component {
 
   focusInput = (input) => {
     this.inputs[input].focus()
-  }
-
-  previewTemplate = (campaignCall) => {
-    return <div>
-      <p>Hi <span className="user-var">[firstName]</span>! We’ve got an issue to call about.</p>
-      <p><span className="action-var" onClick={this.focusInput.bind(this, 'message')}>{campaignCall.desc}</span>. You can find out more about the issue here: <span className="action-var" onClick={this.focusInput.bind(this, 'issueLink')}>{campaignCall.issueLink}</span>.</p>
-      <p>You’ll be calling <span className="user-var">[repType]</span> <span className="user-var">[repName]</span>. When you call you’ll talk to a staff member, or you’ll leave a voicemail. Let them know:</p>
-      <p>* You’re a constituent calling about <span className="action-var" onClick={this.focusInput.bind(this, 'subject')}>{campaignCall.subject}</span>.</p>
-      <p>* The call to action: “I’d like <span className="user-var">[repType]</span> <span className="user-var">[repName]</span> to <span className="action-var" onClick={this.focusInput.bind(this, 'task')}>{campaignCall.task}</span>.”</p>
-      <p>* Share any personal feelings or stories</p>
-      <p>* If taking the wrong stance on this issue would endanger your vote, let them know.</p>
-      <p>* Answer any questions the staffer has, and be friendly!</p>
-    </div>
   }
 
   render = () => {
@@ -392,9 +380,9 @@ class NewCampaignCall extends Component {
             <input
               maxLength="640"
               type="text"
-              value={this.state.campaignCall.subject}
-              onChange={this.onInputChange.bind(this, 'subject')}
-              ref={(input) => { this.inputs.subject = input }} />
+              value={this.state.campaignCall.title}
+              onChange={this.onInputChange.bind(this, 'title')}
+              ref={(input) => { this.inputs.title = input }} />
           </fieldset>
           <fieldset>
             <label>Task</label>
@@ -408,13 +396,7 @@ class NewCampaignCall extends Component {
           <input type="submit" value="Send" />
         </form>
         <div className="preview">
-          <h4>Preview</h4>
-          <div className="preview-message">{this.previewTemplate({
-            desc: this.state.campaignCall.message,
-            issueLink: this.state.campaignCall.issueLink,
-            subject: this.state.campaignCall.subject,
-            task: this.state.campaignCall.task
-          })}</div>
+          <CampaignCallPreview campaignCall={this.state.campaignCall} focusInput={this.focusInput.bind(this)} />
         </div>
         <Modal
           isOpen={this.state.confirmationModalIsOpen}
