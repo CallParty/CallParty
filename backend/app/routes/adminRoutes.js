@@ -43,9 +43,9 @@ module.exports = function(apiRouter) {
     }
 
     if (type === 'CampaignCall') {
-      return campaignCallMethods.getCampaignCall(req, res)
+      return campaignCallMethods.getCampaignCallDetail(req, res)
     } else {
-      return campaignUpdateMethods.getCampaignUpdate(req, res)
+      return campaignUpdateMethods.getCampaignUpdateDetail(req, res)
     }
   })
 

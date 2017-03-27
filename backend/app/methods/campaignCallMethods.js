@@ -1,6 +1,6 @@
 const { CampaignCall } = require('../models')
 
-function getCampaignCall(req, res) {
+function getCampaignCallDetail(req, res) {
   return CampaignCall
     .findById(req.params.id)
     .populate('campaignUpdates userActions')
@@ -22,6 +22,15 @@ function getCampaignCall(req, res) {
     .catch(err => res.send(err))
 }
 
+function getCampaignCall(req, res) {
+  return CampaignCall
+    .findById(req.params.id)
+    .exec()
+    .then(campaignCallObject => res.json(campaignCallObject))
+    .catch(err => res.send(err))
+}
+
 module.exports = {
-  getCampaignCall
+  getCampaignCall,
+  getCampaignCallDetail
 }
