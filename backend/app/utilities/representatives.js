@@ -65,7 +65,7 @@ async function loadRepsFromFile() {
 
 async function fetchOfficeLocationsFromPhoneYourRep() {
   const repsData = await rp({ uri: 'https://phone-your-rep.herokuapp.com/reps/', json: true })
-  return repsData.reps.reduce((acc, rep) => Object.assign(acc, { [rep.bioguide_id]: rep.office_locations }), {})
+  return repsData.reduce((acc, rep) => Object.assign(acc, { [rep.bioguide_id]: rep.office_locations }), {})
 }
 
 module.exports = {

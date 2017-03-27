@@ -86,13 +86,12 @@ class NewCampaignUpdate extends Component {
       this.state.campaign.id,
       this.state.update,
       (campaignUpdate) => {
-        API.sendCampaignUpdate(campaignUpdate.id)
         this.context.notify({
           message: 'Update created',
           level: 'success',
           autoDismiss: 1,
           onRemove: () => {
-            this.props.router.push(`/${this.state.campaign.id}`)
+            this.props.router.push(`/{this.state.campaign.id}/actions/${campaignUpdate.id}`)
           }
         })
       }
@@ -120,7 +119,10 @@ class NewCampaignUpdate extends Component {
   }
 
   render = () => {
-    const notUpdates = this.state.campaign.campaignActions.filter(a => a.type !== 'CampaignUpdate')
+    let notUpdates = []
+    if (this.state.campaign.campaignActions) {
+      notUpdates = this.state.campaign.campaignActions.filter(a => a.type !== 'CampaignUpdate')
+    }
     const options = notUpdates.map(a => ({
       value: a.id,
       label: a.title
@@ -146,7 +148,7 @@ class NewCampaignUpdate extends Component {
             <label htmlFor="message">Message</label>
             <textarea id="message" value={this.state.update.message} onChange={this.onMessageChange} />
           </fieldset>
-          <input type="submit" value="Send" />
+          <input type="submit" value="Create" />
         </form>
         <div className="preview">
           <h4>Preview</h4>
@@ -279,15 +281,13 @@ class NewCampaignCall extends Component {
       this.state.campaign.id,
       this.state.campaignCall,
       (campaignCall) => {
-        // start the CampaignCall after it has been created (this can be async, we don't need to wait for response)
-        API.sendCampaignCall(campaignCall.id)
         this.context.notify({
           message: 'Action created',
           level: 'success',
           autoDismiss: 1,
-          // TODO: redirect to CampaignActionDetail page for newly created CampaignAction
+          // redirect to CampaignActionDetail page for newly created CampaignAction
           onRemove: () => {
-            this.props.router.push(`/${this.state.campaign.id}`)
+            this.props.router.push(`/${this.state.campaign.id}/actions/${campaignCall.id}`)
           }
         })
       })
@@ -393,7 +393,7 @@ class NewCampaignCall extends Component {
               onChange={this.onInputChange.bind(this, 'task')}
               ref={(input) => { this.inputs.task = input }} />
           </fieldset>
-          <input type="submit" value="Send" />
+          <input type="submit" value="Create" />
         </form>
         <div className="preview">
           <CampaignCallPreview campaignCall={this.state.campaignCall} focusInput={this.focusInput.bind(this)} />

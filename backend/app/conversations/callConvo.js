@@ -63,9 +63,6 @@ function startCallConversation(user, userConversation, representatives, campaign
 
 // part 1
 function areYouReadyConvo(user, message) {
-  // set that the conversation has been intialized
-  // (we could consider putting this after the first set of messages instead of before)
-  UserConversation.update({ _id: user.convoData.userConversationId }, { active: true }).exec()
   // begin the conversation
   return botReply(user,
     `Hi ${user.convoData.firstName}. We've got an issue that needs your action.`

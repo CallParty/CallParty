@@ -3,6 +3,8 @@ const moment = require('moment')
 const { logMessage, captureException } = require('../utilities/logHelper')
 const { startCallConversation } = require('./callConvo')
 const { startUpdateConversation } = require('./updateConvo')
+const { UserConversation } = require('../models')
+const USER_CONVO_STATUS = UserConversation.USER_CONVO_STATUS
 
 async function initConvos(campaignAction, userConversations) {
   /*
@@ -21,7 +23,7 @@ async function initConvos(campaignAction, userConversations) {
     // to make this function idempotent, check if this conversation has already been initialized and if not then skip it
     const userConversation = userConversations[i]
     const user = userConversation.user
-    if (userConversation.active === true) {
+    if (userConversation.status !== USER_CONVO_STATUS.pending) {
       await logMessage(`++ skipping user ${user.firstName} ${user.lastName} (${user._id})`)
     }
     else {
@@ -33,6 +35,7 @@ async function initConvos(campaignAction, userConversations) {
     }
   }
   // finally save that the campaignAction finished sending
+  campaignAction.sent = true
   campaignAction.sentAt = moment.utc().toDate()
   await campaignAction.save()
   // and log this to slack
@@ -62,12 +65,17 @@ async function sendUserConversation(campaignAction, userConversation) {
       await startUpdateConversation(user, userConversation, campaignAction)
     }
     // if we made it here, we log that it was a success
+    userConversation.status = USER_CONVO_STATUS.sent
+    userConversation.datePrompted = moment.utc().toDate()
+    await userConversation.save()
     await logMessage(`+ (${user.fbId}) success: :small_blue_diamond:`)
   }
-  // otherwise captureException an dlog that it was an error
+  // otherwise captureException and log that it was an error
   catch (e) {
     captureException(e)
     await logMessage(`+ (${user.fbId}) error: :x: @here`)
+    userConversation.status = USER_CONVO_STATUS.error
+    await userConversation.save()
   }
 }
 
