@@ -102,7 +102,7 @@ class Campaign extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      actions: [],
+      campaignActions: [],
       title: '',
     }
   }
@@ -119,7 +119,7 @@ class Campaign extends Component {
 
   render() {
     const createdAt = moment.utc(this.state.createdAt).local().format(DATE_FORMAT)
-    const campaignActions = this.state.actions.sort(compareCampaignActions).map((campaignAction, i) => {
+    const campaignActions = this.state.campaignActions.sort(compareCampaignActions).map((campaignAction, i) => {
       return <CampaignAction
         key={i}
         num={i}
@@ -173,7 +173,7 @@ function CampaignAction(props) {
     <tr onClick={redirectToCampaignActionPage}>
       <td>{props.num}</td>
       <td>{ACTION_TYPES[props.type]}</td>
-      <td>{props.subject}</td>
+      <td>{props.title}</td>
       <td>{createdAt}</td>
       {props.type === 'CampaignCall'
         ? <td><Link to={createDuplicateUrl} onClick={e => e.stopPropagation()}>Clone</Link></td>

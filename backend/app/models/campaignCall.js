@@ -27,6 +27,12 @@ campaignCallSchema.virtual('campaignUpdates', {
   foreignField: 'campaignCall'
 })
 
+campaignCallSchema.virtual('userActions', {
+  ref: 'UserAction',
+  localField: '_id',
+  foreignField: 'campaignCall'
+})
+
 campaignCallSchema.methods.getMatchingRepresentatives = function() {
 
   // construct repsQuery

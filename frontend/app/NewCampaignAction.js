@@ -120,10 +120,10 @@ class NewCampaignUpdate extends Component {
   }
 
   render = () => {
-    const notUpdates = this.state.campaign.actions.filter(a => a.type !== 'CampaignUpdate')
+    const notUpdates = this.state.campaign.campaignActions.filter(a => a.type !== 'CampaignUpdate')
     const options = notUpdates.map(a => ({
       value: a.id,
-      label: a.subject
+      label: a.title
     }))
 
     return (
@@ -199,7 +199,7 @@ class NewCampaignCall extends Component {
         message: '',
         issueLink: '',
         shareLink: '',
-        subject: '',
+        title: '',
         task: '',
         memberTypes: [],
         parties: [],
@@ -254,7 +254,7 @@ class NewCampaignCall extends Component {
     ev.preventDefault()
 
     const campaignCall = this.state.campaignCall
-    const fieldsToValidate = ['subject', 'message', 'task', 'issueLink', 'shareLink']
+    const fieldsToValidate = ['title', 'message', 'task', 'issueLink', 'shareLink']
     for (let k of fieldsToValidate) {
       if (campaignCall[k] === undefined || campaignCall[k] === null || campaignCall[k] === '') {
         this.context.notify({
@@ -380,9 +380,9 @@ class NewCampaignCall extends Component {
             <input
               maxLength="640"
               type="text"
-              value={this.state.campaignCall.subject}
-              onChange={this.onInputChange.bind(this, 'subject')}
-              ref={(input) => { this.inputs.subject = input }} />
+              value={this.state.campaignCall.title}
+              onChange={this.onInputChange.bind(this, 'title')}
+              ref={(input) => { this.inputs.title = input }} />
           </fieldset>
           <fieldset>
             <label>Task</label>
