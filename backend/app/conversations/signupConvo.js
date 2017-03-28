@@ -7,6 +7,7 @@ const botReply = require('../utilities/botkit').botReply
 const { User } = require('../models')
 const { setUserCallback } = require('../methods/userMethods')
 const { logMessage } = require('../utilities/logHelper')
+const { oneLine } = require('common-tags')
 
 mongoose.Promise = Promise
 
@@ -37,14 +38,14 @@ function startSignupConversation(fbId) {
 function askForAddressConvo(user) {
   const organization = 'CallParty' // this should be looked up from the db eventually
   return botReply(user,
-    `Hi there! Nice to meet you. ` +
-    `I'm a bot made by the people at ${organization} to let you know when to call Congress about important issues, ` +
-    `because civic action is way more effective in large groups. ` +
-    `You can unsubscribe any time by just saying ‘Stop’ or ‘Unsubscribe’.`
+    oneLine`Hi there! Nice to meet you.
+    I'm a bot made by the people at ${organization} to let you know when to call Congress about important issues,
+    because civic action is way more effective in large groups.
+    You can unsubscribe any time by just saying ‘Stop’ or ‘Unsubscribe’.`
   ).then(function() {
     return botReply(user,
-      `First, what's your full address? ` +
-      `I need this to identify who your reps are, and I won’t hold onto it after that.`
+      oneLine`First, what's your full address? 
+      I need this to identify who your reps are, and I won’t hold onto it after that.`
     )
   }).then(() => setUserCallback(user, '/signup/handleAddressResponse'))
 }
@@ -84,8 +85,8 @@ function handleAddressResponseConvo(user, message) {
       logMessage(`++ failed to geocode address for user ${user.firstName} ${user.lastName} with string: ${message.text}`, '#_error')
       // then respond to user
       botReply(user,
-        `Hm, something isn't right. Make sure to include your street address, city, state, and zip code like this: ` +
-        `123 Party Street, Brooklyn, NY 11206`
+        oneLine`Hm, something isn't right. Make sure to include your street address, city, state, and zip code like this: 
+        123 Party Street, Brooklyn, NY 11206`
       )
       return setUserCallback(user, '/signup/handleAddressResponse')
     })
@@ -93,9 +94,9 @@ function handleAddressResponseConvo(user, message) {
 
 function finishSignup1Convo(user) {
   return botReply(user,
-    `Whenever there's an issue that needs action I'll send you information, ` +
-    `including contact info for your rep and how to talk to them. ` +
-    `I'll also send updates and outcomes on the issues. Have a nice day, and talk soon!`
+    oneLine`Whenever there's an issue that needs action I'll send you information, 
+    including contact info for your rep and how to talk to them.
+    I'll also send updates and outcomes on the issues. Have a nice day, and talk soon!`
   )
 
   .then(() => setUserCallback(user, null))
