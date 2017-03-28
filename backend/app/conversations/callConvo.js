@@ -6,7 +6,6 @@ const { UserAction } = require('../models')
 const { UserConversation, Reps } = require('../models')
 const ACTION_TYPE_PAYLOADS = UserAction.ACTION_TYPE_PAYLOADS
 const logMessage = require('../utilities/logHelper').logMessage
-const USER_CONVO_STATUS = UserConversation.USER_CONVO_STATUS
 
 function startCallConversation(user, userConversation, representatives, campaignCall) {
 
