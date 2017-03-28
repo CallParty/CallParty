@@ -106,7 +106,7 @@ function firstTimeIntroConvo(user) {
     `Hi ${user.convoData.firstName}. We've got an issue to call about. This is your first time calling, so let’s walk you through the steps and talk about some best practices.`
   )
   .then(() => {
-    return botReply(user, `When you call your Congress Member's office, you'll either talk to a staff member or leave a voicemail. The staff member is there to listen to you and pass your concerns on to the Congress Member. They're your buddy (and you'll probably talk to them again) so be friendly.`)
+    return botReply(user, `When you call your member's office, you'll either talk to a staffer or leave a voicemail. The staffer is there to listen to you and pass your concerns on to the Member of Congress. They're your buddy (and you'll probably talk to them again) so be friendly.`)
   })
   .then(() => botReply(user, `Give me a thumbs up if that sounds good!`))
   .then(() => setUserCallback(user, '/calltoaction/firstTimeAreYouReady'))
@@ -122,10 +122,10 @@ function firstTimeAreYouReadyConvo(user) {
     }
   })
   .then(() => botReply(user, stripIndent`
-    Awesome. When you call, you're going to tell them your name, that you're a constituent (because you only want to be calling your own Congress Members), and why you're calling. Always include a specific action you'd like the representative to take, and feel free to share any personal feelings or stories so they understand why it matters to you.
+    Awesome. When you call, you're going to tell them your name, that you're a constituent (because you only want to be calling your own Members of Congress), and why you're calling. Always include a specific action you'd like the representative to take, and feel free to share any personal feelings or stories so they understand why it matters to you.
   `))
   .then(() => botReply(user, stripIndent`
-     The staff member will probably ask for your address or phone number to confirm you're a constituent. Thank them and that's it! You've done a great job.
+     The staffer will probably ask for your address or phone number to confirm you're a constituent. Thank them, and that's it!
   `))
   .then(() => {
     const msg_attachment = {
@@ -195,7 +195,7 @@ function readyResponseConvo(user, message) {
       if (hasOneRep) {
         msgToSend = stripIndent`
         Great! You'll be calling ${representative.repType} ${representative.repName}.
-        You'll either talk to a staff member or leave a voicemail.
+        You'll either talk to a staffer or leave a voicemail.
         When you call:
 
         \u2022 Be sure to say you're a constituent calling about ${user.convoData.issueSubject}
@@ -205,10 +205,10 @@ function readyResponseConvo(user, message) {
       `
       } else {
         msgToSend = stripIndent`
-        Great! You'll be calling ${user.convoData.representatives.length} Congress Members. You'll either talk to a staff member or leave a voicemail. When you call:
+        Great! You'll be calling ${user.convoData.representatives.length} Members of Congress. You'll either talk to a staffer or leave a voicemail. When you call:
 
         \u2022 Be sure to say you're a constituent calling about ${user.convoData.issueSubject}
-        \u2022 Let them know: "I'd like the Congress Member to ${user.convoData.issueTask}"
+        \u2022 Let them know you'd like them to "${user.convoData.issueTask}"
         \u2022 Share any personal feelings or stories you have on the issue
         \u2022 Answer any questions the staffer has, and be friendly!
 
@@ -359,7 +359,7 @@ function noNextRepResponse(user, message, numCalls) {
                     payload: {
                       template_type: 'generic',
                       elements: [{
-                        title: 'Call your Congress Members and join the CallParty!',
+                        title: 'Call your Members of Congress and join the CallParty!',
                         subtitle: user.convoData.issueSubject,
                         image_url: 'https://storage.googleapis.com/callparty/cpshare.jpg',
                         default_action: {
@@ -465,7 +465,7 @@ function somethingWentWrongResponse(user) {
             type: 'template',
             payload: {
               template_type: 'button',
-              text: ' Do you want to try your next Congress Member?',
+              text: ' Do you want to try your next member?',
               buttons: [
                 {
                   type: 'postback',

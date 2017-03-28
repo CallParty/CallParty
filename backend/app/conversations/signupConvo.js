@@ -39,11 +39,11 @@ function askForAddressConvo(user) {
     `Hi there! Nice to meet you. ` +
     `I'm a bot made by the people at ${organization} to let you know when to call Congress about important issues, ` +
     `because civic action is way more effective in large groups. ` +
-    `You can unsubscribe any time by just saying ‘Stop’ or ‘Unsubscribe’.`
+    `You can stop our messages any time by just saying ‘Stop’ or ‘Unsubscribe’.`
   ).then(function() {
     return botReply(user,
       `First, what's your full address? ` +
-      `I need this to identify who your reps are, and I won’t hold onto it after that.`
+      `I need this to know who your reps are, and I won’t hold onto it after that.`
     )
   }).then(() => setUserCallback(user, '/signup/handleAddressResponse'))
 }
