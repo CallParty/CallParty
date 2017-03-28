@@ -27,7 +27,13 @@ const CONFIRMATION_MODAL_STYLE = {
 }
 
 function compareUserConvos(a, b) {
-  if (a.user.firstName > b.user.firstName) {
+  if (a.user && !b.user) {
+    return 1
+  } else if (!a.user && b.user) {
+    return -1
+  } else if (!a.user && !b.user) {
+    return 0
+  } else if (a.user.firstName > b.user.firstName) {
     return 1
   } else if (a.user.lastName > b.user.lastName) {
     return 1
@@ -45,13 +51,13 @@ class UserConvoItem extends Component {
     }
 
     // TODO: calculate X as number of reps
-    return <tr>
-      <td>{this.props.userConvo.user.id}</td>
-      <td>{this.props.userConvo.user.firstName} {this.props.userConvo.user.lastName}</td>
+    return(<tr>
+      <td>{this.props.userConvo.user ? this.props.userConvo.user.id : ''}</td>
+      <td>{this.props.userConvo.user ? this.props.userConvo.user.firstName + ' ' + this.props.userConvo.user.lastName : ''}</td>
       <td>{this.props.userConvo.status}</td>
       <td>{this.props.userConvo.datePrompted}</td>
       <td>{numUserCalls ? numUserCalls + '/ X' : ''}</td>
-    </tr>
+    </tr>)
   }
 }
 
