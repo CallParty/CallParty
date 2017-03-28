@@ -16,7 +16,7 @@ function startCallConversation(user, userConversation, representatives, campaign
 
   // then begin the conversation
   const repsPromise = Reps.find({ _id: { $in: representatives } }).exec()
-  const userConversationCountPromise = UserConversation.count({ user: user._id, active: true }).exec()
+  const userConversationCountPromise = UserConversation.count({ user: user._id }).exec()
   return Promise.all([repsPromise, userConversationCountPromise])
     .then(([representatives, userConversationCount]) => {
       const isFirstTimeCaller = userConversationCount === 0
@@ -100,8 +100,6 @@ function areYouReadyConvo(user, message) {
 }
 
 function firstTimeIntroConvo(user) {
-  UserConversation.update({ _id: user.convoData.userConversationId }, { active: true }).exec()
-
   return botReply(user,
     `Hi ${user.convoData.firstName}. We've got an issue to call about. This is your first time calling, so let’s walk you through the steps and talk about some best practices.`
   )
