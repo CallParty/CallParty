@@ -81,7 +81,7 @@ export default class CampaignActionDetail extends React.Component {
     var intervalId = setInterval(() => {
       console.log('++ updating campaign action')
       this.fetchCampaignAction()
-    }, 1000)
+    }, 3000)
     this.setState({intervalId: intervalId})
   }
 
