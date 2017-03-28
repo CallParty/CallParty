@@ -19,7 +19,7 @@ function startCallConversation(user, userConversation, representatives, campaign
   const userConversationCountPromise = UserConversation.count({ user: user._id }).exec()
   return Promise.all([repsPromise, userConversationCountPromise])
     .then(([representatives, userConversationCount]) => {
-      const isFirstTimeCaller = userConversationCount === 0
+      const isFirstTimeCaller = userConversationCount <= 1
       // only send one representative if it's the user's first time calling
       if (isFirstTimeCaller) {
         representatives = representatives.slice(0, 1)
