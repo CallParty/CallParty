@@ -533,7 +533,7 @@ function tryNextRepResponseConvo(user, message) {
 function thanksForSharingConvo(user, message) {
   logMessage(`++ ${user.firstName} ${user.lastName} (${user.fbId}) said in response to something went wrong: "${message.text}"`, '#_feedback')
   return UserConversation.update({ _id: user.convoData.userConversationId }, { dateCompleted: moment.utc().toDate() }).exec()
-    .then(() => botReply(user, `Thanks for sharing! We'll reach back out if we can be helpful.`))
+    .then(() => botReply(user, `Got it – we'll reach back out if we can be helpful.`))
     .then(function () {
       // Should be logged to sentry and then slack.
       console.log(message.text)
