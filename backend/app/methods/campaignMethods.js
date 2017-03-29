@@ -69,6 +69,7 @@ exports.newCampaignCall = function(req, res) {
     active: false,
     type: data.type,
     memberTypes: data.memberTypes,
+    actionAdminLabel: data.actionAdminLabel,
     parties: data.parties,
     committees: data.committees,
     districts: data.districts,

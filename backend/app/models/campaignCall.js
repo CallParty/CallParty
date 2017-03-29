@@ -8,6 +8,7 @@ const campaignCallSchema = new Schema({
   title: String,
   message: String,
   task: String,
+  actionAdminLabel: String,
   issueLink: String,
   shareLink: String,
   active: Boolean,
