@@ -106,7 +106,7 @@ exports.newCampaignCall = function(req, res) {
     .catch(err => res.status(400).send(err))
 }
 
-exports.newCampaignUpdate = async function(req, res) {
+exports.newCampaignUpdate = function(req, res) {
   const data = req.body
   const campaignCallId = data.campaignCall.value
 
