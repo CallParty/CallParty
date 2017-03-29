@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const { Campaign, CampaignCall, CampaignUpdate, UserConversation } = require('../models')
 const USER_CONVO_STATUS = UserConversation.USER_CONVO_STATUS
+const { captureException } = require('../utilities/logHelper')
 
 const ObjectId = mongoose.Types.ObjectId
 
@@ -130,12 +131,14 @@ exports.newCampaignUpdate = function(req, res) {
       const userConvoPromises = []
       for (let i = 0; i < users.length; i++) {
         const user = users[i]
-        const userConvoPromise = UserConversation.create({
-          user: ObjectId(user._id),
-          campaignAction: ObjectId(savedCampaignUpdate._id),
-          status: USER_CONVO_STATUS.pending,
-        })
-        userConvoPromises.push(userConvoPromise)
+        if (user) {
+          const userConvoPromise = UserConversation.create({
+            user: ObjectId(user._id),
+            campaignAction: ObjectId(savedCampaignUpdate._id),
+            status: USER_CONVO_STATUS.pending,
+          })
+          userConvoPromises.push(userConvoPromise)
+        }
       }
       return Promise.all(userConvoPromises).then(() => {
         return savedCampaignUpdate
@@ -144,7 +147,9 @@ exports.newCampaignUpdate = function(req, res) {
     .then(campaignUpdate => {
       res.json(campaignUpdate)
     })
-    .catch(err => res.status(400).send(err))
+    .catch((err) => {
+      captureException(err)
+    })
 }
 
 exports.createUserAction = function(req, res) {
