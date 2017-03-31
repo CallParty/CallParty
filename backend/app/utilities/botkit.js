@@ -2,7 +2,27 @@ const { bot } = require('../botkit_controller/botkitSetup')
 const { captureException, logMessage } = require('./logHelper')
 
 
-function botReply(user, text) {
+async function botReply(user, text, numAttempts) {
+  try {
+    await botReplyHelper(user, text)
+  } catch (err) {
+    if (!numAttempts) {
+     numAttempts = 1
+    }
+    let knownError = isKnownError(err)
+    if (knownError) {
+      if (numAttempts < 5) {
+        numAttempts += 1
+        await logMessage(`re-trying message to ${user.fbId} after error "${err.message}". Attempt #${numAttempts}`, "#_error")
+        await botReply(user, text, numAttempts)
+      }
+    }
+    // regardless of error, ultimately resolve promise so script execution can carry on
+    return Promise.resolve()
+  }
+}
+
+function botReplyHelper(user, text) {
   // this is the message object botkit expects
   const message = {
     channel: user.fbId,
@@ -31,6 +51,17 @@ function botReply(user, text) {
       resolve(response)
     })
   })
+}
+
+function isKnownError(err) {
+  let knownError = false
+  if (err.message) {
+    knownError =
+      err.message.includes('connect ETIMEDOUT') ||
+      err.message.includes('connect ECONNREFUSED') ||
+      err.message === "(#200) This person isn't available right now"
+  }
+  return knownError
 }
 
 module.exports = {
