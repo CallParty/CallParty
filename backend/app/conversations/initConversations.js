@@ -41,10 +41,10 @@ async function initConvos(campaignAction, userConversations) {
   // and log this to slack
   await logMessage(`++++ finished initializing conversations for ${campaignAction.type}: ${campaignAction.title} (${campaignAction._id})`)
   // log metrics to slack
-  await userConvos = UserConversation.find({campaignAction: campaignAction._id}).exec()
+  const finalUserConvos = await UserConversation.find({campaignAction: campaignAction._id}).exec()
   const statusCounts = {}
-  for (let i = 0; i < userConversations.length; i++) {
-    const userConversation = userConversations[i]
+  for (let i = 0; i < finalUserConvos.length; i++) {
+    const userConversation = finalUserConvos[i]
     if (!statusCounts[userConversation.status]) {
         statusCounts[userConversation.status] = 0
     }
