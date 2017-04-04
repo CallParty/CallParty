@@ -50,6 +50,8 @@ async function sendUserConversation(campaignAction, userConversation) {
    Also logs success/failure to slack
    */
   const user = userConversation.user
+  user.currentConvo = userConversation._id
+  await user.save()
   const convoData = userConversation.convoData
   // log that we are attempting to send
   await logMessage(
@@ -64,11 +66,17 @@ async function sendUserConversation(campaignAction, userConversation) {
     else if (campaignAction.type == 'CampaignUpdate') {
       await startUpdateConversation(user, userConversation, campaignAction)
     }
-    // if we made it here, we log that it was a success
-    userConversation.status = USER_CONVO_STATUS.sent
-    userConversation.datePrompted = moment.utc().toDate()
-    await userConversation.save()
-    await logMessage(`+ (${user.fbId}) success: :small_blue_diamond:`)
+    // if we made it here, and there was no error, log that it was a success
+    if (userConversation.status !== USER_CONVO_STATUS.error) {
+      userConversation.status = USER_CONVO_STATUS.sent
+      userConversation.datePrompted = moment.utc().toDate()
+      await userConversation.save()
+      await logMessage(`+ (${user.fbId}) success: :small_blue_diamond:`)
+    }
+    // otherwise log that there was an error
+    else {
+      await logMessage(`+ (${user.fbId}) error: :x: @here`)
+    }
   }
   // otherwise captureException and log that it was an error
   catch (e) {
