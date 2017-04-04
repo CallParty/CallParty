@@ -40,6 +40,24 @@ async function initConvos(campaignAction, userConversations) {
   await campaignAction.save()
   // and log this to slack
   await logMessage(`++++ finished initializing conversations for ${campaignAction.type}: ${campaignAction.title} (${campaignAction._id})`)
+  // log metrics to slack
+  await userConvos = UserConversation.find({campaignAction: campaignAction._id}).exec()
+  const statusCounts = {}
+  for (let i = 0; i < userConversations.length; i++) {
+    const userConversation = userConversations[i]
+    if (!statusCounts[userConversation.status]) {
+        statusCounts[userConversation.status] = 0
+    }
+    statusCounts[userConversation.status] += 1
+  }
+  const statusEmoji = {}
+  statusEmoji[USER_CONVO_STATUS.sent] = ':white_check_mark:'
+  statusEmoji[USER_CONVO_STATUS.pending] = ':snowflake:'
+  statusEmoji[USER_CONVO_STATUS.error] = ':x'
+  for (var status in statusCounts) {
+    const emoji = statusEmoji[status] || ''
+    await logMessage(`++ ${emoji} total ${status}: ${statusCounts[status]}`)
+  }
 }
 
 async function sendUserConversation(campaignAction, userConversation) {
