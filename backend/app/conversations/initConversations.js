@@ -66,22 +66,24 @@ async function sendUserConversation(campaignAction, userConversation) {
     else if (campaignAction.type == 'CampaignUpdate') {
       await startUpdateConversation(user, userConversation, campaignAction)
     }
+    // refetch userConversation from database as it might have been changed while sending
+    const userConvo = await UserConversation.findOne({_id: userConversation._id}).exec()
     // if we made it here, and there was no error, log that it was a success
-    if (userConversation.status !== USER_CONVO_STATUS.error) {
-      userConversation.status = USER_CONVO_STATUS.sent
-      userConversation.datePrompted = moment.utc().toDate()
-      await userConversation.save()
+    if (userConvo.status !== USER_CONVO_STATUS.error) {
+      userConvo.status = USER_CONVO_STATUS.sent
+      userConvo.datePrompted = moment.utc().toDate()
+      await userConvo.save()
       await logMessage(`+ (${user.fbId}) success: :small_blue_diamond:`)
     }
     // otherwise log that there was an error
     else {
-      await logMessage(`+ (${user.fbId}) error: :x: @here`)
+      await logMessage(`+ (${user.fbId}) error: :small_red_triangle:`)
     }
   }
-  // otherwise captureException and log that it was an error
+  // if we catch an error, then captureException and log that it was an error
   catch (e) {
     captureException(e)
-    await logMessage(`+ (${user.fbId}) error: :x: @here`)
+    await logMessage(`+ (${user.fbId}) error: :small_red_triangle:`)
     userConversation.status = USER_CONVO_STATUS.error
     await userConversation.save()
   }

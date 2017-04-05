@@ -20,7 +20,9 @@ async function botReply(user, text, numAttempts) {
     // if there was an error, mark that this conversation had an error
     else {
       if (user && user.currentConvo) {
-        await UserConversation.update({ _id: user.currentConvo }, { status: USER_CONVO_STATUS.error }).exec()
+        await user.populate({ path: 'currentConvo'}).execPopulate()
+        user.currentConvo.status = USER_CONVO_STATUS.error
+        await user.currentConvo.save()
       }
     }
     // regardless of error, ultimately resolve promise so script execution can carry on
@@ -48,7 +50,7 @@ function botReplyHelper(user, text) {
         // but wrap in a try/catch because if this fails we still want to log the error
         let userObject = {}
         try {
-          userObject = user.toObject()
+          userObject = user.toObject({ virtuals: false })
         } catch (e) {
           captureException(new Error('Failed to convert user to object while logging exception'))
         }
