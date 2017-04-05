@@ -42,9 +42,6 @@ function botReplyHelper(user, text) {
   return new Promise(function(resolve, reject) {
     bot.reply(message, text, function(err, response) {
       // if there was an error, lets try to log info about it for debugging purposes
-      if (typeof text === 'string' && text.includes('Hi Max')) {
-        err = new Error('Test error')
-      }
       if (err) {
         // try to convert the user to an object for extra debugging info
         // but wrap in a try/catch because if this fails we still want to log the error
