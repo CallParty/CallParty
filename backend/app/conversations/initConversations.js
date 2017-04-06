@@ -59,9 +59,9 @@ async function initConvos(campaignAction) {
     statusCounts[userConversation.status] += 1
   }
   const statusEmoji = {}
-  statusEmoji[USER_CONVO_STATUS.sent] = ':white_check_mark:'
+  statusEmoji[USER_CONVO_STATUS.sent] = ':sparkles:'
   statusEmoji[USER_CONVO_STATUS.pending] = ':snowflake: @here'
-  statusEmoji[USER_CONVO_STATUS.error] = ':x: @here'
+  statusEmoji[USER_CONVO_STATUS.error] = ':round_pushpin: @here'
   for (var status in statusCounts) {
     const emoji = statusEmoji[status] || ''
     await logMessage(`+ ${emoji} total ${status}: ${statusCounts[status]}`)
