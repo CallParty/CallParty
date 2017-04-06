@@ -58,8 +58,8 @@ app.use(jwt({ secret: process.env.JWT_SECRET }).unless({
 }))
 
 // routes
-require('./app/routes/routes')(apiRouter)
-require('./app/routes/conversationRoutes')(apiRouter)
+require('./app/routes/helperRoutes')(apiRouter)
+require('./app/routes/sendRoutes')(apiRouter)
 require('./app/routes/adminRoutes')(apiRouter)
 
 app.use('/api', apiRouter)

@@ -3,7 +3,7 @@ const { stripIndent } = require('common-tags')
 const { setUserCallback } = require('../methods/userMethods')
 const { botReply } = require('../utilities/botkit')
 const { UserAction } = require('../models')
-const { UserConversation, Reps } = require('../models')
+const { UserConversation, Reps, Campaign } = require('../models')
 const ACTION_TYPE_PAYLOADS = UserAction.ACTION_TYPE_PAYLOADS
 const logMessage = require('../utilities/logHelper').logMessage
 
@@ -16,49 +16,47 @@ function startCallConversation(user, userConversation, representatives, campaign
 
   // then begin the conversation
   const repsPromise = Reps.find({ _id: { $in: representatives } }).exec()
-  const userConversationCountPromise = UserConversation.count({ user: user._id }).exec()
-  return Promise.all([repsPromise, userConversationCountPromise])
-    .then(([representatives, userConversationCount]) => {
-      const isFirstTimeCaller = userConversationCount <= 1
-      // only send one representative if it's the user's first time calling
-      if (isFirstTimeCaller) {
-        representatives = representatives.slice(0, 1)
-      }
-      const convoData = {
-        firstName: user.firstName,
-        issueMessage: campaignCall.message,
-        issueLink: campaignCall.issueLink,
-        shareLink: campaignCall.shareLink,
-        issueSubject: campaignCall.title,
-        issueTask: campaignCall.task,
-        campaignCall: campaignCall.toObject({ virtuals: false }), // without toObject mongoose goes into an infinite loop on insert
-        userConversationId: userConversation._id,
-        representatives: representatives.map(representative => ({
-          repType: representative.legislatorTitle,
-          repName: representative.official_full,
-          repId: representative._id,
-          repImage: representative.image_url,
-          repPhoneNumbers: [
-            representative.phoneNumbers.filter(({ officeType }) => officeType === 'district')[0],
-            representative.phoneNumbers.filter(({ officeType }) => officeType === 'capitol')[0]
-          ].filter(Boolean), // filter out undefined values
-          repWebsite: representative.url,
-        })),
-        currentRepresentativeIndex: 0,
-        numUserCalls: 0,  // the number of calls this user has made for this campaignCall
-        isFirstTimeCaller: isFirstTimeCaller
-      }
-      // save params as convoData
-      user.convoData = convoData
+  repsPromise.then((representatives) => {
+    const isFirstTimeCaller = user.firstTimeCaller
+    // only send one representative if it's the user's first time calling
+    if (isFirstTimeCaller) {
+      representatives = representatives.slice(0, 1)
+    }
+    const convoData = {
+      firstName: user.firstName,
+      issueMessage: campaignCall.message,
+      issueLink: campaignCall.issueLink,
+      shareLink: campaignCall.shareLink,
+      issueSubject: campaignCall.title,
+      issueTask: campaignCall.task,
+      campaignCall: campaignCall.toObject({ virtuals: false }), // without toObject mongoose goes into an infinite loop on insert
+      userConversationId: userConversation._id,
+      representatives: representatives.map(representative => ({
+        repType: representative.legislatorTitle,
+        repName: representative.official_full,
+        repId: representative._id,
+        repImage: representative.image_url,
+        repPhoneNumbers: [
+          representative.phoneNumbers.filter(({ officeType }) => officeType === 'district')[0],
+          representative.phoneNumbers.filter(({ officeType }) => officeType === 'capitol')[0]
+        ].filter(Boolean), // filter out undefined values
+        repWebsite: representative.url,
+      })),
+      currentRepresentativeIndex: 0,
+      numUserCalls: 0,  // the number of calls this user has made for this campaignCall
+      isFirstTimeCaller: isFirstTimeCaller
+    }
+    // save params as convoData
+    user.convoData = convoData
 
-      return user.save().then(() => {
-        if (isFirstTimeCaller) {
-          return firstTimeIntroConvo(user, null)
-        } else {
-          return areYouReadyConvo(user, null)
-        }
-      })
+    return user.save().then(() => {
+      if (isFirstTimeCaller) {
+        return firstTimeIntroConvo(user, null)
+      } else {
+        return areYouReadyConvo(user, null)
+      }
     })
+  })
 }
 
 // part 1
@@ -100,6 +98,8 @@ function areYouReadyConvo(user, message) {
 }
 
 function firstTimeIntroConvo(user) {
+  user.firstTimeCaller = false
+  user.save()
   return botReply(user,
     `Hi ${user.convoData.firstName}. We've got an issue to call about.`
   )
@@ -412,9 +412,12 @@ function hasNextRepResponse(user, message, numCalls) {
   return botReplyPromise.then(() => sendRepCard(user, message))
 }
 
-function userMadeCallResponse(user, message) {
-  const userActionCountPromise = UserAction.count({
-    campaignCall: user.convoData.campaignCall._id,
+async function userMadeCallResponse(user, message) {
+  const campaign = await Campaign.findById(user.convoData.campaignCall.campaign._id).populate('campaignActions').exec()
+  const numCalls = await UserAction.count({
+    campaignCall: {
+      $in: campaign.campaignCalls.map(call => call._id)
+    },
     actionType: {
       $in: [
         ACTION_TYPE_PAYLOADS.voicemail,
@@ -426,22 +429,19 @@ function userMadeCallResponse(user, message) {
   user.convoData.currentRepresentativeIndex++
   user.convoData.numUserCalls++
   user.markModified('convoData')
-  const updateUserPromise = user.save()
+  user = await user.save()
 
-  return Promise.all([userActionCountPromise, updateUserPromise])
-    .then(([numCalls, user]) => {
-      // log message in case we reached invalid state
-      if (numCalls < 1) {
-        logMessage('++ @here: this if clause is only executed if the user made a call. So if there are 0 calls something is weird')
-      }
-      // but continue regardless
-      const hasNextRep = user.convoData.currentRepresentativeIndex < user.convoData.representatives.length
-      if (!hasNextRep) {
-        return noNextRepResponse(user, message, numCalls)
-      } else {
-        return hasNextRepResponse(user, message, numCalls)
-      }
-    })
+  // log message in case we reached invalid state
+  if (numCalls < 1) {
+    logMessage('++ @here: this if clause is only executed if the user made a call. So if there are 0 calls something is weird')
+  }
+  // but continue regardless
+  const hasNextRep = user.convoData.currentRepresentativeIndex < user.convoData.representatives.length
+  if (!hasNextRep) {
+    return noNextRepResponse(user, message, numCalls)
+  } else {
+    return hasNextRepResponse(user, message, numCalls)
+  }
 }
 
 function somethingWentWrongResponse(user) {
