@@ -20,6 +20,7 @@ const userSchema = new Schema({
   firstCTA: { type: Boolean, default: false },
   callbackPath: String, // controls which convoFunction will be called in response to next message
   convoData: Schema.Types.Mixed,  // the data which the next convoFunction will have access to
+  currentConvo: { type: Schema.Types.ObjectId, ref: 'UserConversation' },
 }, {
   toObject: { virtuals: true },
   toJSON: { virtuals: true }

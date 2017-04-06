@@ -52,8 +52,8 @@ async function initConvos(campaignAction, userConversations) {
   }
   const statusEmoji = {}
   statusEmoji[USER_CONVO_STATUS.sent] = ':white_check_mark:'
-  statusEmoji[USER_CONVO_STATUS.pending] = ':snowflake:'
-  statusEmoji[USER_CONVO_STATUS.error] = ':x:'
+  statusEmoji[USER_CONVO_STATUS.pending] = ':snowflake: @here'
+  statusEmoji[USER_CONVO_STATUS.error] = ':x: @here'
   for (var status in statusCounts) {
     const emoji = statusEmoji[status] || ''
     await logMessage(`++ ${emoji} total ${status}: ${statusCounts[status]}`)
@@ -68,6 +68,8 @@ async function sendUserConversation(campaignAction, userConversation) {
    Also logs success/failure to slack
    */
   const user = userConversation.user
+  user.currentConvo = userConversation._id
+  await user.save()
   const convoData = userConversation.convoData
   // log that we are attempting to send
   await logMessage(
@@ -82,16 +84,24 @@ async function sendUserConversation(campaignAction, userConversation) {
     else if (campaignAction.type == 'CampaignUpdate') {
       await startUpdateConversation(user, userConversation, campaignAction)
     }
-    // if we made it here, we log that it was a success
-    userConversation.status = USER_CONVO_STATUS.sent
-    userConversation.datePrompted = moment.utc().toDate()
-    await userConversation.save()
-    await logMessage(`+ (${user.fbId}) success: :small_blue_diamond:`)
+    // refetch userConversation from database as it might have been changed while sending
+    const userConvo = await UserConversation.findOne({_id: userConversation._id}).exec()
+    // if we made it here, and there was no error, log that it was a success
+    if (userConvo.status !== USER_CONVO_STATUS.error) {
+      userConvo.status = USER_CONVO_STATUS.sent
+      userConvo.datePrompted = moment.utc().toDate()
+      await userConvo.save()
+      await logMessage(`+ (${user.fbId}) success: :small_blue_diamond:`)
+    }
+    // otherwise log that there was an error
+    else {
+      await logMessage(`+ (${user.fbId}) error: :small_red_triangle:`)
+    }
   }
-  // otherwise captureException and log that it was an error
+  // if we catch an error, then captureException and log that it was an error
   catch (e) {
     captureException(e)
-    await logMessage(`+ (${user.fbId}) error: :x: @here`)
+    await logMessage(`+ (${user.fbId}) error: :small_red_triangle:`)
     userConversation.status = USER_CONVO_STATUS.error
     await userConversation.save()
   }
