@@ -3,7 +3,7 @@ const { stripIndent } = require('common-tags')
 const { setUserCallback } = require('../methods/userMethods')
 const { botReply } = require('../utilities/botkit')
 const { UserAction } = require('../models')
-const { UserConversation, Reps } = require('../models')
+const { UserConversation, Reps, Campaign } = require('../models')
 const ACTION_TYPE_PAYLOADS = UserAction.ACTION_TYPE_PAYLOADS
 const logMessage = require('../utilities/logHelper').logMessage
 
@@ -411,9 +411,12 @@ function hasNextRepResponse(user, message, numCalls) {
   return botReplyPromise.then(() => sendRepCard(user, message))
 }
 
-function userMadeCallResponse(user, message) {
-  const userActionCountPromise = UserAction.count({
-    campaignCall: user.convoData.campaignCall._id,
+async function userMadeCallResponse(user, message) {
+  const campaign = await Campaign.findById(user.convoData.campaignCall.campaign._id).populate('campaignActions').exec()
+  const numCalls = await UserAction.count({
+    campaignCall: {
+      $in: campaign.campaignCalls.map(call => call._id)
+    },
     actionType: {
       $in: [
         ACTION_TYPE_PAYLOADS.voicemail,
@@ -425,22 +428,19 @@ function userMadeCallResponse(user, message) {
   user.convoData.currentRepresentativeIndex++
   user.convoData.numUserCalls++
   user.markModified('convoData')
-  const updateUserPromise = user.save()
+  user = await user.save()
 
-  return Promise.all([userActionCountPromise, updateUserPromise])
-    .then(([numCalls, user]) => {
-      // log message in case we reached invalid state
-      if (numCalls < 1) {
-        logMessage('++ @here: this if clause is only executed if the user made a call. So if there are 0 calls something is weird')
-      }
-      // but continue regardless
-      const hasNextRep = user.convoData.currentRepresentativeIndex < user.convoData.representatives.length
-      if (!hasNextRep) {
-        return noNextRepResponse(user, message, numCalls)
-      } else {
-        return hasNextRepResponse(user, message, numCalls)
-      }
-    })
+  // log message in case we reached invalid state
+  if (numCalls < 1) {
+    logMessage('++ @here: this if clause is only executed if the user made a call. So if there are 0 calls something is weird')
+  }
+  // but continue regardless
+  const hasNextRep = user.convoData.currentRepresentativeIndex < user.convoData.representatives.length
+  if (!hasNextRep) {
+    return noNextRepResponse(user, message, numCalls)
+  } else {
+    return hasNextRepResponse(user, message, numCalls)
+  }
 }
 
 function somethingWentWrongResponse(user) {
