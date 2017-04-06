@@ -1,5 +1,4 @@
 .env
-.envrc
 *node_modules*
 .idea/
 *.swp
