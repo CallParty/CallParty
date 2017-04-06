@@ -16,7 +16,7 @@ function startCallConversation(user, userConversation, representatives, campaign
 
   // then begin the conversation
   const repsPromise = Reps.find({ _id: { $in: representatives } }).exec()
-  repsPromise.then((representatives) => {
+  return repsPromise.then((representatives) => {
     const isFirstTimeCaller = user.firstTimeCaller
     // only send one representative if it's the user's first time calling
     if (isFirstTimeCaller) {
