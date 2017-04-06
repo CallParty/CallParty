@@ -414,7 +414,7 @@ function hasNextRepResponse(user, message, numCalls) {
 }
 
 async function userMadeCallResponse(user, message) {
-  const campaign = await Campaign.findById(user.convoData.campaignCall.campaign._id).populate('campaignActions').exec()
+  const campaign = await Campaign.findById(user.convoData.campaignCall.campaign).populate('campaignActions').exec()
   const numCalls = await UserAction.count({
     campaignCall: {
       $in: campaign.campaignCalls.map(call => call._id)
