@@ -77,7 +77,7 @@ function areYouReadyConvo(user, message) {
         type: 'template',
         payload: {
           template_type: 'button',
-          text: 'Are you ready to call now?',
+          text: `Are you ready to call? (If you can't right this second just come back when you're ready)`,
           buttons: [
             {
               type: 'postback',
@@ -101,10 +101,14 @@ function areYouReadyConvo(user, message) {
 
 function firstTimeIntroConvo(user) {
   return botReply(user,
-    `Hi ${user.convoData.firstName}. We've got an issue to call about. This is your first time calling, so let’s walk you through the steps and talk about some best practices.`
+    `Hi ${user.convoData.firstName}. We've got an issue to call about.`
   )
   .then(() => {
-    return botReply(user, `When you call your member's office, you'll either talk to a staffer or leave a voicemail. The staffer is there to listen to you and pass your concerns on to the Member of Congress. They're your buddy (and you'll probably talk to them again) so be friendly.`)
+    return botReply(user, `${user.convoData.issueMessage}. ` +
+      `You can find out more about it here ${user.convoData.issueLink}.`
+    )
+  .then(() => {
+    return botReply(user, `It’s your first call so we’ll walk through the steps: When you call your member's office, you'll either talk to a staffer or leave a voicemail. The staffer is there to listen to you and pass your concerns on to the Member of Congress. They're your buddy (and you'll probably talk to them again) so be friendly.`)
   })
   .then(() => botReply(user, `Give me a thumbs up if that sounds good!`))
   .then(() => setUserCallback(user, '/calltoaction/firstTimeAreYouReady'))
@@ -131,7 +135,7 @@ function firstTimeAreYouReadyConvo(user) {
         type: 'template',
         payload: {
           template_type: 'button',
-          text: 'Ready to make your first call?',
+          text: `Ready to make your first call? (If you can't right this second just come back when you're ready)`,
           buttons: [
             {
               type: 'postback',
@@ -163,10 +167,7 @@ function firstTimeReadyResponseConvo(user, message) {
   .then(() => {
     if (message.text === ACTION_TYPE_PAYLOADS.isReady) {
       const representative = user.convoData.representatives[0]
-      return botReply(user, `${user.convoData.issueMessage} ` +
-        `You can find out more about it here ${user.convoData.issueLink}`
-      )
-      .then(() => botReply(user, `Here’s your first script and the information for your representative: "Hello, my name is ${user.convoData.firstName} and I’m a constituent of ${representative.repName}. I’m calling about ${user.convoData.issueSubject}. I’d like to ask that ${representative.repName} ${user.convoData.issueTask}. Thanks for listening, have a good day!"`))
+      return botReply(user, `Here’s your first script and the information for your representative: "Hello, my name is ${user.convoData.firstName} and I’m a constituent of ${representative.repName}. I’m calling about ${user.convoData.issueSubject}. I’d like to ask that ${representative.repName} ${user.convoData.issueTask}. Thanks for listening, have a good day!"`)
       .then(() => sendRepCard(user, message))
     }
     else if (message.text === ACTION_TYPE_PAYLOADS.noCall) {
