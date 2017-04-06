@@ -1,6 +1,5 @@
 
-
-function unsubscribeAndAnonymizeUser(user) {
+async function unsubscribeAndAnonymizeUser(user) {
   /*
    * Sets all of a users fields to null (including fbId)
    * so that they will not be identifiable in the future.
@@ -12,7 +11,6 @@ function unsubscribeAndAnonymizeUser(user) {
    * which may have a foreign key to user (which will now be anonymized).
    */
   var userId = user._id
-  console.log('++ unsubscribing and anonymizing user: ' + userId)
   var props = Object.keys(user.toObject())
   props.forEach(function(prop){
     user[prop] = null
@@ -21,7 +19,6 @@ function unsubscribeAndAnonymizeUser(user) {
   user.unsubscribed = true
 
   return user.save()
-      .catch(err => console.log(err))
 }
 
 
