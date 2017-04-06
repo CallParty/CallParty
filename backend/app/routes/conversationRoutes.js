@@ -22,10 +22,9 @@ module.exports = function(apiRouter) {
 
   apiRouter.post('/send/campaignCall/:id', function(req, res) {
     const campaignCallId = req.params.id
-    const campaignCallPromise = CampaignCall.findById(ObjectId(campaignCallId))
-      .populate('campaign').populate({ path: 'userConversations', populate: { path: 'user' } }).exec()
+    const campaignCallPromise = CampaignCall.findById(ObjectId(campaignCallId)).exec()
     campaignCallPromise.then(campaignCall => {
-      return initConvos(campaignCall, campaignCall.userConversations)
+      return initConvos(campaignCall)
     })
     // send response
     res.send('ok')
@@ -33,10 +32,9 @@ module.exports = function(apiRouter) {
 
   apiRouter.post('/send/campaignUpdate/:id', function(req, res) {
     const campaignUpdateId = req.params.id
-    const campaignUpdatePromise = CampaignUpdate.findById(ObjectId(campaignUpdateId))
-      .populate('campaign').populate({ path: 'userConversations', populate: { path: 'user' } }).exec()
+    const campaignUpdatePromise = CampaignUpdate.findById(ObjectId(campaignUpdateId)).exec()
     campaignUpdatePromise.then(campaignUpdate => {
-      return initConvos(campaignUpdate, campaignUpdate.userConversations)
+      return initConvos(campaignUpdate)
     })
     // send response
     res.send('ok')
