@@ -1,9 +1,11 @@
 const mongoose = require('mongoose')
 const dotenv = require('dotenv')
-const { User, UserConversation } = require('../app/models')
-const logMessage = require('../utilities/logHelper').logMessage
-
 dotenv.load()
+
+const { User, UserConversation } = require('../app/models')
+const logMessage = require('../app/utilities/logHelper').logMessage
+
+
 
 mongoose.Promise = require('es6-promise')
 mongoose.connect(process.env.MONGODB_URI)
