@@ -75,7 +75,7 @@ function areYouReadyConvo(user, message) {
         type: 'template',
         payload: {
           template_type: 'button',
-          text: `Are you ready to call? (If you can't right this second just come back when you're ready)`,
+          text: `Are you ready to call? (If you can't right this second you can come back when you're ready)`,
           buttons: [
             {
               type: 'postback',
@@ -107,6 +107,7 @@ function firstTimeIntroConvo(user) {
     return botReply(user, `${user.convoData.issueMessage}. ` +
       `You can find out more about it here ${user.convoData.issueLink}.`
     )
+  })
   .then(() => {
     return botReply(user, `It’s your first call so we’ll walk through the steps: When you call your member's office, you'll either talk to a staffer or leave a voicemail. The staffer is there to listen to you and pass your concerns on to the Member of Congress. They're your buddy (and you'll probably talk to them again) so be friendly.`)
   })
@@ -135,7 +136,7 @@ function firstTimeAreYouReadyConvo(user) {
         type: 'template',
         payload: {
           template_type: 'button',
-          text: `Ready to make your first call? (If you can't right this second just come back when you're ready)`,
+          text: `Ready to make your first call? (If you can't right this second you can come back when you're ready)`,
           buttons: [
             {
               type: 'postback',
