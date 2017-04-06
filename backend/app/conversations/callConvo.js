@@ -75,7 +75,7 @@ function areYouReadyConvo(user, message) {
         type: 'template',
         payload: {
           template_type: 'button',
-          text: `Are you ready to call? (If you can't right this second you can come back when you're ready)`,
+          text: `Are you ready to call? (You can come back later if you're busy)`,
           buttons: [
             {
               type: 'postback',
@@ -136,7 +136,7 @@ function firstTimeAreYouReadyConvo(user) {
         type: 'template',
         payload: {
           template_type: 'button',
-          text: `Ready to make your first call? (If you can't right this second you can come back when you're ready)`,
+          text: `Ready to make your first call? (You can come back later if you're busy)`,
           buttons: [
             {
               type: 'postback',
