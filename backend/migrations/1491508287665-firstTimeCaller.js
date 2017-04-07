@@ -19,7 +19,7 @@ export async function up () {
   const users = await User.find({})
   for (let user of users) {
     const userConversationCount = await UserConversation.count({ user: user._id }).exec()
-    const isFirstTimeCaller = userConversationCount <= 1
+    const isFirstTimeCaller = userConversationCount < 1
     await logMessage(`++ ${user.firstName} ${user.lastName} has ${userConversationCount} conversations: ${isFirstTimeCaller}`)
     user.firstTimeCaller = isFirstTimeCaller
     await user.save()
