@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import Loader from 'react-loader'
 import moment from 'moment'
 import Modal from 'react-modal'
+import io from 'socket.io-client'
 import API from './API'
 import CampaignCallPreview from './CampaignCallPreview'
 
@@ -42,23 +43,25 @@ function compareUserConvos(a, b) {
   }
 }
 
-class UserConvoItem extends Component {
-  render() {
-
-    let numUserCalls = null
-    if (this.props.userConvo.convoData) {
-      numUserCalls = this.props.userConvo.convoData.numUserCalls
-    }
-
-    // TODO: calculate X as number of reps
-    return(<tr>
-      <td>{this.props.userConvo.user ? this.props.userConvo.user.id : ''}</td>
-      <td>{this.props.userConvo.user ? this.props.userConvo.user.firstName + ' ' + this.props.userConvo.user.lastName : ''}</td>
-      <td>{this.props.userConvo.status}</td>
-      <td>{this.props.userConvo.datePrompted}</td>
-      <td>{numUserCalls ? numUserCalls + '/ X' : ''}</td>
-    </tr>)
+function UserConvoItem(props) {
+  let numUserCalls = null
+  let numRepresentatives = null
+  if (props.userConvo.user && props.userConvo.user.convoData) {
+    numUserCalls = props.userConvo.user.convoData.numUserCalls
+    numRepresentatives = props.userConvo.user.convoData.representatives.length
   }
+
+  const datePrompted = props.userConvo.datePrompted
+
+  return (
+    <tr>
+      <td>{props.userConvo.user ? props.userConvo.user.id : ''}</td>
+      <td>{props.userConvo.user ? props.userConvo.user.firstName + ' ' + props.userConvo.user.lastName : ''}</td>
+      <td>{props.userConvo.status}</td>
+      <td>{datePrompted ? moment.utc(datePrompted).local().format(DATE_FORMAT) : 'N/A'}</td>
+      <td>{numUserCalls !== null ? `${numUserCalls} / ${numRepresentatives}` : ''}</td>
+    </tr>
+  )
 }
 
 export default class CampaignActionDetail extends React.Component {
@@ -70,6 +73,8 @@ export default class CampaignActionDetail extends React.Component {
       confirmationModalIsOpen: false,
     }
     this.fetchCampaignAction = this.fetchCampaignAction.bind(this)
+    this.closeConfirmationModal = this.closeConfirmationModal.bind(this)
+    this.sendAction = this.sendAction.bind(this)
   }
 
   static get contextTypes() {
@@ -77,18 +82,12 @@ export default class CampaignActionDetail extends React.Component {
   }
 
   componentWillMount() {
+    const socket = io()
+    socket.on(`campaign_action/${this.props.params.actionId}`, message => {
+      const data = JSON.parse(message)
+      this.setState({ action: data.campaign_action })
+    })
     this.fetchCampaignAction()
-    var intervalId = setInterval(() => {
-      console.log('++ updating campaign action')
-      this.fetchCampaignAction()
-    }, 3000)
-    this.setState({intervalId: intervalId})
-  }
-
-  componentWillUnmount() {
-    if (this.state.intervalId) {
-      clearInterval(this.state.intervalId)
-    }
   }
 
   fetchCampaignAction() {
@@ -134,8 +133,29 @@ export default class CampaignActionDetail extends React.Component {
     )
   }
 
-  closeConfirmationModal = () => {
+  closeConfirmationModal() {
     this.setState({ confirmationModalIsOpen: false })
+  }
+
+  sendAction() {
+    this.closeConfirmationModal()
+    const notifyCallback = () => {
+      this.context.notify({
+        message: 'Sent',
+        level: 'success',
+        autoDismiss: 1,
+        onRemove: () => {}
+      })
+    }
+    switch (this.state.action.type) {
+      case 'CampaignCall':
+        return API.sendCampaignCall(this.state.action.id).then(notifyCallback)
+      case 'CampaignUpdate':
+        return API.sendCampaignUpdate(this.state.action.id).then(notifyCallback)
+      default:
+        console.log('++ invalid campaign action type')
+        return null
+    }
   }
 
   get preview() {
@@ -149,28 +169,14 @@ export default class CampaignActionDetail extends React.Component {
     }
   }
 
-  sendAction = () => {
-    this.closeConfirmationModal()
-    const notifyCallback = () => {
-      this.context.notify({
-        message: 'Sent',
-        level: 'success',
-        autoDismiss: 1,
-        onRemove: () => {}
-      })
-    }
-    switch (this.state.action.type) {
-      case 'CampaignCall':
-          return API.sendCampaignCall(this.state.action.id).then(notifyCallback)
-      case 'CampaignUpdate':
-          return API.sendCampaignUpdate(this.state.action.id).then(notifyCallback)
-      default:
-          console.log('++ invalid campaign action type')
-          return null
-    }
+  get targeting() {
+    return (
+      <ul className="targeting">
+      </ul>
+    )
   }
 
-  render = () => {
+  render() {
     const createdAt = moment.utc(this.state.action.createdAt).local().format(DATE_FORMAT)
     const actionTypeLabels = {
       CampaignCall: 'Call',
@@ -211,9 +217,16 @@ export default class CampaignActionDetail extends React.Component {
             {this.preview}
           </div>
 
+          <div className="targeting-container">
+            <h4>Targeting</h4>
+            {this.targeting}
+          </div>
+
           <div className="sent-to">
             <h1>Sent To</h1>
-            <button className="send-button" onClick={() => this.setState({ confirmationModalIsOpen: true })}>Send</button>
+            <button className="send-button" onClick={() => this.setState({ confirmationModalIsOpen: true })}>
+              {this.state.action.sent ? 'Send to remaining list' : 'Send'}
+            </button>
           </div>
 
           <Modal
@@ -236,7 +249,7 @@ export default class CampaignActionDetail extends React.Component {
                   <th>User</th>
                   <th>Status</th>
                   <th>Date Received</th>
-                  <th>NumCalls</th>
+                  <th>Called</th>
                 </tr>
                 {userConvos}
               </tbody>

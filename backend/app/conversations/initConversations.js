@@ -1,12 +1,13 @@
 const moment = require('moment')
 
 const { logMessage, captureException } = require('../utilities/logHelper')
+const { getPopulatedCampaignActionObject } = require('../utilities/campaignActions')
 const { startCallConversation } = require('./callConvo')
 const { startUpdateConversation } = require('./updateConvo')
 const { UserConversation } = require('../models')
 const USER_CONVO_STATUS = UserConversation.USER_CONVO_STATUS
 
-async function initConvos(campaignAction) {
+async function initConvos(campaignAction, io) {
   /*
    * An idempotent function for sending a campaignAction to all the users it should go to.
    *
@@ -40,6 +41,15 @@ async function initConvos(campaignAction) {
         userConversation.status = USER_CONVO_STATUS.error
         userConversation.save()
       }
+    }
+
+    // this block of code emits a websocket event that the admin frontend can use to update itself in realtime
+    try {
+      const actionObject = await getPopulatedCampaignActionObject(campaignAction._id, campaignAction.type)
+      io.sockets.emit(`campaign_action/${campaignAction._id}`, JSON.stringify({ campaign_action: actionObject }))
+    } catch (err) {
+      captureException(err)
+      continue
     }
   }
 

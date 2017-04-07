@@ -54,6 +54,11 @@ module.exports = {
       '/api': {
         target: 'http://localhost:8081',
         secure: false
+      },
+      '/socket.io': {
+        target: 'ws://localhost:8081',
+        ws: true,
+        secure: false
       }
     }
   }

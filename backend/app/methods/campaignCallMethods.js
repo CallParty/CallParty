@@ -1,23 +1,8 @@
 const { CampaignCall } = require('../models')
+const { getPopulatedCampaignCallObject } = require('../utilities/campaignCalls')
 
 function getCampaignCallDetail(req, res) {
-  return CampaignCall
-    .findById(req.params.id)
-    .populate('campaignUpdates userActions')
-    .populate({
-      path: 'userConversations',
-      populate: {
-        path: 'user'
-      }
-    })
-    .exec()
-    .then(async function(campaignCall) {
-      return Object.assign(
-        {},
-        campaignCall.toObject(),
-        { matchingRepresentatives: await campaignCall.getMatchingRepresentatives() }
-      )
-    })
+  return getPopulatedCampaignCallObject(req.params.id)
     .then(campaignCallObject => res.json(campaignCallObject))
     .catch(err => res.send(err))
 }

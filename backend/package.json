@@ -37,6 +37,7 @@
     "raven": "^1.1.1",
     "request": "^2.79.0",
     "request-promise-any": "^1.0.3",
+    "socket.io": "^1.7.3",
     "xtend": "^4.0.1"
   },
   "devDependencies": {
