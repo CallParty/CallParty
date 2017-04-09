@@ -129,42 +129,44 @@ class NewCampaignUpdate extends Component {
     }))
 
     return (
-      <div>
+      <div className="camp-act-container">
         <div className="meta">
           <h1>New Update</h1>
           <h3>Campaign: <Link to={`/${this.state.campaign.id}`}>{this.state.campaign.title}</Link></h3>
         </div>
-        <form onSubmit={this.onSubmit}>
-          <fieldset>
-            <label htmlFor="callToActionReference">Call to Action Reference</label>
-            <Select
-              name="callToActionReference"
-              value={this.state.update.campaignCall}
-              options={options}
-              onChange={this.onSelectChange}
-            />
-          </fieldset>
-          <fieldset>
-            <label htmlFor="message">Message</label>
-            <textarea id="message" value={this.state.update.message} onChange={this.onMessageChange} />
-          </fieldset>
-          <input type="submit" value="Create" />
-        </form>
-        <div className="preview">
-          <h4>Preview</h4>
-          <div className="preview-message">{this.state.update.message}</div>
-        </div>
-        <Modal
-          isOpen={this.state.confirmationModalIsOpen}
-          style={CONFIRMATION_MODAL_STYLE}
-          contentLabel="Confirm"
-        >
-          <p style={{ marginBottom: '10px' }}>Are you sure?</p>
-          <div>
-            <button onClick={this.createCampaignUpdate} style={{ marginRight: '10px' }}>Yes</button>
-            <button onClick={this.closeConfirmationModal}>No</button>
+        <div className="camp-act-input">
+          <form onSubmit={this.onSubmit}>
+            <fieldset>
+              <label htmlFor="callToActionReference">Call to Action Reference</label>
+              <Select
+                name="callToActionReference"
+                value={this.state.update.campaignCall}
+                options={options}
+                onChange={this.onSelectChange}
+              />
+            </fieldset>
+            <fieldset>
+              <label htmlFor="message">Message</label>
+              <textarea id="message" value={this.state.update.message} onChange={this.onMessageChange} />
+            </fieldset>
+            <input type="submit" value="Create" />
+          </form>
+          <div className="preview">
+            <h4>Preview</h4>
+            <div className="preview-message">{this.state.update.message}</div>
           </div>
-        </Modal>
+          <Modal
+            isOpen={this.state.confirmationModalIsOpen}
+            style={CONFIRMATION_MODAL_STYLE}
+            contentLabel="Confirm"
+          >
+            <p style={{ marginBottom: '10px' }}>Are you sure?</p>
+            <div>
+              <button onClick={this.createCampaignUpdate} style={{ marginRight: '10px' }}>Yes</button>
+              <button onClick={this.closeConfirmationModal}>No</button>
+            </div>
+          </Modal>
+        </div>
       </div>
     )
   }
@@ -302,113 +304,115 @@ class NewCampaignCall extends Component {
     const districtOptions = this.state.districts.map(c => ({ value: c, label: c }))
 
     return (
-      <div>
+      <div className="camp-act-container">
         <div className="meta">
           <h1>New Action</h1>
           <h3>Campaign: <Link to={`/${this.state.campaign.id}`}>{this.state.campaign.title}</Link></h3>
         </div>
-        <form onSubmit={this.onSubmit.bind(this)}>
-          <fieldset>
-            <label>Targeting</label>
-            <div>
-              <Select
-                name="memberTypes"
-                placeholder="Member Type"
-                value={this.state.campaignCall.memberTypes}
-                options={MEMBERS}
-                onChange={this.onSelectChange.bind(this, 'memberTypes')}
-                clearable={false}
-                multi
-              />
-              <Select
-                name="parties"
-                placeholder="Party"
-                value={this.state.campaignCall.parties}
-                options={PARTIES}
-                onChange={this.onSelectChange.bind(this, 'parties')}
-                clearable={false}
-                multi
-              />
-              <Select
-                name="committees"
-                placeholder="Committee"
-                value={this.state.campaignCall.committees}
-                options={committeeOptions}
-                onChange={this.onSelectChange.bind(this, 'committees')}
-                clearable={false}
-                multi
-              />
-              <Select
-                name="districts"
-                placeholder="District"
-                value={this.state.campaignCall.districts}
-                options={districtOptions}
-                onChange={this.onSelectChange.bind(this, 'districts')}
-                clearable={false}
-                multi
-              />
-            </div>
-          </fieldset>
-          <fieldset>
-            <label>Message</label>
-            <textarea
-              maxLength="640"
-              value={this.state.campaignCall.message}
-              onChange={this.onInputChange.bind(this, 'message')}
-              ref={(input) => { this.inputs.message = input }} />
-          </fieldset>
-          <fieldset>
-            <label>Issue Link</label>
-            <input
-              maxLength="640"
-              type="text"
-              value={this.state.campaignCall.issueLink}
-              onChange={this.onInputChange.bind(this, 'issueLink')}
-              ref={(input) => { this.inputs.issueLink = input }} />
-          </fieldset>
-          <fieldset>
-            <label>Share Link</label>
-            <input
-              maxLength="640"
-              type="text"
-              value={this.state.campaignCall.shareLink}
-              onChange={this.onInputChange.bind(this, 'shareLink')}
-              ref={(input) => { this.inputs.shareLink = input }} />
-          </fieldset>
-          <fieldset>
-            <label>Subject</label>
-            <input
-              maxLength="640"
-              type="text"
-              value={this.state.campaignCall.title}
-              onChange={this.onInputChange.bind(this, 'title')}
-              ref={(input) => { this.inputs.title = input }} />
-          </fieldset>
-          <fieldset>
-            <label>Task</label>
-            <input
-              maxLength="640"
-              type="text"
-              value={this.state.campaignCall.task}
-              onChange={this.onInputChange.bind(this, 'task')}
-              ref={(input) => { this.inputs.task = input }} />
-          </fieldset>
-          <input type="submit" value="Create" />
-        </form>
-        <div className="preview">
-          <CampaignCallPreview campaignCall={this.state.campaignCall} focusInput={this.focusInput.bind(this)} />
-        </div>
-        <Modal
-          isOpen={this.state.confirmationModalIsOpen}
-          style={CONFIRMATION_MODAL_STYLE}
-          contentLabel="Confirm"
-        >
-          <p style={{ marginBottom: '10px' }}>Are you sure?</p>
-          <div>
-            <button onClick={this.createCampaignCall} style={{ marginRight: '10px' }}>Yes</button>
-            <button onClick={this.closeConfirmationModal}>No</button>
+        <div className="camp-act-input">
+          <form onSubmit={this.onSubmit.bind(this)}>
+            <fieldset>
+              <label>Targeting</label>
+              <div>
+                <Select
+                  name="memberTypes"
+                  placeholder="Member Type"
+                  value={this.state.campaignCall.memberTypes}
+                  options={MEMBERS}
+                  onChange={this.onSelectChange.bind(this, 'memberTypes')}
+                  clearable={false}
+                  multi
+                />
+                <Select
+                  name="parties"
+                  placeholder="Party"
+                  value={this.state.campaignCall.parties}
+                  options={PARTIES}
+                  onChange={this.onSelectChange.bind(this, 'parties')}
+                  clearable={false}
+                  multi
+                />
+                <Select
+                  name="committees"
+                  placeholder="Committee"
+                  value={this.state.campaignCall.committees}
+                  options={committeeOptions}
+                  onChange={this.onSelectChange.bind(this, 'committees')}
+                  clearable={false}
+                  multi
+                />
+                <Select
+                  name="districts"
+                  placeholder="District"
+                  value={this.state.campaignCall.districts}
+                  options={districtOptions}
+                  onChange={this.onSelectChange.bind(this, 'districts')}
+                  clearable={false}
+                  multi
+                />
+              </div>
+            </fieldset>
+            <fieldset>
+              <label>Message</label>
+              <textarea
+                maxLength="640"
+                value={this.state.campaignCall.message}
+                onChange={this.onInputChange.bind(this, 'message')}
+                ref={(input) => { this.inputs.message = input }} />
+            </fieldset>
+            <fieldset>
+              <label>Issue Link</label>
+              <input
+                maxLength="640"
+                type="text"
+                value={this.state.campaignCall.issueLink}
+                onChange={this.onInputChange.bind(this, 'issueLink')}
+                ref={(input) => { this.inputs.issueLink = input }} />
+            </fieldset>
+            <fieldset>
+              <label>Share Link</label>
+              <input
+                maxLength="640"
+                type="text"
+                value={this.state.campaignCall.shareLink}
+                onChange={this.onInputChange.bind(this, 'shareLink')}
+                ref={(input) => { this.inputs.shareLink = input }} />
+            </fieldset>
+            <fieldset>
+              <label>Subject</label>
+              <input
+                maxLength="640"
+                type="text"
+                value={this.state.campaignCall.title}
+                onChange={this.onInputChange.bind(this, 'title')}
+                ref={(input) => { this.inputs.title = input }} />
+            </fieldset>
+            <fieldset>
+              <label>Task</label>
+              <input
+                maxLength="640"
+                type="text"
+                value={this.state.campaignCall.task}
+                onChange={this.onInputChange.bind(this, 'task')}
+                ref={(input) => { this.inputs.task = input }} />
+            </fieldset>
+            <input type="submit" value="Create" />
+          </form>
+          <div className="preview">
+            <CampaignCallPreview campaignCall={this.state.campaignCall} focusInput={this.focusInput.bind(this)} />
           </div>
-        </Modal>
+          <Modal
+            isOpen={this.state.confirmationModalIsOpen}
+            style={CONFIRMATION_MODAL_STYLE}
+            contentLabel="Confirm"
+          >
+            <p style={{ marginBottom: '10px' }}>Are you sure?</p>
+            <div>
+              <button onClick={this.createCampaignCall} style={{ marginRight: '10px' }}>Yes</button>
+              <button onClick={this.closeConfirmationModal}>No</button>
+            </div>
+          </Modal>
+        </div>
       </div>
     )
   }

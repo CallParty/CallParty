@@ -2,68 +2,115 @@
 @import 'select.css'
 @import 'notifications'
 
+@import url('https://fonts.googleapis.com/css?family=Montserrat:400,700');
+
+$white: #FFFFFF
+$litegrey: #F2F3F7
+$grey: #CCCCCC
+$black: #000000
+
+$cpred: #F2205C
+$cpblue: #18C7EF
+$cpdarkblue: #41416B
+$messengerblue: #4080ff
 *
   -moz-box-sizing: border-box
   -webkit-box-sizing: border-box
   box-sizing: border-box
 
-html
+html, body
   font-family: 'Helvetica', sans-serif
-  background: #f9f9f9
-  padding: 2em
+  display: block
+  font-size: 16px
+
+h1, h2, h3, h4, h5
+  font-family: 'Montserrat', sans-serif
 
 h1
-  font-size: 2em
+  font-size: 2rem
+  font-weight: bold
+
+h2
+  font-size: 1.6rem
   font-weight: bold
 
 button, input[type=submit]
   border: none
   border-radius: 4px
   padding: 1em
-  background: #F2205C
+  background: $cpred
   text-align: center
-  font-family: 'Helvetica', sans-serif
+  font-family: 'Montserrat', sans-serif
   font-weight: bold
-  color: #FFF
+  color: $white
   cursor: pointer
   margin: 0 4px 4px 0
   min-width: 8em
   &:hover
-    background: #41416B
+    background: $cpdarkblue
 
 button, input[type=button]
-  color: #FFF
-  background: #41416B
+  color: $white
+  background: $cpdarkblue
   &:hover
-    background: #F2205C
+    background: $cpred
+
+.button 
+  //border: none;
+  text-decoration: none;
+  display: block;
+  margin: 15px 0;
+  border-radius: 4px;
+  padding: 1em;
+  text-align: center;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: bold;
+  cursor: pointer;
+  min-width: 150px;
+  padding: 20px;
+  font-size: 1em;
+  height: 60px;
+  background-color: $cpred;
+  color: $white;
 
 .warn
-  background: #18C7EF
+  background: $cpblue
   &:hover
-    background: #F2205C
+    background: $cpred
 
 .table
-  header
-    margin: 0 0 1em 0
-    overflow: hidden
-    h1
-      float: left
-    button
-      float: right
-      margin-left: 0.2em
+  padding-bottom: 50px
+  &-header
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+    &-buttons 
+      margin: 0;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between
+      .button 
+        margin-left: 15px
   table
     clear: both
     width: 100%
     border-radius: 4px
   tr
-    background: #F2F3F7
+    background: $litegrey
     cursor: pointer
     &:hover
-      background: #41416B
-      color: #fff
+      background: $cpblue
+      color: $white
     &:first-child
-      background: #241F3D
-      color: #FFF
+      background: $cpdarkblue
+      color: $white
+      cursor: default
+    a
+      color: $cpred
+      text-decoration: none
+      //cursor: pointer
   td, th
     padding: 1em
     text-align: left
@@ -77,47 +124,58 @@ button, input[type=button]
   .send-button
     margin-left: 20px
     float: right
-    background: #F2205C
+    background: $cpred
 
 .userconvo-table
   margin-top: 20px
   float: left
   width: 100%
 
+//--- Campaign Action
+
+  //--- New Campaign Action
+.camp-act
+  &-container 
+    position: relative
+
+  &-input
+    display: flex
+    flex-direction: row
+    flex-wrap: nowrap
+
 .preview-warning
-  padding: 20px
+  padding: 15px
   width: 400px
-  border: 1px solid black
+  border: 1px solid $cpred
+  border-radius: 4px;
+  color: $cpred
   margin-bottom: 20px
 
 .preview-message
-  background: #4080FF
+  background-color: $messengerblue
+  width: 100%;
   border-radius: 1em
   padding: 1.5em
   min-width: 16em
-  color: #fff
+  color: $white
   line-height: 1.4
   float: right
 
 form, .preview
-  width: 50%
-  float: left
+  flex-basis: 50%
   input[type=submit]
     width: 100%
     margin: 2em 0
 
 .preview
   padding: 0 0 0 4em
-  position: fixed
-  right: 1em
-  top: 16em
   h4
     margin-bottom: 1em
 
 fieldset
-  margin: 1em 0
+  margin-bottom: 20px
 label
-  margin: 1em 0
+  margin-bottom: 20px
   display: block
 textarea
   resize: vertical
@@ -129,7 +187,7 @@ textarea, input[type=text], input[type=password]
   width: 100%
   display: block
   padding: 1em
-  border: 1px solid #bbb
+  border: 1px solid $grey
   &:focus
     background: #dcffdc
 
@@ -138,41 +196,41 @@ textarea, input[type=text], input[type=password]
   min-height: 1em
   padding: 0.2em 0.4em
   display: inline-block
-  background: #fdf8d8
-  color: #222
+  background: $litegrey
+  color: $black
   box-shadow: 2px 2px rgba(0,0,0,0.2)
   margin: 0.1em 0.3em
   border-radius: 0.4em
   cursor: pointer
   &:hover
-    background: #dcffdc
+    background: $cpblue
 
 .new-campaign
   padding: 20px
   font-size: 1em
   height: 60px
-  background-color: #F2205C
-  color: #FFF
+  background-color: $cpred
+  color: $white
   &:hover
-    background: #41416B
+    background: $cpdarkblue
 
 .new-action
   padding: 20px
   font-size: 1em
   height: 60px
-  background-color: #F2205C
-  color: #FFF
+  background-color: $cpred
+  color: $white
   &:hover
-    background: #41416B
+    background: $cpdarkblue
 
 .new-update
   padding: 20px
   font-size: 1em
   height: 60px
-  background-color: #F2205C
-  color: #FFF
+  background-color: $cpred
+  color: $white
   &:hover
-    background: #41416B
+    background: $cpdarkblue
 
 .user-var
   font-style: italic
@@ -181,25 +239,46 @@ textarea, input[type=text], input[type=password]
 .meta
   margin: 0 0 2em 0
   line-height: 1.5
+  span 
+    color: $cpdarkblue
+
+.body-container 
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 1rem
+
 
 .main-header
-  padding: 1em 0
+  padding-top: 15px
   display: flex
   justify-content: space-between
+  align-items: center
+  //border-bottom: 1px solid $grey
   &-nav
-    margin-bottom: 20px;
+    //margin-bottom: 20px
     a
-      margin-left: 10px;
+      margin-left: 10px
+  &-logo
+    img
+      height: 60px
+      width: 60px
 
 .breadcrumbs
   list-style: none
+  min-height: 40px
+  margin: 15px 0
 
 .breadcrumb
   display: inline
-  color: #F45380
-
+  font-size: 0.75rem
+  color: $black
+  padding: 5px 15px 5px 0
+  border-bottom: 1px solid transparent
+  &:hover
+    border-bottom: 1px solid $black
 .breadcrumb-link
-  color: #F45380
+  color: $black
+  text-decoration: none;
 
 .campaign-action-preview-container
   width: 50%

@@ -84,14 +84,19 @@ class Container extends Component {
     const breadcrumbs = isNotLogin ? this.breadcrumbs : null
 
     return (
-      <div>
+      <div className="body-container">
         <header className="main-header">
-          {breadcrumbs}
+          <div className="main-header-logo">
+            <Link to="/"><img src="http://callparty.org/assets/images/callparty.png" alt="Call Party Logo" /></Link>
+          </div>
           <div className="main-header-nav">
             {refreshButton}
             {logoutButton}
           </div>
         </header>
+        <div className="breadcrumbs-container">
+          {breadcrumbs}
+        </div>
         {this.props.children}
       </div>
     )

@@ -40,10 +40,12 @@ class Campaigns extends Component {
 
     return (
       <div className="table">
-        <header>
+        <div className="table-header">
           <h1>Campaigns</h1>
-          <Link to="/new"><button className="new-campaign">New Campaign</button></Link>
-        </header>
+          <div className="table-header-buttons">
+            <Link className="button" to="/new">New Campaign</Link>
+          </div>
+        </div>
         <table>
           <tbody>
             <tr>
@@ -132,16 +134,18 @@ class Campaign extends Component {
     return (
       <div className="campaign">
         <div className="meta">
-          <h1>{this.state.title}</h1>
-          <h2>{this.state.description}</h2>
-          <h4>Created at {createdAt}</h4>
+          <h1>Campaign: <span>{this.state.title}</span></h1>
+          <p>Description: {this.state.description}</p>
+          <p>Created at {createdAt}</p>
         </div>
         <div className="table">
-          <header>
-            <h1>Conversations</h1>
-            <Link to={`/${this.props.params.id}/call/new`}><button className="new-action">New Action</button></Link>
-            <Link to={`/${this.props.params.id}/update/new`}><button className="new-update">New Update</button></Link>
-          </header>
+          <div className="table-header">
+            <h2>Conversations</h2>
+            <div className="table-header-buttons">
+              <Link className="button" to={`/${this.props.params.id}/call/new`}>New Action</Link>
+              <Link className="button" to={`/${this.props.params.id}/update/new`}>New Update</Link>
+            </div>
+          </div>
           <table>
             <tbody>
               <tr>
@@ -149,7 +153,7 @@ class Campaign extends Component {
                 <th>Type</th>
                 <th>Subject</th>
                 <th>Date Created</th>
-                <th>Clone</th>
+                <th>Clone?</th>
               </tr>
               {campaignActions}
             </tbody>
