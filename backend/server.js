@@ -10,10 +10,11 @@ const Raven = require('raven')
 // modules =================================================
 const apiRouter = express.Router()
 const bodyParser = require('body-parser') // BodyParser pour POST
-const http = require('http').Server(app) // préparer le serveur web
+const server = require('http').Server(app) // préparer le serveur web
 const path = require('path')
 const mongoose = require('mongoose')
 const jwt = require('express-jwt')
+const io = require('socket.io')(server, { path: '/socket.io' })
 
 // log unhandled promise rejections and uncaught exceptions
 process.on('unhandledRejection', function(err) {
@@ -21,6 +22,10 @@ process.on('unhandledRejection', function(err) {
 })
 process.on('uncaughtException', function(err) {
   captureException(err)
+})
+
+io.on('connection', function connection(client) {
+  client.emit('message', 'Socket connected OK')
 })
 
 // Handle CORS
@@ -59,7 +64,7 @@ app.use(jwt({ secret: process.env.JWT_SECRET }).unless({
 
 // routes
 require('./app/routes/helperRoutes')(apiRouter)
-require('./app/routes/sendRoutes')(apiRouter)
+require('./app/routes/sendRoutes')(apiRouter, io)
 require('./app/routes/adminRoutes')(apiRouter)
 
 app.use('/api', apiRouter)
@@ -120,6 +125,6 @@ if (process.env.SENTRY_BACKEND_DSN) {
 }
 
 // START ===================================================
-http.listen(app.get('port'), function () {
+server.listen(app.get('port'), function () {
   logMessage('++ listening on port ' + app.get('port'))
 })

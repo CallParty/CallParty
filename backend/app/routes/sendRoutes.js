@@ -5,13 +5,13 @@ const { initConvos } = require('../conversations/initConversations')
 mongoose.Promise = Promise
 const ObjectId = mongoose.Types.ObjectId
 
-module.exports = function(apiRouter) {
+module.exports = function(apiRouter, io) {
 
   apiRouter.post('/send/campaignCall/:id', function(req, res) {
     const campaignCallId = req.params.id
     const campaignCallPromise = CampaignCall.findById(ObjectId(campaignCallId)).exec()
     campaignCallPromise.then(campaignCall => {
-      return initConvos(campaignCall)
+      return initConvos(campaignCall, io)
     })
     // send response
     res.send('ok')
@@ -21,7 +21,7 @@ module.exports = function(apiRouter) {
     const campaignUpdateId = req.params.id
     const campaignUpdatePromise = CampaignUpdate.findById(ObjectId(campaignUpdateId)).exec()
     campaignUpdatePromise.then(campaignUpdate => {
-      return initConvos(campaignUpdate)
+      return initConvos(campaignUpdate, io)
     })
     // send response
     res.send('ok')
