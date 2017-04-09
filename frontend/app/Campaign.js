@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Link, browserHistory } from 'react-router'
 import moment from 'moment'
-import API from './API'
+import API from './helpers/API'
 
 const DATE_FORMAT = 'h:mma on M/DD/YYYY'
 

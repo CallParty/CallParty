@@ -3,7 +3,7 @@ import Loader from 'react-loader'
 import moment from 'moment'
 import Modal from 'react-modal'
 import io from 'socket.io-client'
-import API from './API'
+import API from './helpers/API'
 import CampaignCallPreview from './CampaignCallPreview'
 
 const DATE_FORMAT = 'h:mma on M/DD/YYYY'

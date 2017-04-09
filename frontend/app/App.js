@@ -3,11 +3,12 @@ import { Router, Route, Link, IndexRoute, browserHistory } from 'react-router'
 import NotificationSystem from 'react-notification-system'
 import classNames from 'classnames'
 import { Campaigns, Campaign, NewCampaign } from './Campaign'
-import { NewCampaignUpdate, NewCampaignCall } from './NewCampaignAction'
+import NewCampaignUpdate from './NewCampaignUpdate'
+import NewCampaignCall from './NewCampaignCall'
 import CampaignActionDetail from './CampaignActionDetail'
 import RequireAuthenticationContainer from './RequireAuthenticationContainer'
 import Login from './Login'
-import API from './API'
+import API from './helpers/API'
 
 
 class Container extends Component {
