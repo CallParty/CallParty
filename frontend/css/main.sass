@@ -219,15 +219,30 @@ textarea, input[type=text], input[type=password]
   width: 50%
 
 .campaign-action-statistic-label
-  margin-bottom: 10px
+  margin-bottom: 5px
 
-.campaign-action-targeting
+.targeting-container
+  margin-left: 50px
   h4
     margin-bottom: 1em
 
+.targeting-list-item
+  margin-bottom: 10px
+  &:last-child
+    margin-bottom: 0
+
 .pill
+  display: inline-block
   background-color: #E9E8ED
+  color: #42416c
   border: 1px solid #E3E2E7
   border-radius: 32px
-  padding: 5px 15px
-  width: initial
+  padding: 8px 16px
+  line-height: 16px
+  font-size: 16px
+
+.details-container
+  display: flex
+  flex-direction: row
+  justify-content: flex-start
+  align-items: flex-start

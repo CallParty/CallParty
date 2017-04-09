@@ -49,7 +49,6 @@ async function initConvos(campaignAction, io) {
       io.sockets.emit(`campaign_action/${campaignAction._id}`, JSON.stringify({ campaign_action: actionObject }))
     } catch (err) {
       captureException(err)
-      continue
     }
   }
 

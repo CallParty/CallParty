@@ -170,8 +170,42 @@ export default class CampaignActionDetail extends React.Component {
   }
 
   get targeting() {
+    if (Object.keys(this.state.action).length === 0) {
+      return null
+    }
+
+    const memberTypes = this.state.action.memberTypes || []
+    const memberTypeLabels = { rep: 'Representatives', sen: 'Senators' }
+    let memberTypeTargeting
+    if (memberTypes.length === 0 || (memberTypes.includes('rep') && memberTypes.includes('sen'))) {
+      memberTypeTargeting = 'All congress members'
+    } else {
+      memberTypeTargeting = memberTypeLabels[memberTypes[0]]
+    }
+
+    const parties = this.state.action.parties || []
+    const partyLabels = { Democrat: 'Democrats', Republican: 'Republicans', Independent: 'Independents' }
+    let partyTargeting
+    if (parties.length === 0 || (parties.includes('Democrat') && parties.includes('Republican') && parties.includes('Independent'))) {
+      partyTargeting = ['All parties']
+    } else {
+      partyTargeting = parties.map(party => partyLabels[party])
+    }
+
+    const committees = this.state.action.committees || []
+    const committeeTargeting = committees.length === 0 ? ['All committees'] : committees
+
+    const districts = this.state.action.districts || []
+    const districtTargeting = districts.length === 0 ? ['All districts'] : districts
+
+    const targeting = [memberTypeTargeting, ...partyTargeting, ...committeeTargeting, ...districtTargeting]
     return (
       <ul className="targeting">
+        {targeting.map((target, i) => (
+          <li key={i} className="targeting-list-item">
+            <span className="pill">{target}</span>
+          </li>
+        ))}
       </ul>
     )
   }
@@ -213,13 +247,15 @@ export default class CampaignActionDetail extends React.Component {
             {this.statistics}
           </div>
 
-          <div className="campaign-action-preview-container">
-            {this.preview}
-          </div>
+          <div className="details-container">
+            <div className="campaign-action-preview-container">
+              {this.preview}
+            </div>
 
-          <div className="targeting-container">
-            <h4>Targeting</h4>
-            {this.targeting}
+            <div className="targeting-container">
+              <h4>Targeting</h4>
+              {this.targeting}
+            </div>
           </div>
 
           <div className="sent-to">
@@ -245,8 +281,8 @@ export default class CampaignActionDetail extends React.Component {
             <table>
               <tbody>
                 <tr>
-                  <th>#</th>
-                  <th>User</th>
+                  <th>User ID</th>
+                  <th>Name</th>
                   <th>Status</th>
                   <th>Date Received</th>
                   <th>Called</th>
