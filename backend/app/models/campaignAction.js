@@ -11,7 +11,7 @@ const campaignActionSchema = new Schema({
   campaign: { type: Schema.Types.ObjectId, ref: 'Campaign' },
 
   // TARGETING
-  targetingType: [{ type: String, enum: ['segmenting', 'borrowed'] }],
+  targetingType: { type: String, enum: ['segmenting', 'borrowed'] },
 
   // (independent targeting)
   // rep targeting
@@ -22,7 +22,10 @@ const campaignActionSchema = new Schema({
   districts: Array,
 
   // (borrowed targeting)
-  targetAction: { type: Schema.Types.ObjectId, ref: 'CampaignAction' }    // targets anyone who this action was sent to
+  targetAction: { type: Schema.Types.ObjectId, ref: 'CampaignAction' },    // targets anyone who this action was sent to
+
+  // CACHED (store targeted reps so that it doesn't have to be recalculated)
+  targetedRepIds: [{ type: Schema.Types.ObjectId, ref: 'Representative' } ]
 
 }, {
   toObject: { virtuals: true },
@@ -36,7 +39,12 @@ campaignActionSchema.virtual('userConversations', {
   foreignField: 'campaignAction'
 })
 
-campaignActionSchema.methods.getMatchingRepresentatives = function() {
+campaignActionSchema.methods.getMatchingRepresentatives = async function() {
+
+  if (this.targetingType === 'borrowed') {
+    await this.populate('targetAction').execPopulate()
+    return this.targetAction.getMatchingRepresentatives()
+  }
 
   // construct repsQuery
   let repsQuery = this.model('Reps')
@@ -75,7 +83,13 @@ campaignActionSchema.methods.getMatchingRepresentatives = function() {
   return repsQuery.exec()
 }
 
-campaignActionSchema.methods.getMatchingUsers = function() {
+campaignActionSchema.methods.getMatchingUsers = async function() {
+
+  if (this.targetingType === 'borrowed') {
+    await this.populate('targetAction').execPopulate()
+    await this.targetAction.populate({ path: 'userConversations', populate: { path: 'user' }}).execPopulate()
+    return this.targetAction.userConversations.map(ua => ua.user)
+  }
 
   // base query
   let userQuery = this.model('User')

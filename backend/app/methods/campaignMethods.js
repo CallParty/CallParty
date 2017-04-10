@@ -71,7 +71,9 @@ exports.newCampaignAction = async function(req, res) {
     parties: data.parties,
     committees: data.committees,
     // user targeting
-    districts: data.districts
+    districts: data.districts,
+    // borrowed targeting
+    targetAction: data.targetAction,
   }
   let campaignAction = null
   if (data.type === 'CampaignCall') {
@@ -111,6 +113,12 @@ exports.newCampaignAction = async function(req, res) {
       status: USER_CONVO_STATUS.pending,
     })
   }
+
+  // for cacheing, save the reps that were targeted
+  const targetedReps = await campaignAction.getMatchingRepresentatives()
+  campaignAction.targetedRepIds = targetedReps.map(r => r._id)
+  await campaignAction.save()
+
   // return json
   return res.json(campaignAction)
 }

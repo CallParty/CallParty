@@ -1,6 +1,7 @@
 import API from './helpers/API'
 import React, { Component } from 'react'
 import Select from 'react-select'
+import RadioGroup from 'react-radio'
 import { Link } from 'react-router'
 import Modal from 'react-modal'
 import CampaignCallPreview from './CampaignCallPreview'
@@ -25,9 +26,10 @@ class NewCampaignAction extends Component {
         parties: [],
         committees: [],
         districts: [],
+        targetAction: null,
       },
       confirmationModalIsOpen: false,
-      loading: true,
+      loaded: false,
     }
     if (this.props.actionType === 'CampaignCall') {
         Object.assign(this.state.campaignAction, {
@@ -61,7 +63,7 @@ class NewCampaignAction extends Component {
 
     // if a cloneId param was passed, then pre-populate fields based on that campaignAction
     if (this.props.location && this.props.location.query && this.props.location.query.cloneId) {
-      API.campaignAction(this.props.location.query.cloneId, data => {
+      API.getClonedAction(this.props.location.query.cloneId, data => {
         this.setState({
           campaignAction: data
         })
@@ -82,6 +84,12 @@ class NewCampaignAction extends Component {
   onInputChange = (key, ev) => {
     var campaignAction = this.state.campaignAction
     campaignAction[key] = ev.target.value
+    this.setState({ campaignAction: campaignAction })
+  }
+
+  onTargetingTypeChange = (key, ev) => {
+    var campaignAction = this.state.campaignAction
+    campaignAction['targetingType'] = ev.target.value
     this.setState({ campaignAction: campaignAction })
   }
 
@@ -166,59 +174,94 @@ class NewCampaignAction extends Component {
     }
   }
 
-  render = () => {
+  getSegmentingTargeting = () => {
     const committeeOptions = this.state.committees.map(c => ({ value: c._id, label: c.name }))
     const districtOptions = this.state.districts.map(c => ({ value: c, label: c }))
+    return (
+      <fieldset>
+        <label>Segment Targeting</label>
+        <div>
+          <Select
+            name="memberTypes"
+            placeholder="Member Type"
+            value={this.state.campaignAction.memberTypes}
+            options={MEMBERS}
+            onChange={this.onSelectChange.bind(this, 'memberTypes')}
+            clearable={false}
+            multi
+          />
+          <Select
+            name="parties"
+            placeholder="Party"
+            value={this.state.campaignAction.parties}
+            options={PARTIES}
+            onChange={this.onSelectChange.bind(this, 'parties')}
+            clearable={false}
+            multi
+          />
+          <Select
+            name="committees"
+            placeholder="Committee"
+            value={this.state.campaignAction.committees}
+            options={committeeOptions}
+            onChange={this.onSelectChange.bind(this, 'committees')}
+            clearable={false}
+            multi
+          />
+          <Select
+            name="districts"
+            placeholder="District"
+            value={this.state.campaignAction.districts}
+            options={districtOptions}
+            onChange={this.onSelectChange.bind(this, 'districts')}
+            clearable={false}
+            multi
+          />
+        </div>
+      </fieldset>
+    )
+  }
 
+  getBorrowedTargeting = () => {
+    const options = this.state.campaign.campaignActions.map(a => ({
+      value: a.id,
+      label: a.title
+    }))
+    return (
+      <fieldset>
+        <label htmlFor="callToActionReference">Target Action</label>
+        <Select
+          name="targetAction"
+          value={this.state.campaignAction.targetAction}
+          options={options}
+          onChange={this.onSelectChange.bind(this, 'targetAction')}
+        />
+      </fieldset>
+    )
+  }
+
+  render = () => {
     return (
       <div>
         <div className="meta">
-          <h1>New Action</h1>
+          <h1>New {{'CampaignCall': 'Call', 'CampaignUpdate': 'Update'}[this.state.campaignAction.type]}</h1>
           <h3>Campaign: <Link to={`/${this.state.campaign.id}`}>{this.state.campaign.title}</Link></h3>
         </div>
         <form onSubmit={this.onSubmit.bind(this)}>
-          <fieldset>
-            <label>Targeting</label>
-            <div>
-              <Select
-                name="memberTypes"
-                placeholder="Member Type"
-                value={this.state.campaignAction.memberTypes}
-                options={MEMBERS}
-                onChange={this.onSelectChange.bind(this, 'memberTypes')}
-                clearable={false}
-                multi
-              />
-              <Select
-                name="parties"
-                placeholder="Party"
-                value={this.state.campaignAction.parties}
-                options={PARTIES}
-                onChange={this.onSelectChange.bind(this, 'parties')}
-                clearable={false}
-                multi
-              />
-              <Select
-                name="committees"
-                placeholder="Committee"
-                value={this.state.campaignAction.committees}
-                options={committeeOptions}
-                onChange={this.onSelectChange.bind(this, 'committees')}
-                clearable={false}
-                multi
-              />
-              <Select
-                name="districts"
-                placeholder="District"
-                value={this.state.campaignAction.districts}
-                options={districtOptions}
-                onChange={this.onSelectChange.bind(this, 'districts')}
-                clearable={false}
-                multi
-              />
-            </div>
-          </fieldset>
-
+          {(this.state.campaignAction.type === 'CampaignUpdate')
+            ? <fieldset>
+                <label>Targeting Type</label>
+                <RadioGroup name="targetingType" value={this.state.campaignAction.targetingType} onChange={this.onTargetingTypeChange}>
+                  <input type="radio" value="segmenting" />segmenting
+                  <input type="radio" value="borrowed" />borrowed
+                </RadioGroup>
+              </fieldset>
+            : null
+          }
+          {this.state.campaignAction.targetingType === 'segmenting'
+            ? this.getSegmentingTargeting()
+            : this.getBorrowedTargeting()
+          }
           <div>
             { this.getActionForm() }
           </div>

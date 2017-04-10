@@ -175,9 +175,7 @@ function CampaignAction(props) {
       <td>{ACTION_TYPES[props.type]}</td>
       <td>{props.title}</td>
       <td>{createdAt}</td>
-      {props.type === 'CampaignCall'
-        ? <td><Link to={createDuplicateUrl} onClick={e => e.stopPropagation()}>Clone</Link></td>
-        : <td></td>}
+      <td><Link to={createDuplicateUrl} onClick={e => e.stopPropagation()}>Clone</Link></td>
     </tr>
   )
 }

@@ -1,3 +1,4 @@
+const { CampaignUpdate } = require('../models')
 const { getPopulatedCampaignUpdateObject } = require('../utilities/campaignUpdates')
 
 function getCampaignUpdateDetail(req, res) {
@@ -6,6 +7,15 @@ function getCampaignUpdateDetail(req, res) {
     .catch(err => res.send(err))
 }
 
+function getCampaignUpdate(req, res) {
+  return CampaignUpdate
+    .findById(req.params.id)
+    .exec()
+    .then(campaignUpdateObject => res.json(campaignUpdateObject))
+    .catch(err => res.send(err))
+}
+
 module.exports = {
-  getCampaignUpdateDetail
+  getCampaignUpdateDetail,
+  getCampaignUpdate,
 }

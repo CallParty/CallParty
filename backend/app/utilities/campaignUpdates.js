@@ -1,12 +1,9 @@
 const { CampaignUpdate } = require('../models')
+const { captureException } = require('./logHelper')
 
 async function getPopulatedCampaignUpdateObject(id) {
-  return CampaignUpdate
+  const campaignUpdate = await CampaignUpdate
     .findById(id)
-    .populate({
-      path: 'campaignCall',
-      populate: 'userActions committees'
-    })
     .populate({
       path: 'userConversations',
       populate: {
@@ -14,18 +11,10 @@ async function getPopulatedCampaignUpdateObject(id) {
       }
     })
     .exec()
-    .then(async function(campaignUpdate) {
-      return Object.assign(
-        {},
-        campaignUpdate.toObject(),
-        {
-          campaignCall: Object.assign(
-            campaignUpdate.campaignCall.toObject(),
-            { matchingRepresentatives: await campaignUpdate.campaignCall.getMatchingRepresentatives() }
-          )
-        }
-      )
-    })
+  if (campaignUpdate.targetingType === 'borrowed') {
+    await campaignUpdate.populate('targetAction').execPopulate()
+  }
+  return campaignUpdate
 }
 
 module.exports = {

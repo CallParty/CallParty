@@ -51,7 +51,22 @@ module.exports = function(apiRouter) {
     }
   })
 
-  apiRouter.get('/campaign_calls/:id', campaignCallMethods.getCampaignCall)
+  apiRouter.get('/clone_action/:id', async function(req, res) {
+    /* this function returns a campaign action without its virtuals populated (to be used as a clone input) */
+    const { type } = await CampaignAction.findById(req.params.id).select({ type: 1, _id: 0 }).exec()
+    if (!type) {
+      return res.status(404).json({ error: 'CampaignAction not found.' })
+    }
+
+    if (type === 'CampaignCall') {
+      return campaignCallMethods.getCampaignCall(req, res)
+    } else if (type === 'CampaignUpdate') {
+      return campaignUpdateMethods.getCampaignUpdate(req, res)
+    }
+    else {
+      throw new Error("Invalid action type")
+    }
+  })
 
   apiRouter.get('/committees', committeeMethods.getCommittees)
   apiRouter.get('/districts', async function(req, res) {

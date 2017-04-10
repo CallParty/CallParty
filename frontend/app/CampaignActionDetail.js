@@ -5,6 +5,7 @@ import Modal from 'react-modal'
 import io from 'socket.io-client'
 import API from './helpers/API'
 import CampaignCallPreview from './CampaignCallPreview'
+import CampaignUpdatePreview from './CampaignUpdatePreview'
 
 const DATE_FORMAT = 'h:mma on M/DD/YYYY'
 
@@ -59,7 +60,10 @@ function UserConvoItem(props) {
       <td>{props.userConvo.user ? props.userConvo.user.firstName + ' ' + props.userConvo.user.lastName : ''}</td>
       <td>{props.userConvo.status}</td>
       <td>{datePrompted ? moment.utc(datePrompted).local().format(DATE_FORMAT) : 'N/A'}</td>
-      <td>{numUserCalls !== null ? `${numUserCalls} / ${numRepresentatives}` : ''}</td>
+      {props.actionType === 'CampaignCall'
+        ? <td>{numUserCalls !== null ? `${numUserCalls} / ${numRepresentatives}` : ''}</td>
+        : null
+      }
     </tr>
   )
 }
@@ -91,7 +95,9 @@ export default class CampaignActionDetail extends React.Component {
   }
 
   fetchCampaignAction() {
-    return API.campaignAction(this.props.params.actionId).then(data => this.setState({ action: data, loaded: true }))
+    return API.campaignAction(this.props.params.actionId).then(data => {
+      this.setState({ action: data, loaded: true })
+    })
   }
 
   get breadcrumbTitle() {
@@ -99,13 +105,11 @@ export default class CampaignActionDetail extends React.Component {
   }
 
   get representativesCount() {
-    switch (this.state.action.type) {
-      case 'CampaignCall':
-        return this.state.action.matchingRepresentatives.length
-      case 'CampaignUpdate':
-        return this.state.action.campaignCall.matchingRepresentatives.length
-      default:
-        return 0
+    if (this.state.action.targetedRepIds) {
+      return this.state.action.targetedRepIds.length
+    }
+    else {
+      return 0
     }
   }
 
@@ -153,8 +157,7 @@ export default class CampaignActionDetail extends React.Component {
       case 'CampaignUpdate':
         return API.sendCampaignUpdate(this.state.action.id).then(notifyCallback)
       default:
-        console.log('++ invalid campaign action type')
-        return null
+        throw new Error('++ invalid campaign action type')
     }
   }
 
@@ -163,7 +166,7 @@ export default class CampaignActionDetail extends React.Component {
       case 'CampaignCall':
         return  <CampaignCallPreview campaignCall={this.state.action} />
       case 'CampaignUpdate':
-        return this.state.action.message
+        return <CampaignUpdatePreview campaignUpdate={this.state.action} />
       default:
         return null
     }
@@ -198,7 +201,12 @@ export default class CampaignActionDetail extends React.Component {
     const districts = this.state.action.districts || []
     const districtTargeting = districts.length === 0 ? ['All districts'] : districts
 
-    const targeting = [memberTypeTargeting, ...partyTargeting, ...committeeTargeting, ...districtTargeting]
+    let targeting = []
+    if (this.state.action.targetingType === 'segmenting') {
+      targeting = [memberTypeTargeting, ...partyTargeting, ...committeeTargeting, ...districtTargeting]
+    } else if (this.state.action.targetingType === 'borrowed') {
+      targeting = [`action: ${this.state.action.targetAction.title} `]
+    }
     return (
       <ul className="targeting">
         {targeting.map((target, i) => (
@@ -226,6 +234,7 @@ export default class CampaignActionDetail extends React.Component {
           key={i}
           num={i}
           userConvo={userConvo}
+          actionType={this.state.action.type}
         />
       })
     }
@@ -285,7 +294,10 @@ export default class CampaignActionDetail extends React.Component {
                   <th>Name</th>
                   <th>Status</th>
                   <th>Date Received</th>
-                  <th>Called</th>
+                  {this.state.action.type === 'CampaignCall'
+                    ? <th>Called</th>
+                    : null
+                  }
                 </tr>
                 {userConvos}
               </tbody>
