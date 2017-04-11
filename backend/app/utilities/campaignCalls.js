@@ -11,13 +11,6 @@ async function getPopulatedCampaignCallObject(id) {
       }
     })
     .exec()
-    .then(async function(campaignCall) {
-      return Object.assign(
-        {},
-        campaignCall.toObject(),
-        { matchingRepresentatives: await campaignCall.getMatchingRepresentatives() }
-      )
-    })
 }
 
 module.exports = {

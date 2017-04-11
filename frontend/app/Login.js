@@ -1,6 +1,6 @@
 import React from 'react'
 import { browserHistory } from 'react-router'
-import API from './API'
+import API from './helpers/API'
 
 export default class Login extends React.Component {
   constructor(props) {
