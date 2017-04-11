@@ -17,6 +17,7 @@
     "react-loader": "^2.4.0",
     "react-modal": "^1.6.5",
     "react-notification-system": "^0.2.11",
+    "react-radio": "^2.1.2",
     "react-router": "^3.0.1",
     "react-select": "^1.0.0-rc.2",
     "socket.io-client": "^1.7.3",

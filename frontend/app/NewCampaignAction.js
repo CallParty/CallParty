@@ -1,216 +1,48 @@
-import API from './API'
+import API from './helpers/API'
 import React, { Component } from 'react'
 import Select from 'react-select'
+import RadioGroup from 'react-radio'
 import { Link } from 'react-router'
 import Modal from 'react-modal'
 import CampaignCallPreview from './CampaignCallPreview'
+import CampaignUpdatePreview from './CampaignUpdatePreview'
+import CampaignCallForm from './CampaignCallForm'
+import CampaignUpdateForm from './CampaignUpdateForm'
+import { CONFIRMATION_MODAL_STYLE, PARTIES, MEMBERS } from './helpers/constants'
 
-// used in both the NewCampaignUpdate and NewAction components
-const CONFIRMATION_MODAL_STYLE = {
-  content: {
-    top: '50%',
-    left: '50%',
-    right: '',
-    bottom: '',
-    transform: 'translate(-50%, -50%)',
-    width: '100%',
-    maxWidth: '300px',
-    height: '100%',
-    maxHeight: '135px',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center'
-  }
-}
-
-
-class NewCampaignUpdate extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      campaign: { actions: [] },
-      update: {
-        message: 'Hello! This is an update.',
-        campaignCall: null
-      },
-      confirmationModalIsOpen: false
-    }
-
-    this.onSubmit = this.onSubmit.bind(this)
-    this.onSelectChange = this.onSelectChange.bind(this)
-    this.onMessageChange = this.onMessageChange.bind(this)
-    this.createCampaignUpdate = this.createCampaignUpdate.bind(this)
-    this.closeConfirmationModal = this.closeConfirmationModal.bind(this)
-  }
-
-  static get contextTypes() {
-    return { notify: React.PropTypes.func.isRequired }
-  }
-
-  componentWillMount() {
-    API.campaign(this.props.params.id, data => {
-      this.setState({
-        campaign: data
-      })
-    })
-  }
-
-  onSubmit = (ev) => {
-    ev.preventDefault()
-
-    const update = this.state.update
-    const validationLabels = {
-      message: 'Message',
-      campaignCall: 'Call to Action Reference'
-    }
-
-    const fieldsToValidate = ['campaignCall', 'message']
-    for (let k of fieldsToValidate) {
-      if (update[k] === undefined || update[k] === null || update[k] === '') {
-        this.context.notify({
-          message: `${validationLabels[k]} can't be blank`,
-          level: 'error'
-        })
-        return
-      }
-    }
-
-    this.setState({ confirmationModalIsOpen: true })
-  }
-
-  createCampaignUpdate = () => {
-    this.closeConfirmationModal()
-
-    API.newCampaignUpdate(
-      this.state.campaign.id,
-      this.state.update,
-      (campaignUpdate) => {
-        this.context.notify({
-          message: 'Update created',
-          level: 'success',
-          autoDismiss: 1,
-          onRemove: () => {
-            this.props.router.push(`/{this.state.campaign.id}/actions/${campaignUpdate.id}`)
-          }
-        })
-      }
-    )
-  }
-
-  closeConfirmationModal() {
-    this.setState({ confirmationModalIsOpen: false })
-  }
-
-  onSelectChange = (val) => {
-    const update = this.state.update
-    update.campaignCall = val
-    this.setState({
-      update: update
-    })
-  }
-
-  onMessageChange = (ev) => {
-    const update = this.state.update
-    update.message = ev.target.value
-    this.setState({
-      update: update
-    })
-  }
-
-  render = () => {
-    let notUpdates = []
-    if (this.state.campaign.campaignActions) {
-      notUpdates = this.state.campaign.campaignActions.filter(a => a.type !== 'CampaignUpdate')
-    }
-    const options = notUpdates.map(a => ({
-      value: a.id,
-      label: a.title
-    }))
-
-    return (
-      <div className="camp-act-container">
-        <div className="meta">
-          <h1>New Update</h1>
-          <h3>Campaign: <Link to={`/${this.state.campaign.id}`}>{this.state.campaign.title}</Link></h3>
-        </div>
-        <div className="camp-act-input">
-          <form onSubmit={this.onSubmit}>
-            <fieldset>
-              <label htmlFor="callToActionReference">Call to Action Reference</label>
-              <Select
-                name="callToActionReference"
-                value={this.state.update.campaignCall}
-                options={options}
-                onChange={this.onSelectChange}
-              />
-            </fieldset>
-            <fieldset>
-              <label htmlFor="message">Message</label>
-              <textarea id="message" value={this.state.update.message} onChange={this.onMessageChange} />
-            </fieldset>
-            <input type="submit" value="Create" />
-          </form>
-          <div className="preview">
-            <h4>Preview</h4>
-            <div className="preview-message">{this.state.update.message}</div>
-          </div>
-          <Modal
-            isOpen={this.state.confirmationModalIsOpen}
-            style={CONFIRMATION_MODAL_STYLE}
-            contentLabel="Confirm"
-          >
-            <p style={{ marginBottom: '10px' }}>Are you sure?</p>
-            <div>
-              <button onClick={this.createCampaignUpdate} style={{ marginRight: '10px' }}>Yes</button>
-              <button onClick={this.closeConfirmationModal}>No</button>
-            </div>
-          </Modal>
-        </div>
-      </div>
-    )
-  }
-}
-
-
-const PARTIES = [{
-  value: 'Democrat',
-  label: 'Democratic'
-}, {
-  value: 'Republican',
-  label: 'Republican'
-}, {
-  value: 'Independent',
-  label: 'Independent'
-}]
-
-const MEMBERS = [{
-  value: 'rep',
-  label: 'Representative'
-}, {
-  value: 'sen',
-  label: 'Senator'
-}]
-
-class NewCampaignCall extends Component {
+class NewCampaignAction extends Component {
   constructor(props) {
     super(props)
     this.state = {
       campaign: {},
-      committees: [],
-      districts: [],
-      campaignCall: {
-        message: '',
-        issueLink: '',
-        shareLink: '',
-        title: '',
-        task: '',
+      committees: [], // list of all possible committees that can be targeted
+      districts: [],  // list of all possible districts that can be targeted
+      campaignAction: {
+        type: this.props.actionType,
+        // targeting
+        targetingType: 'segmenting',
         memberTypes: [],
         parties: [],
         committees: [],
         districts: [],
+        targetAction: null,
       },
-      confirmationModalIsOpen: false
+      confirmationModalIsOpen: false,
+      loaded: false,
+    }
+    if (this.props.actionType === 'CampaignCall') {
+        Object.assign(this.state.campaignAction, {
+          message: '',
+          issueLink: '',
+          shareLink: '',
+          title: '',
+          task: '',
+        })
+    }
+    else if (this.props.actionType === 'CampaignUpdate') {
+      Object.assign(this.state.campaignAction, {
+        message: '',
+      })
     }
   }
 
@@ -230,37 +62,52 @@ class NewCampaignCall extends Component {
 
     // if a cloneId param was passed, then pre-populate fields based on that campaignAction
     if (this.props.location && this.props.location.query && this.props.location.query.cloneId) {
-      API.campaignCall(this.props.location.query.cloneId, data => {
+      API.getClonedAction(this.props.location.query.cloneId, data => {
         this.setState({
-          campaignCall: data
+          campaignAction: data
         })
       })
     }
   }
 
   onSelectChange = (key, val) => {
-    const campaignCall = this.state.campaignCall
+    const campaignAction = this.state.campaignAction
     if (Array.isArray(val)) {
-      campaignCall[key] = val.map(v => v.value)
+      campaignAction[key] = val.map(v => v.value)
     } else {
-      campaignCall[key] = val.value
+      campaignAction[key] = val.value
     }
-    this.setState({ campaignCall: campaignCall })
+    this.setState({ campaignAction: campaignAction })
   }
 
   onInputChange = (key, ev) => {
-    var campaignCall = this.state.campaignCall
-    campaignCall[key] = ev.target.value
-    this.setState({ campaignCall: campaignCall })
+    var campaignAction = this.state.campaignAction
+    campaignAction[key] = ev.target.value
+    this.setState({ campaignAction: campaignAction })
+  }
+
+  onTargetingTypeChange = (key, ev) => {
+    var campaignAction = this.state.campaignAction
+    campaignAction['targetingType'] = ev.target.value
+    this.setState({ campaignAction: campaignAction })
   }
 
   onSubmit = (ev) => {
     ev.preventDefault()
 
-    const campaignCall = this.state.campaignCall
-    const fieldsToValidate = ['title', 'message', 'task', 'issueLink', 'shareLink']
+    const campaignAction = this.state.campaignAction
+    let fieldsToValidate = []
+    if (this.props.actionType === 'CampaignCall') {
+      fieldsToValidate = ['title', 'message', 'task', 'issueLink', 'shareLink']
+    }
+    else if (this.props.actionType=== 'CampaignUpdate') {
+      fieldsToValidate = ['message']
+    }
+    else {
+      throw new Error('Invalid action type')
+    }
     for (let k of fieldsToValidate) {
-      if (campaignCall[k] === undefined || campaignCall[k] === null || campaignCall[k] === '') {
+      if (campaignAction[k] === undefined || campaignAction[k] === null || campaignAction[k] === '') {
         this.context.notify({
           message: `${k} can't be blank`,
           level: 'error'
@@ -276,20 +123,20 @@ class NewCampaignCall extends Component {
     this.setState({ confirmationModalIsOpen: false })
   }
 
-  createCampaignCall = () => {
+  createCampaignAction = () => {
     this.closeConfirmationModal()
 
-    API.newCampaignCall(
+    API.newCampaignAction(
       this.state.campaign.id,
-      this.state.campaignCall,
-      (campaignCall) => {
+      this.state.campaignAction,
+      (campaignAction) => {
         this.context.notify({
           message: 'Action created',
           level: 'success',
           autoDismiss: 1,
           // redirect to CampaignActionDetail page for newly created CampaignAction
           onRemove: () => {
-            this.props.router.push(`/${this.state.campaign.id}/actions/${campaignCall.id}`)
+            this.props.router.push(`/${this.state.campaign.id}/actions/${campaignAction.id}`)
           }
         })
       })
@@ -299,123 +146,144 @@ class NewCampaignCall extends Component {
     this.inputs[input].focus()
   }
 
-  render = () => {
+  getActionPreview = () => {
+    if (this.props.actionType === 'CampaignCall') {
+      return <CampaignCallPreview campaignCall={this.state.campaignAction} focusInput={this.focusInput.bind(this)} />
+    }
+    else if (this.props.actionType === 'CampaignUpdate') {
+      return <CampaignUpdatePreview campaignUpdate={this.state.campaignAction} />
+    }
+    else {
+      return null
+    }
+  }
+
+  getActionForm = () => {
+    if (this.props.actionType === 'CampaignCall') {
+      return <CampaignCallForm
+        campaignAction={this.state.campaignAction}
+        onInputChange={this.onInputChange}
+      />
+    }
+    else if (this.props.actionType === 'CampaignUpdate') {
+      return <CampaignUpdateForm campaignAction={this.state.campaignAction} onInputChange={this.onInputChange} />
+    }
+    else {
+      return null
+    }
+  }
+
+  getSegmentingTargeting = () => {
     const committeeOptions = this.state.committees.map(c => ({ value: c._id, label: c.name }))
     const districtOptions = this.state.districts.map(c => ({ value: c, label: c }))
+    return (
+      <fieldset>
+        <label>Segment Targeting</label>
+        <div>
+          <Select
+            name="memberTypes"
+            placeholder="Member Type"
+            value={this.state.campaignAction.memberTypes}
+            options={MEMBERS}
+            onChange={this.onSelectChange.bind(this, 'memberTypes')}
+            clearable={false}
+            multi
+          />
+          <Select
+            name="parties"
+            placeholder="Party"
+            value={this.state.campaignAction.parties}
+            options={PARTIES}
+            onChange={this.onSelectChange.bind(this, 'parties')}
+            clearable={false}
+            multi
+          />
+          <Select
+            name="committees"
+            placeholder="Committee"
+            value={this.state.campaignAction.committees}
+            options={committeeOptions}
+            onChange={this.onSelectChange.bind(this, 'committees')}
+            clearable={false}
+            multi
+          />
+          <Select
+            name="districts"
+            placeholder="District"
+            value={this.state.campaignAction.districts}
+            options={districtOptions}
+            onChange={this.onSelectChange.bind(this, 'districts')}
+            clearable={false}
+            multi
+          />
+        </div>
+      </fieldset>
+    )
+  }
 
+  getBorrowedTargeting = () => {
+    const options = this.state.campaign.campaignActions.map(a => ({
+      value: a.id,
+      label: a.title
+    }))
+    return (
+      <fieldset>
+        <label htmlFor="callToActionReference">Target Action</label>
+        <Select
+          name="targetAction"
+          value={this.state.campaignAction.targetAction}
+          options={options}
+          onChange={this.onSelectChange.bind(this, 'targetAction')}
+        />
+      </fieldset>
+    )
+  }
+
+  render = () => {
     return (
       <div className="camp-act-container">
         <div className="meta">
-          <h1>New Action</h1>
+          <h1>New {{'CampaignCall': 'Call', 'CampaignUpdate': 'Update'}[this.state.campaignAction.type]}</h1>
           <h3>Campaign: <Link to={`/${this.state.campaign.id}`}>{this.state.campaign.title}</Link></h3>
         </div>
-        <div className="camp-act-input">
-          <form onSubmit={this.onSubmit.bind(this)}>
-            <fieldset>
-              <label>Targeting</label>
-              <div>
-                <Select
-                  name="memberTypes"
-                  placeholder="Member Type"
-                  value={this.state.campaignCall.memberTypes}
-                  options={MEMBERS}
-                  onChange={this.onSelectChange.bind(this, 'memberTypes')}
-                  clearable={false}
-                  multi
-                />
-                <Select
-                  name="parties"
-                  placeholder="Party"
-                  value={this.state.campaignCall.parties}
-                  options={PARTIES}
-                  onChange={this.onSelectChange.bind(this, 'parties')}
-                  clearable={false}
-                  multi
-                />
-                <Select
-                  name="committees"
-                  placeholder="Committee"
-                  value={this.state.campaignCall.committees}
-                  options={committeeOptions}
-                  onChange={this.onSelectChange.bind(this, 'committees')}
-                  clearable={false}
-                  multi
-                />
-                <Select
-                  name="districts"
-                  placeholder="District"
-                  value={this.state.campaignCall.districts}
-                  options={districtOptions}
-                  onChange={this.onSelectChange.bind(this, 'districts')}
-                  clearable={false}
-                  multi
-                />
-              </div>
-            </fieldset>
-            <fieldset>
-              <label>Message</label>
-              <textarea
-                maxLength="640"
-                value={this.state.campaignCall.message}
-                onChange={this.onInputChange.bind(this, 'message')}
-                ref={(input) => { this.inputs.message = input }} />
-            </fieldset>
-            <fieldset>
-              <label>Issue Link</label>
-              <input
-                maxLength="640"
-                type="text"
-                value={this.state.campaignCall.issueLink}
-                onChange={this.onInputChange.bind(this, 'issueLink')}
-                ref={(input) => { this.inputs.issueLink = input }} />
-            </fieldset>
-            <fieldset>
-              <label>Share Link</label>
-              <input
-                maxLength="640"
-                type="text"
-                value={this.state.campaignCall.shareLink}
-                onChange={this.onInputChange.bind(this, 'shareLink')}
-                ref={(input) => { this.inputs.shareLink = input }} />
-            </fieldset>
-            <fieldset>
-              <label>Subject</label>
-              <input
-                maxLength="640"
-                type="text"
-                value={this.state.campaignCall.title}
-                onChange={this.onInputChange.bind(this, 'title')}
-                ref={(input) => { this.inputs.title = input }} />
-            </fieldset>
-            <fieldset>
-              <label>Task</label>
-              <input
-                maxLength="640"
-                type="text"
-                value={this.state.campaignCall.task}
-                onChange={this.onInputChange.bind(this, 'task')}
-                ref={(input) => { this.inputs.task = input }} />
-            </fieldset>
-            <input type="submit" value="Create" />
-          </form>
-          <div className="preview">
-            <CampaignCallPreview campaignCall={this.state.campaignCall} focusInput={this.focusInput.bind(this)} />
+        <form onSubmit={this.onSubmit.bind(this)}>
+          {(this.state.campaignAction.type === 'CampaignUpdate')
+            ? <fieldset>
+                <label>Targeting Type</label>
+                <RadioGroup name="targetingType" value={this.state.campaignAction.targetingType} onChange={this.onTargetingTypeChange}>
+                  <input type="radio" value="segmenting" />segmenting
+                  <input type="radio" value="borrowed" />borrowed
+                </RadioGroup>
+              </fieldset>
+            : null
+          }
+          {this.state.campaignAction.targetingType === 'segmenting'
+            ? this.getSegmentingTargeting()
+            : this.getBorrowedTargeting()
+          }
+          <div>
+            { this.getActionForm() }
           </div>
-          <Modal
-            isOpen={this.state.confirmationModalIsOpen}
-            style={CONFIRMATION_MODAL_STYLE}
-            contentLabel="Confirm"
-          >
-            <p style={{ marginBottom: '10px' }}>Are you sure?</p>
-            <div>
-              <button onClick={this.createCampaignCall} style={{ marginRight: '10px' }}>Yes</button>
-              <button onClick={this.closeConfirmationModal}>No</button>
-            </div>
-          </Modal>
+
+          <input type="submit" value="Create" />
+        </form>
+        <div className="preview">
+          { this.getActionPreview() }
         </div>
+        <Modal
+          isOpen={this.state.confirmationModalIsOpen}
+          style={CONFIRMATION_MODAL_STYLE}
+          contentLabel="Confirm"
+        >
+          <p style={{ marginBottom: '10px' }}>Are you sure?</p>
+          <div>
+            <button onClick={this.createCampaignAction} style={{ marginRight: '10px' }}>Yes</button>
+            <button onClick={this.closeConfirmationModal}>No</button>
+          </div>
+        </Modal>
       </div>
     )
   }
 }
 
-export { NewCampaignUpdate, NewCampaignCall }
+export { NewCampaignAction }

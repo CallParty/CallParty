@@ -33,8 +33,7 @@ module.exports = function(apiRouter) {
   apiRouter.get('/campaigns', campaignMethods.getCampaigns)
   apiRouter.get('/campaigns/:id', campaignMethods.getCampaign)
   apiRouter.post('/campaigns', campaignMethods.newCampaign)
-  apiRouter.post('/campaigns/:id/call/new', campaignMethods.newCampaignCall)
-  apiRouter.post('/campaigns/:id/update/new', campaignMethods.newCampaignUpdate)
+  apiRouter.post('/campaigns/:id/action/new', campaignMethods.newCampaignAction)
 
   apiRouter.get('/campaign_actions/:id', async function(req, res) {
     const { type } = await CampaignAction.findById(req.params.id).select({ type: 1, _id: 0 }).exec()
@@ -44,12 +43,30 @@ module.exports = function(apiRouter) {
 
     if (type === 'CampaignCall') {
       return campaignCallMethods.getCampaignCallDetail(req, res)
-    } else {
+    } else if (type === 'CampaignUpdate') {
       return campaignUpdateMethods.getCampaignUpdateDetail(req, res)
+    }
+    else {
+      throw new Error("Invalid action type")
     }
   })
 
-  apiRouter.get('/campaign_calls/:id', campaignCallMethods.getCampaignCall)
+  apiRouter.get('/clone_action/:id', async function(req, res) {
+    /* this function returns a campaign action without its virtuals populated (to be used as a clone input) */
+    const { type } = await CampaignAction.findById(req.params.id).select({ type: 1, _id: 0 }).exec()
+    if (!type) {
+      return res.status(404).json({ error: 'CampaignAction not found.' })
+    }
+
+    if (type === 'CampaignCall') {
+      return campaignCallMethods.getCampaignCall(req, res)
+    } else if (type === 'CampaignUpdate') {
+      return campaignUpdateMethods.getCampaignUpdate(req, res)
+    }
+    else {
+      throw new Error("Invalid action type")
+    }
+  })
 
   apiRouter.get('/committees', committeeMethods.getCommittees)
   apiRouter.get('/districts', async function(req, res) {

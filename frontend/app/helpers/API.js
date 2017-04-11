@@ -88,16 +88,20 @@ export default {
     return post(`/api/send/campaignUpdate/${id}/`)
   },
 
+  newCampaignAction: function(id, data, cb = response => response) {
+    return post(`/api/campaigns/${id}/action/new`, data).then(data => cb(data))
+  },
+
   newCampaignUpdate: function(id, data, cb = response => response) {
     return post(`/api/campaigns/${id}/update/new`, data).then(data => cb(data))
   },
 
-  campaignCall: function(id, cb = response => response) {
-    return get(`/api/campaign_calls/${id}`).then(data => cb(data))
-  },
-
   campaignAction: function(id, cb = response => response) {
     return get(`/api/campaign_actions/${id}`).then(data => cb(data))
+  },
+
+  getClonedAction: function(id, cb = response => response) {
+    return get(`/api/clone_action/${id}`).then(data => cb(data))
   },
 
   committees: function(cb = response => response) {

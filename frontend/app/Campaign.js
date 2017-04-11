@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Link, browserHistory } from 'react-router'
 import moment from 'moment'
-import API from './API'
+import API from './helpers/API'
 
 const DATE_FORMAT = 'h:mma on M/DD/YYYY'
 
@@ -179,9 +179,7 @@ function CampaignAction(props) {
       <td>{ACTION_TYPES[props.type]}</td>
       <td>{props.title}</td>
       <td>{createdAt}</td>
-      {props.type === 'CampaignCall'
-        ? <td><Link to={createDuplicateUrl} onClick={e => e.stopPropagation()}>Clone</Link></td>
-        : <td></td>}
+      <td><Link to={createDuplicateUrl} onClick={e => e.stopPropagation()}>Clone</Link></td>
     </tr>
   )
 }

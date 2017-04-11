@@ -60,96 +60,67 @@ exports.getCampaigns = function(req, res) {
     })
 }
 
-exports.newCampaignCall = function(req, res) {
+exports.newCampaignAction = async function(req, res) {
   const data = req.body
-  const campaignCall = new CampaignCall({
-    title: data.title,
-    message: data.message,
-    issueLink: data.issueLink,
-    shareLink: data.shareLink,
-    task: data.task,
-    active: false,
-    type: data.type,
+  const actionData = {
+    campaign: ObjectId(req.params.id),
+    // targeting
+    targetingType: data.targetingType,
+    // rep targeting
     memberTypes: data.memberTypes,
     parties: data.parties,
     committees: data.committees,
+    // user targeting
     districts: data.districts,
-    campaign: ObjectId(req.params.id)
-  })
-  campaignCall.save()
-    .then(savedCampaignCall => Promise.all([savedCampaignCall, savedCampaignCall.getMatchingUsersWithRepresentatives()]))
-    .then(([savedCampaignCall, matchingUsersWithRepresentatives]) => {
-      // for each targeted user create a UserConversation
-      // we will use these objects to keep track of which users have been messaged
-      // uninitialized conversations are initialized by pinging /send/campaignCall
-      const userConvoPromises = []
-      for (let i = 0; i < matchingUsersWithRepresentatives.length; i++) {
-        const user = matchingUsersWithRepresentatives[i].user
-        const repIds = matchingUsersWithRepresentatives[i].representatives.map(r => r._id)
-        const userConvoPromise = UserConversation.create({
-          user: ObjectId(user._id),
-          campaignAction: ObjectId(savedCampaignCall._id),
-          convoData: {
-            representatives: repIds,
-          },
-          status: USER_CONVO_STATUS.pending,
-        })
-        userConvoPromises.push(userConvoPromise)
-      }
-      return Promise.all(userConvoPromises).then(() => {
-        return savedCampaignCall
-      })
+    // borrowed targeting
+    targetAction: data.targetAction,
+  }
+  let campaignAction = null
+  if (data.type === 'CampaignCall') {
+    Object.assign(actionData, {
+      title: data.title,
+      message: data.message,
+      issueLink: data.issueLink,
+      shareLink: data.shareLink,
+      task: data.task,
     })
-    .then(campaignCall => {
-      res.json(campaignCall)
+    campaignAction = new CampaignCall(actionData)
+  }
+  else if (data.type === 'CampaignUpdate') {
+    Object.assign(actionData, {
+      message: data.message,
     })
-    .catch(err => res.status(400).send(err))
-}
+    campaignAction = new CampaignUpdate(actionData)
+  }
+  else {
+    throw new Error('Invalid action type')
+  }
 
-exports.newCampaignUpdate = function(req, res) {
-  const data = req.body
-  const campaignCallId = data.campaignCall.value
+  await campaignAction.save()
+  const matchingUsersWithRepresentatives = await campaignAction.getMatchingUsersWithRepresentatives()
+  // for each targeted user create a UserConversation
+  // we will use these objects to keep track of which users have been messaged
+  // uninitialized conversations are initialized by pinging /send/campaignAction
+  for (let i = 0; i < matchingUsersWithRepresentatives.length; i++) {
+    const user = matchingUsersWithRepresentatives[i].user
+    const repIds = matchingUsersWithRepresentatives[i].representatives.map(r => r._id)
+    await UserConversation.create({
+      user: ObjectId(user._id),
+      campaignAction: ObjectId(campaignAction._id),
+      convoData: {
+        representatives: repIds,
+      },
+      status: USER_CONVO_STATUS.pending,
+    })
+  }
 
-  CampaignCall
-    .findById(ObjectId(campaignCallId))
-    .populate({ path: 'userConversations', populate: { path: 'user' } })
-    .exec().then(function(campaignCall) {
-      const campaignUpdate = new CampaignUpdate({
-        message: data.message,
-        campaignCall: ObjectId(campaignCallId),
-        campaign: ObjectId(req.params.id),
-        title: `Update: ${campaignCall.title}`
-      })
-      return Promise.all([campaignUpdate.save(), campaignCall])
-    }).then(function([savedCampaignUpdate, campaignCall]) {
-      return Promise.all([
-        savedCampaignUpdate,
-        campaignCall.userConversations.map(ua => ua.user)
-      ])
-    })
-    .then(([savedCampaignUpdate, users]) => {
-      const userConvoPromises = []
-      for (let i = 0; i < users.length; i++) {
-        const user = users[i]
-        if (user) {
-          const userConvoPromise = UserConversation.create({
-            user: ObjectId(user._id),
-            campaignAction: ObjectId(savedCampaignUpdate._id),
-            status: USER_CONVO_STATUS.pending,
-          })
-          userConvoPromises.push(userConvoPromise)
-        }
-      }
-      return Promise.all(userConvoPromises).then(() => {
-        return savedCampaignUpdate
-      })
-    })
-    .then(campaignUpdate => {
-      res.json(campaignUpdate)
-    })
-    .catch((err) => {
-      captureException(err)
-    })
+  // for cacheing, save the reps that were targeted
+  const targetedReps = await campaignAction.getMatchingRepresentatives()
+  campaignAction.targetedRepIds = targetedReps.map(r => r._id)
+  await campaignAction.save()
+
+  // return json
+  return res.json(campaignAction)
 }
 
 exports.createUserAction = function(req, res) {
