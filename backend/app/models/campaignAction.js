@@ -58,6 +58,7 @@ campaignActionSchema.methods.getMatchingRepresentatives = async function() {
       legislator_type: { $first: '$legislator_type' },
       party: { $first: '$party' },
       state: { $first: '$state' },
+      district: { $first: '$district' },
       committees: { $push: '$committees' },
     })
 
