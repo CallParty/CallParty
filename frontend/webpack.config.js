@@ -14,7 +14,7 @@ else {
 }
 
 module.exports = {
-  entry: ['react-hot-loader/patch', 'whatwg-fetch', './main'],
+  entry: ['react-hot-loader/patch', 'babel-polyfill', 'whatwg-fetch', './main'],
   output: {
     path: params.BUILD_DIR,
     filename: 'bundle.js',
