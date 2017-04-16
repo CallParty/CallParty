@@ -10,7 +10,6 @@ import CampaignCallForm from './CampaignCallForm'
 import CampaignUpdateForm from './CampaignUpdateForm'
 import { CONFIRMATION_MODAL_STYLE, PARTIES, MEMBERS } from './helpers/constants'
 
-
 class NewCampaignAction extends Component {
   constructor(props) {
     super(props)
@@ -242,46 +241,48 @@ class NewCampaignAction extends Component {
 
   render = () => {
     return (
-      <div>
+      <div className="camp-act-container">
         <div className="meta">
           <h1>New {{'CampaignCall': 'Call', 'CampaignUpdate': 'Update'}[this.state.campaignAction.type]}</h1>
           <h3>Campaign: <Link to={`/${this.state.campaign.id}`}>{this.state.campaign.title}</Link></h3>
         </div>
-        <form onSubmit={this.onSubmit.bind(this)}>
-          {(this.state.campaignAction.type === 'CampaignUpdate')
-            ? <fieldset>
-                <label>Targeting Type</label>
-                <RadioGroup name="targetingType" value={this.state.campaignAction.targetingType} onChange={this.onTargetingTypeChange}>
-                  <input type="radio" value="segmenting" />segmenting
-                  <input type="radio" value="borrowed" />borrowed
-                </RadioGroup>
-              </fieldset>
-            : null
-          }
-          {this.state.campaignAction.targetingType === 'segmenting'
-            ? this.getSegmentingTargeting()
-            : this.getBorrowedTargeting()
-          }
-          <div>
-            { this.getActionForm() }
-          </div>
+        <div className="camp-act-input">
+          <form onSubmit={this.onSubmit.bind(this)}>
+            {(this.state.campaignAction.type === 'CampaignUpdate')
+              ? <fieldset>
+                  <label>Targeting Type</label>
+                  <RadioGroup name="targetingType" value={this.state.campaignAction.targetingType} onChange={this.onTargetingTypeChange}>
+                    <input type="radio" value="segmenting" />segmenting
+                    <input type="radio" value="borrowed" />borrowed
+                  </RadioGroup>
+                </fieldset>
+              : null
+            }
+            {this.state.campaignAction.targetingType === 'segmenting'
+              ? this.getSegmentingTargeting()
+              : this.getBorrowedTargeting()
+            }
+            <div>
+              { this.getActionForm() }
+            </div>
 
-          <input type="submit" value="Create" />
-        </form>
-        <div className="preview">
-          { this.getActionPreview() }
-        </div>
-        <Modal
-          isOpen={this.state.confirmationModalIsOpen}
-          style={CONFIRMATION_MODAL_STYLE}
-          contentLabel="Confirm"
-        >
-          <p style={{ marginBottom: '10px' }}>Are you sure?</p>
-          <div>
-            <button onClick={this.createCampaignAction} style={{ marginRight: '10px' }}>Yes</button>
-            <button onClick={this.closeConfirmationModal}>No</button>
+            <input type="submit" value="Create" />
+          </form>
+          <div className="preview">
+            { this.getActionPreview() }
           </div>
-        </Modal>
+          <Modal
+            isOpen={this.state.confirmationModalIsOpen}
+            style={CONFIRMATION_MODAL_STYLE}
+            contentLabel="Confirm"
+          >
+            <p style={{ marginBottom: '10px' }}>Are you sure?</p>
+            <div>
+              <button onClick={this.createCampaignAction} style={{ marginRight: '10px' }}>Yes</button>
+              <button onClick={this.closeConfirmationModal}>No</button>
+            </div>
+          </Modal>
+        </div>
       </div>
     )
   }
