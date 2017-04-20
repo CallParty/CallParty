@@ -5,6 +5,11 @@ const USER_CONVO_STATUS = UserConversation.USER_CONVO_STATUS
 
 
 async function botReply(user, text, numAttempts) {
+  // to avoid production errors, confirm that we only send to prod users when on prod
+  if (user.fbPage === 'callparty' && process.env.ENVIRONMENT !== 'PROD') {
+    throw new Error('cannot send messages to callparty bot when not on prod')
+  }
+  // try to send the message
   try {
     await botReplyHelper(user, text)
   } catch (err) {
