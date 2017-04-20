@@ -43,6 +43,12 @@
   - name: ensure secrets directory
     action: file dest={{backend_dir}}/devops/secret_files state=directory
 
+  - name: Copy secret.json file
+    copy: src=secret_files/secret.json dest={{backend_dir}}/devops/secret_files/secret.json
+
+  - name: Copy gce_credentials.json file
+    copy: src=secret_files/gce_credentials.json dest={{backend_dir}}/devops/secret_files/gce_credentials.json
+
   - name: Copy .env file
     copy: src={{node_env}} dest={{backend_dir}}/.env
 
