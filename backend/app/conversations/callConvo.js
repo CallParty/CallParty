@@ -1,7 +1,7 @@
 const moment = require('moment')
 const { stripIndent } = require('common-tags')
 const { setUserCallback } = require('../methods/userMethods')
-const { botReply } = require('../utilities/botkit')
+const { botReply } = require('../utilities/botReply')
 const { UserAction } = require('../models')
 const { UserConversation, Reps, Campaign } = require('../models')
 const ACTION_TYPE_PAYLOADS = UserAction.ACTION_TYPE_PAYLOADS

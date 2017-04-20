@@ -1,10 +1,12 @@
 const mongoose = require('mongoose')
 const moment = require('moment')
 const Schema = mongoose.Schema
+const { getTokenFromPage } = require('../utilities/multiTenant')
 
 const userSchema = new Schema({
   userId: String,
   fbId: String,
+  fbPage: String,
   state: String,
   districtNumber: String,
   district: String,
@@ -24,6 +26,11 @@ const userSchema = new Schema({
 }, {
   toObject: { virtuals: true },
   toJSON: { virtuals: true }
+})
+
+userSchema.virtual('fbToken').get(function() {
+  const fbToken = getTokenFromPage(this.fbPage)
+  return fbToken
 })
 
 userSchema.virtual('userConversations', {

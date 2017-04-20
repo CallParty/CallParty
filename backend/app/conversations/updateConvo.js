@@ -1,5 +1,5 @@
 const { setUserCallback } = require('../methods/userMethods')
-const botReply = require('../utilities/botkit').botReply
+const botReply = require('../utilities/botReply').botReply
 
 
 async function startUpdateConversation(user, userConversation, campaignUpdate) {

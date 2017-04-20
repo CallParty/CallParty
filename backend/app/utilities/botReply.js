@@ -1,6 +1,6 @@
-const { bot } = require('../botkit_controller/botkitSetup')
 const { captureException, logMessage } = require('./logHelper')
 const { UserConversation } = require('../models')
+const request = require('request')
 const USER_CONVO_STATUS = UserConversation.USER_CONVO_STATUS
 
 
@@ -31,23 +31,18 @@ async function botReply(user, text, numAttempts) {
 }
 
 function botReplyHelper(user, text) {
-  // this is the message object botkit expects
-  const message = {
-    channel: user.fbId,
-    user: user.fbId,
-  }
   // for early testing going to keep this log in here
   logMessage(`++ sending message to ${user.fbId}: ${typeof text !== 'string' ? JSON.stringify(text) : text}`, '#_msg')
   // return promisified bot message
-  return new Promise(function(resolve, reject) {
-    bot.reply(message, text, function(err, response) {
+  return new Promise(function (resolve, reject) {
+    sendFbMessage(user.fbId, user.fbToken, text, function (err, response) {
       // if there was an error, lets try to log info about it for debugging purposes
       if (err) {
         // try to convert the user to an object for extra debugging info
         // but wrap in a try/catch because if this fails we still want to log the error
         let userObject = {}
         try {
-          userObject = user.toObject({ virtuals: false })
+          userObject = user.toObject({virtuals: false})
         } catch (e) {
           captureException(new Error('Failed to convert user to object while logging exception'))
         }
@@ -59,6 +54,28 @@ function botReplyHelper(user, text) {
       resolve(response)
     })
   })
+}
+
+
+function sendFbMessage(recipientId, token, message, callback) {
+  let messageData
+  // if its a string, then put message data in format facebook expects
+  if (typeof message === 'string' || message instanceof String) {
+    messageData = {text: message}
+  }
+  // otherwise just pass it as raw data
+  else {
+    messageData = message
+  }
+  request({
+   url: 'https://graph.facebook.com/v2.6/me/messages',
+   qs: {access_token:token},
+   method: 'POST',
+    json: {
+    recipient: {id:recipientId},
+      message: messageData,
+    }
+    }, callback)
 }
 
 function isKnownError(err) {
@@ -74,4 +91,6 @@ function isKnownError(err) {
 
 module.exports = {
   botReply,
+  sendFbMessage,
 }
+
