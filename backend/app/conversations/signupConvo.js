@@ -3,27 +3,32 @@ const Promise = require('any-promise')
 const rp = require('request-promise-any')
 const mongoose = require('mongoose')
 const geocoding = require('../utilities/geocoding')
-const botReply = require('../utilities/botkit').botReply
+const botReply = require('../utilities/botReply').botReply
 const { User } = require('../models')
 const { setUserCallback } = require('../methods/userMethods')
 const { logMessage } = require('../utilities/logHelper')
+const { getPageFromId, getTokenFromPage } = require('../utilities/multiTenant')
 
 mongoose.Promise = Promise
 
 
-function startSignupConversation(fbId) {
+function startSignupConversation(senderId, recipientId) {
+
+  // figure out which bot the user sent a message to, based on the recipientId
+  const fbPage = getPageFromId(recipientId)
+  const fbToken = getTokenFromPage(fbPage)
 
   const facebookGraphRequestOptions = {
-    uri: `https://graph.facebook.com/${fbId}`,
-    qs: { access_token: process.env.FACEBOOK_PAGE_TOKEN },
+    uri: `https://graph.facebook.com/${senderId}`,
+    qs: { access_token: fbToken },
     json: true
   }
 
   return rp(facebookGraphRequestOptions)
     .then(function(fbUserData) {
       return User.findOneAndUpdate(
-        { fbId: fbId },
-        { firstName: fbUserData.first_name, lastName: fbUserData.last_name },
+        { fbId: senderId },
+        { firstName: fbUserData.first_name, lastName: fbUserData.last_name, fbPage: fbPage },
         { upsert: true, new: true, setDefaultsOnInsert: true }
       ).exec()
     })

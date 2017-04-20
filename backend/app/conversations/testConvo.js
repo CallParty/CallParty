@@ -1,4 +1,4 @@
-const botReply = require('../utilities/botkit').botReply
+const botReply = require('../utilities/botReply').botReply
 const { User } = require('../models')
 const { setUserCallback } = require('../methods/userMethods')
 
