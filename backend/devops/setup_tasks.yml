@@ -77,8 +77,12 @@
       - { from: 'secret_files/deploy_rsa.pub', to: '/root/.ssh/id_rsa.pub', mode: '0644' }
       - { from: 'secret_files/deploy_rsa', to: '/root/.ssh/id_rsa', mode: '0600' }
 
+  - name: copy over Google Cloud Compute Engine credentials
+    copy: src=secret_files/gce_credentials.json dest="{{ backend_dir }}/gce_credentials.json"
+
   - name: obtain or renew cert for domain from Let's Encrypt
     command: certbot certonly --text -n --no-self-upgrade -m hi@callparty.org -d admin.callparty.org,staging.callparty.org --agree-tos --webroot -w /usr/share/nginx/html --expand --allow-subset-of-names
 
   - name: create cron job for auto renewing Let's Encrypt cert
-    cron: name="renew letsencrypt cert" hour="2,11" minute=0 job="certbot renew --quiet --no-self-upgrade; sudo service nginx restart"
+    cron: name="renew letsencrypt cert" hour="2,11" minute=0 job="certbot renew --quiet --no-self-upgrade; sudo service nginx restart; curl -X POST http://localhost:8081/api/upload_ssl_certs"
+
