@@ -144,6 +144,10 @@ export default class CampaignActionDetail extends React.Component {
   sendAction() {
     this.closeConfirmationModal()
     const notifyCallback = () => {
+      const action = this.state.action
+      action.sent = true
+      this.setState({ action: action })
+
       this.context.notify({
         message: 'Sent',
         level: 'success',
