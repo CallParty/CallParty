@@ -5,7 +5,7 @@
   "scripts": {
     "start": "webpack-dev-server --colors --progress --hot --inline --port 8082",
     "build": "webpack --colors --progress",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"No test specified\" && exit 0"
   },
   "dependencies": {
     "babel-polyfill": "^6.23.0",
