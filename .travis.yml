@@ -15,3 +15,7 @@ branches:
     - master
 
 before_install: cd backend
+
+script:
+  - eslint .
+  - npm test
