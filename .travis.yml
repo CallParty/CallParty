@@ -13,6 +13,8 @@ addons:
 branches:
   only:
     - master
+    - staging
+    - prod
 
 env:
   - TEST_DIR=backend
@@ -23,3 +25,14 @@ before_install: cd $TEST_DIR
 script:
   - eslint .
   - npm test
+
+deploy:
+  - provider: script
+    script: backend/bash/staging_deploy.sh
+    on:
+      branch: staging
+
+  - provider: script
+    script: backend/bash/prod_deploy.sh
+    on:
+      branch: prod
