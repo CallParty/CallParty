@@ -39,6 +39,7 @@ module.exports = {
       "error",
       "as-needed"
     ],
-    "jsx-quotes": [2, "prefer-double"]
+    "jsx-quotes": [2, "prefer-double"],
+    "react/jsx-no-bind": 0
   }
 };

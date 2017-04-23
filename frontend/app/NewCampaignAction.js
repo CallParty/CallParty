@@ -30,27 +30,40 @@ class NewCampaignAction extends Component {
       confirmationModalIsOpen: false,
       loaded: false,
     }
+
     if (this.props.actionType === 'CampaignCall') {
-        Object.assign(this.state.campaignAction, {
-          message: '',
-          issueLink: '',
-          shareLink: '',
-          title: '',
-          task: '',
-        })
+      Object.assign(this.state.campaignAction, {
+        message: '',
+        issueLink: '',
+        shareLink: '',
+        title: '',
+        task: '',
+      })
     }
     else if (this.props.actionType === 'CampaignUpdate') {
       Object.assign(this.state.campaignAction, {
         message: '',
       })
     }
+
+    this.onSelectChange = this.onSelectChange.bind(this)
+    this.onInputChange = this.onInputChange.bind(this)
+    this.onTargetingTypeChange = this.onTargetingTypeChange.bind(this)
+    this.onSubmit = this.onSubmit.bind(this)
+    this.closeConfirmationModal = this.closeConfirmationModal.bind(this)
+    this.createCampaignAction = this.createCampaignAction.bind(this)
+    this.focusInput = this.focusInput.bind(this)
+    this.getActionPreview = this.getActionPreview.bind(this)
+    this.getActionForm = this.getActionForm.bind(this)
+    this.getSegmentingTargeting = this.getSegmentingTargeting.bind(this)
+    this.getBorrowedTargeting = this.getBorrowedTargeting.bind(this)
   }
 
   static get contextTypes() {
     return { notify: React.PropTypes.func.isRequired }
   }
 
-  componentWillMount = () => {
+  componentWillMount() {
     API.campaign(this.props.params.id, data => {
       this.setState({
         campaign: data
@@ -70,7 +83,7 @@ class NewCampaignAction extends Component {
     }
   }
 
-  onSelectChange = (key, val) => {
+  onSelectChange(key, val) {
     const campaignAction = this.state.campaignAction
     if (Array.isArray(val)) {
       campaignAction[key] = val.map(v => v.value)
@@ -80,19 +93,19 @@ class NewCampaignAction extends Component {
     this.setState({ campaignAction: campaignAction })
   }
 
-  onInputChange = (key, ev) => {
+  onInputChange(key, ev) {
     var campaignAction = this.state.campaignAction
     campaignAction[key] = ev.target.value
     this.setState({ campaignAction: campaignAction })
   }
 
-  onTargetingTypeChange = (key, ev) => {
+  onTargetingTypeChange(key, ev) {
     var campaignAction = this.state.campaignAction
     campaignAction['targetingType'] = ev.target.value
     this.setState({ campaignAction: campaignAction })
   }
 
-  onSubmit = (ev) => {
+  onSubmit(ev) {
     ev.preventDefault()
 
     const campaignAction = this.state.campaignAction
@@ -119,11 +132,11 @@ class NewCampaignAction extends Component {
     this.setState({ confirmationModalIsOpen: true })
   }
 
-  closeConfirmationModal = () => {
+  closeConfirmationModal() {
     this.setState({ confirmationModalIsOpen: false })
   }
 
-  createCampaignAction = () => {
+  createCampaignAction() {
     this.closeConfirmationModal()
 
     API.newCampaignAction(
@@ -142,11 +155,11 @@ class NewCampaignAction extends Component {
       })
   }
 
-  focusInput = (input) => {
+  focusInput(input) {
     this.inputs[input].focus()
   }
 
-  getActionPreview = () => {
+  getActionPreview() {
     if (this.props.actionType === 'CampaignCall') {
       return <CampaignCallPreview campaignCall={this.state.campaignAction} focusInput={this.focusInput.bind(this)} />
     }
@@ -158,7 +171,7 @@ class NewCampaignAction extends Component {
     }
   }
 
-  getActionForm = () => {
+  getActionForm() {
     if (this.props.actionType === 'CampaignCall') {
       return <CampaignCallForm
         campaignAction={this.state.campaignAction}
@@ -173,7 +186,7 @@ class NewCampaignAction extends Component {
     }
   }
 
-  getSegmentingTargeting = () => {
+  getSegmentingTargeting() {
     const committeeOptions = this.state.committees.map(c => ({ value: c._id, label: c.name }))
     const districtOptions = this.state.districts.map(c => ({ value: c, label: c }))
     return (
@@ -221,7 +234,7 @@ class NewCampaignAction extends Component {
     )
   }
 
-  getBorrowedTargeting = () => {
+  getBorrowedTargeting() {
     const options = this.state.campaign.campaignActions.map(a => ({
       value: a.id,
       label: a.title
@@ -239,38 +252,46 @@ class NewCampaignAction extends Component {
     )
   }
 
-  render = () => {
+  render() {
+    let targetingTypeRadioButtons = null
+    if (this.state.campaignAction.type === 'CampaignUpdate') {
+      targetingTypeRadioButtons = (
+        <fieldset>
+          <label>Targeting Type</label>
+          <RadioGroup name="targetingType" value={this.state.campaignAction.targetingType} onChange={this.onTargetingTypeChange}>
+            <input type="radio" value="segmenting" />segmenting
+            <input type="radio" value="borrowed" />borrowed
+          </RadioGroup>
+        </fieldset>
+      )
+    }
+
     return (
       <div className="camp-act-container">
         <div className="meta">
-          <h1>New {{'CampaignCall': 'Call', 'CampaignUpdate': 'Update'}[this.state.campaignAction.type]}</h1>
+          <h1>New {{CampaignCall: 'Call', CampaignUpdate: 'Update'}[this.state.campaignAction.type]}</h1>
           <h3>Campaign: <Link to={`/${this.state.campaign.id}`}>{this.state.campaign.title}</Link></h3>
         </div>
         <div className="camp-act-input">
-          <form onSubmit={this.onSubmit.bind(this)}>
-            {(this.state.campaignAction.type === 'CampaignUpdate')
-              ? <fieldset>
-                  <label>Targeting Type</label>
-                  <RadioGroup name="targetingType" value={this.state.campaignAction.targetingType} onChange={this.onTargetingTypeChange}>
-                    <input type="radio" value="segmenting" />segmenting
-                    <input type="radio" value="borrowed" />borrowed
-                  </RadioGroup>
-                </fieldset>
-              : null
-            }
+          <form onSubmit={this.onSubmit}>
+            {targetingTypeRadioButtons}
+
             {this.state.campaignAction.targetingType === 'segmenting'
               ? this.getSegmentingTargeting()
               : this.getBorrowedTargeting()
             }
+
             <div>
-              { this.getActionForm() }
+              {this.getActionForm()}
             </div>
 
             <input type="submit" value="Create" />
           </form>
+
           <div className="preview">
             { this.getActionPreview() }
           </div>
+
           <Modal
             isOpen={this.state.confirmationModalIsOpen}
             style={CONFIRMATION_MODAL_STYLE}
