@@ -1,10 +1,3 @@
-import API from './API'
-import React, { Component } from 'react'
-import Select from 'react-select'
-import { Link } from 'react-router'
-import Modal from 'react-modal'
-import CampaignCallPreview from '../CampaignCallPreview'
-
 // used in both the NewCampaignUpdate and NewAction components
 const CONFIRMATION_MODAL_STYLE = {
   content: {

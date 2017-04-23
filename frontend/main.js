@@ -22,6 +22,7 @@ if (module.hot) {
    * See https://github.com/gaearon/react-hot-loader/issues/298
    */
   const isString = s => (typeof s === 'string' || s instanceof String)
+  /* eslint-disable no-console */
   const orgError = console.error
   console.error = (...args) => {
     if (args && args.length === 1 && isString(args[0]) && args[0].indexOf('You cannot change <Router routes>;') > -1) {
@@ -31,6 +32,7 @@ if (module.hot) {
       orgError.apply(console, args)
     }
   }
+  /* eslint:enable no-console */
 
   module.hot.accept('./app/App', () => {
     const NextApp = require('./app/App').default
