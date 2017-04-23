@@ -1,6 +1,6 @@
-<img width="350" height="200" src="http://callparty.org/assets/images/cp_wordmark.png" alt="Call Party Logo" />
-
 [![Build Status](https://travis-ci.org/CallParty/CallParty.svg?branch=master)](https://travis-ci.org/CallParty/CallParty)
+
+<img width="350" height="200" src="http://callparty.org/assets/images/cp_wordmark.png" alt="Call Party Logo" />
 
 # CallParty
 
