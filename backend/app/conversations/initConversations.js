@@ -63,7 +63,7 @@ async function initConvos(campaignAction, io) {
   for (let i = 0; i < finalUserConvos.length; i++) {
     const userConversation = finalUserConvos[i]
     if (!statusCounts[userConversation.status]) {
-        statusCounts[userConversation.status] = 0
+      statusCounts[userConversation.status] = 0
     }
     statusCounts[userConversation.status] += 1
   }

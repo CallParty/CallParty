@@ -1,7 +1,6 @@
 const mongoose = require('mongoose')
 const { Campaign, CampaignCall, CampaignUpdate, UserConversation } = require('../models')
 const USER_CONVO_STATUS = UserConversation.USER_CONVO_STATUS
-const { captureException } = require('../utilities/logHelper')
 
 const ObjectId = mongoose.Types.ObjectId
 
@@ -123,9 +122,9 @@ exports.newCampaignAction = async function(req, res) {
   return res.json(campaignAction)
 }
 
-exports.createUserAction = function(req, res) {
+exports.createUserAction = function() {
   console.log('User Action Created')
 }
-exports.updateUserAction = function(req, res) {
+exports.updateUserAction = function() {
   console.log('User Action Updated')
 }

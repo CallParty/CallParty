@@ -1,5 +1,4 @@
 module.exports = {
-  "ecmaVersion": 2017,
   "env": {
     "node": true
   },
@@ -8,7 +7,8 @@ module.exports = {
     "ecmaFeatures": {
       "experimentalObjectRestSpread": true,
     },
-    "sourceType": "module"
+    "sourceType": "module",
+    "ecmaVersion": 8
   },
   "plugins": [],
   "rules": {
@@ -35,5 +35,8 @@ module.exports = {
       "error",
       "as-needed"
     ]
+  },
+  "globals": {
+    "Promise": true
   }
 };

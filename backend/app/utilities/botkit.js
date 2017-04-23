@@ -9,12 +9,12 @@ async function botReply(user, text, numAttempts) {
     await botReplyHelper(user, text)
   } catch (err) {
     if (!numAttempts) {
-     numAttempts = 1
+      numAttempts = 1
     }
     let knownError = isKnownError(err)
     if (knownError && numAttempts < 5) {
       numAttempts += 1
-      await logMessage(`re-trying message to ${user.fbId} after error "${err.message}". Attempt #${numAttempts}`, "#_error")
+      await logMessage(`re-trying message to ${user.fbId} after error "${err.message}". Attempt #${numAttempts}`, '#_error')
       await botReply(user, text, numAttempts)
     }
     // if there was an error, mark that this conversation had an error

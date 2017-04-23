@@ -4,7 +4,7 @@ async function getDistricts () {
   /* gets all the districts in the database */
   let districts = await Reps.find().distinct('district')
   // filter our null values
-  districts = districts.filter(function(n){ return n });
+  districts = districts.filter(function(n){ return n })
   // split into state and district number and sort accordingly
   districts.sort(function(a, b) {
     let aSplit = a.split('-')
