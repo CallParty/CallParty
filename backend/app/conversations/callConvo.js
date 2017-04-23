@@ -66,7 +66,7 @@ function areYouReadyConvo(user, message) {
     `Hi ${user.convoData.firstName}. We've got an issue that needs your action.`
   )
   .then(() => {
-    return botReply(user, `${user.convoData.issueMessage}. ` +
+    return botReply(user, `${user.convoData.issueMessage} ` +
       `You can find out more about it here ${user.convoData.issueLink}.`
     )
   }).then(() => {
