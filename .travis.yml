@@ -26,9 +26,11 @@ script:
   - eslint .
   - npm test
 
+before_deploy: cd $TRAVIS_BUILD_DIR
+
 deploy:
   - provider: script
-    script: backend/bash/staging_deploy.sh
+    script: backend/bash/staging_quick_deploy.sh
     on:
       branch: staging
 
