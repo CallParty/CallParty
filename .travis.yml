@@ -21,6 +21,9 @@ branches:
     - staging
     - prod
 
+before_install:
+  - mkdir -p $TRAVIS_BUILD_DIR/backend/devops/secret_files && echo {} >> $TRAVIS_BUILD_DIR/backend/devops/secret_files/secret.json
+
 install:
   - cd $TRAVIS_BUILD_DIR/backend && npm install
   - cd $TRAVIS_BUILD_DIR/frontend && npm install
