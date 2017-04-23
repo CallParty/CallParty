@@ -10,4 +10,8 @@ addons:
     packages:
     - mongodb-org-server
 
+branches:
+  only:
+    - master
+
 before_install: cd backend

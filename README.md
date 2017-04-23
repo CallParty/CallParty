@@ -1,5 +1,7 @@
 <img width="350" height="200" src="http://callparty.org/assets/images/cp_wordmark.png" alt="Call Party Logo" />
 
+[![Build Status](https://travis-ci.org/CallParty/CallParty.svg?branch=master)](https://travis-ci.org/CallParty/CallParty)
+
 # CallParty
 
 CallParty is a FB Messenger bot to send calls to action for political issues, link to the specific reps to call, and updates on the issues that have been sent. To do this we’ve built an admin tool to input the calls to action, and segment messages to users based on the party or committee of their rep, and by the district the user lives in.
@@ -57,7 +59,7 @@ https://www.facebook.com/CallingTestX-XXXXXXXXXXX/ (you will have this info from
 
 To run the tests:
 ```bash
-cd backend 
+cd backend
 
 npm test
 ```
