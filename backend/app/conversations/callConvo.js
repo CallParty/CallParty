@@ -5,7 +5,7 @@ const { botReply } = require('../utilities/botkit')
 const { UserAction } = require('../models')
 const { UserConversation, Reps, Campaign } = require('../models')
 const ACTION_TYPE_PAYLOADS = UserAction.ACTION_TYPE_PAYLOADS
-const logMessage = require('../utilities/logHelper').logMessage
+const { logMessage } = require('../utilities/logHelper')
 
 function startCallConversation(user, userConversation, representatives, campaignCall) {
 
@@ -158,73 +158,81 @@ function firstTimeAreYouReadyConvo(user) {
   })
 }
 
-function firstTimeReadyResponseConvo(user, message) {
-  return UserAction.create({
+async function firstTimeReadyResponseConvo(user, message) {
+  if (!Object.values(ACTION_TYPE_PAYLOADS).includes(message.text)) {
+    logMessage(`++ User responded to firstTimeReadyResponseConvo with unexpected message: ${message.text}`)
+    return botReply(user, "I'm sorry, I didn't understand that! Try choosing from one of the options above, or shoot us an email to talk to a person at hi@callparty.org.")
+  }
+
+  await UserAction.create({
     actionType: message.text,
     campaignCall: user.convoData.campaignCall._id,
     representative: user.convoData.representatives[user.convoData.currentRepresentativeIndex].repId,
     user: user._id,
   })
-  .then(() => {
-    if (message.text === ACTION_TYPE_PAYLOADS.isReady) {
-      const representative = user.convoData.representatives[0]
-      return botReply(user, `Here’s your first script and the information for your representative: "Hello, my name is ${user.convoData.firstName} and I’m a constituent of ${representative.repName}. I’m calling about ${user.convoData.issueSubject}. I’d like to ask that ${representative.repName} ${user.convoData.issueTask}. Thanks for listening, have a good day!"`)
-      .then(() => sendRepCard(user, message))
-    }
-    else if (message.text === ACTION_TYPE_PAYLOADS.noCall) {
-      return noCallConvo(user, message)
-    }
-    else {
-      throw new Error('Received unexpected message at path /calltoaction/readyResponse: ' + message.text)
-    }
-  })
+
+  if (message.text === ACTION_TYPE_PAYLOADS.isReady) {
+    const representative = user.convoData.representatives[0]
+    return botReply(user, `Here’s your first script and the information for your representative: "Hello, my name is ${user.convoData.firstName} and I’m a constituent of ${representative.repName}. I’m calling about ${user.convoData.issueSubject}. I’d like to ask that ${representative.repName} ${user.convoData.issueTask}. Thanks for listening, have a good day!"`)
+    .then(() => sendRepCard(user, message))
+  }
+  else if (message.text === ACTION_TYPE_PAYLOADS.noCall) {
+    return noCallConvo(user, message)
+  }
+  else {
+    throw new Error('Received unexpected message at path /calltoaction/firstTimeReadyResponse: ' + message.text)
+  }
 }
 
-function readyResponseConvo(user, message) {
-  return UserAction.create({
+async function readyResponseConvo(user, message) {
+  if (!Object.values(ACTION_TYPE_PAYLOADS).includes(message.text)) {
+    logMessage(`++ User responded to readyResponseConvo with unexpected message: ${message.text}`)
+    return botReply(user, "I'm sorry, I didn't understand that! Try choosing from one of the options above, or shoot us an email to talk to a person at hi@callparty.org.")
+  }
+
+  await UserAction.create({
     actionType: message.text,
     campaignCall: user.convoData.campaignCall._id,
     representative: user.convoData.representatives[user.convoData.currentRepresentativeIndex].repId,
     user: user._id,
   })
-  .then(() => {
-    if (message.text === ACTION_TYPE_PAYLOADS.isReady) {
-      const hasOneRep = user.convoData.representatives.length === 1
-      const representative = user.convoData.representatives[0]
-      let msgToSend
-      if (hasOneRep) {
-        msgToSend = stripIndent`
-        Great! You'll be calling ${representative.repType} ${representative.repName}.
-        You'll either talk to a staffer or leave a voicemail.
-        When you call:
 
-        \u2022 Be sure to say you're a constituent calling about ${user.convoData.issueSubject}
-        \u2022 Let them know "I'd like ${representative.repType} ${representative.repName} to ${user.convoData.issueTask}"
-        \u2022 Share any personal feelings or stories you have on the issue
-        \u2022 Answer any questions the staffer has, and be friendly!
-      `
-      } else {
-        msgToSend = stripIndent`
-        Great! You'll be calling ${user.convoData.representatives.length} Members of Congress. You'll either talk to a staffer or leave a voicemail. When you call:
+  if (message.text === ACTION_TYPE_PAYLOADS.isReady) {
+    const hasOneRep = user.convoData.representatives.length === 1
+    const representative = user.convoData.representatives[0]
+    let msgToSend
+    if (hasOneRep) {
+      msgToSend = stripIndent`
+      Great! You'll be calling ${representative.repType} ${representative.repName}.
+      You'll either talk to a staffer or leave a voicemail.
+      When you call:
 
-        \u2022 Be sure to say you're a constituent calling about ${user.convoData.issueSubject}
-        \u2022 Let them know you'd like them to "${user.convoData.issueTask}"
-        \u2022 Share any personal feelings or stories you have on the issue
-        \u2022 Answer any questions the staffer has, and be friendly!
+      \u2022 Be sure to say you're a constituent calling about ${user.convoData.issueSubject}
+      \u2022 Let them know "I'd like ${representative.repType} ${representative.repName} to ${user.convoData.issueTask}"
+      \u2022 Share any personal feelings or stories you have on the issue
+      \u2022 Answer any questions the staffer has, and be friendly!
+    `
+    } else {
+      msgToSend = stripIndent`
+      Great! You'll be calling ${user.convoData.representatives.length} Members of Congress. You'll either talk to a staffer or leave a voicemail. When you call:
 
-        Your first call is ${representative.repType} ${representative.repName}:
-      `
-      }
-      return botReply(user, msgToSend)
-        .then(() => sendRepCard(user, message))
+      \u2022 Be sure to say you're a constituent calling about ${user.convoData.issueSubject}
+      \u2022 Let them know you'd like them to "${user.convoData.issueTask}"
+      \u2022 Share any personal feelings or stories you have on the issue
+      \u2022 Answer any questions the staffer has, and be friendly!
+
+      Your first call is ${representative.repType} ${representative.repName}:
+    `
     }
-    else if (message.text === ACTION_TYPE_PAYLOADS.noCall) {
-      return noCallConvo(user, message)
-    }
-    else {
-      throw new Error('Received unexpected message at path /calltoaction/readyResponse: ' + message.text)
-    }
-  })
+    return botReply(user, msgToSend)
+      .then(() => sendRepCard(user, message))
+  }
+  else if (message.text === ACTION_TYPE_PAYLOADS.noCall) {
+    return noCallConvo(user, message)
+  }
+  else {
+    throw new Error('Received unexpected message at path /calltoaction/readyResponse: ' + message.text)
+  }
 }
 
 function sendRepCard(user, message) {
@@ -497,42 +505,50 @@ function somethingWentWrongResponse(user) {
     })
 }
 
-function howDidItGoResponseConvo(user, message) {
-  return UserAction.create({
+async function howDidItGoResponseConvo(user, message) {
+  if (!Object.values(ACTION_TYPE_PAYLOADS).includes(message.text)) {
+    logMessage(`++ User responded to howDidItGoResponseConvo with unexpected message: ${message.text}`)
+    return botReply(user, "I'm sorry, I didn't understand that! Try choosing from one of the options above, or shoot us an email to talk to a person at hi@callparty.org.")
+  }
+
+  await UserAction.create({
     actionType: message.text,
     campaignCall: user.convoData.campaignCall._id,
     representative: user.convoData.representatives[user.convoData.currentRepresentativeIndex].repId,
     user: user._id,
   })
-  .then(() => {
-    if ([ACTION_TYPE_PAYLOADS.voicemail, ACTION_TYPE_PAYLOADS.staffer].indexOf(message.text) >= 0) {
-      return userMadeCallResponse(user, message)
-    } else if (message.text === ACTION_TYPE_PAYLOADS.error) {
-      return somethingWentWrongResponse(user, message)
-    } else {
-      throw new Error('Received unexpected message at path /calltoaction/howDidItGoResponse: ' + message.text)
-    }
-  })
+
+  if ([ACTION_TYPE_PAYLOADS.voicemail, ACTION_TYPE_PAYLOADS.staffer].indexOf(message.text) >= 0) {
+    return userMadeCallResponse(user, message)
+  } else if (message.text === ACTION_TYPE_PAYLOADS.error) {
+    return somethingWentWrongResponse(user, message)
+  } else {
+    throw new Error('Received unexpected message at path /calltoaction/howDidItGoResponse: ' + message.text)
+  }
 }
 
-function tryNextRepResponseConvo(user, message) {
-  return UserAction.create({
+async function tryNextRepResponseConvo(user, message) {
+  if (!Object.values(ACTION_TYPE_PAYLOADS).includes(message.text)) {
+    logMessage(`++ User responded to tryNextRepResponseConvo with unexpected message: ${message.text}`)
+    return botReply(user, "I'm sorry, I didn't understand that! Try choosing from one of the options above, or shoot us an email to talk to a person at hi@callparty.org.")
+  }
+
+  await UserAction.create({
     actionType: message.text,
     campaignCall: user.convoData.campaignCall._id,
     representative: user.convoData.representatives[user.convoData.currentRepresentativeIndex].repId,
     user: user._id,
   })
-  .then(() => {
-    if (message.text === ACTION_TYPE_PAYLOADS.tryNextRep) {
-      return sendRepCard(user, message)
-    }
-    else if (message.text === ACTION_TYPE_PAYLOADS.noCall) {
-      return noCallConvo(user, message)
-    }
-    else {
-      throw new Error('Received unexpected message at path /calltoaction/tryNextRepResponse: ' + message.text)
-    }
-  })
+
+  if (message.text === ACTION_TYPE_PAYLOADS.tryNextRep) {
+    return sendRepCard(user, message)
+  }
+  else if (message.text === ACTION_TYPE_PAYLOADS.noCall) {
+    return noCallConvo(user, message)
+  }
+  else {
+    throw new Error('Received unexpected message at path /calltoaction/tryNextRepResponse: ' + message.text)
+  }
 }
 
 // thanks for sharing
