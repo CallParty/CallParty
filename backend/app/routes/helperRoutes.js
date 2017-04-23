@@ -27,7 +27,7 @@ module.exports = function (apiRouter) {
     res.send('ok')
   })
 
-  apiRouter.get('/error', function (req, res) {
+  apiRouter.get('/error', function () {
     throw new Error('Testing error handling')
   })
 

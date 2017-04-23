@@ -47,7 +47,7 @@ module.exports = function(apiRouter) {
       return campaignUpdateMethods.getCampaignUpdateDetail(req, res)
     }
     else {
-      throw new Error("Invalid action type")
+      throw new Error('Invalid action type')
     }
   })
 
@@ -64,7 +64,7 @@ module.exports = function(apiRouter) {
       return campaignUpdateMethods.getCampaignUpdate(req, res)
     }
     else {
-      throw new Error("Invalid action type")
+      throw new Error('Invalid action type')
     }
   })
 

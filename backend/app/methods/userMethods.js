@@ -17,7 +17,7 @@ exports.createUser = function createUser(req) {
     .catch(function(err) { throw err })
 }
 
-exports.lookupDistrict = function(req, res) {
+exports.lookupDistrict = function() {
   console.log('Looking up District')
 }
 

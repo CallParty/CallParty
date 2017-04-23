@@ -13,7 +13,7 @@ function startTestConversation(fbId) {
   })
 }
 
-function testConvo(user, message) {
+function testConvo(user) {
   return botReply(user, 'Start Test Conversation').then(function() {
     return botReply(user, {
       attachment: {

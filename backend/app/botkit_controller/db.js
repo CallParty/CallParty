@@ -67,7 +67,7 @@ module.exports = function (config) {
               new: true
             }, cb)
           }
-                    else {
+          else {
             cb(null, user)
           }
         })

@@ -1,5 +1,4 @@
 const { CampaignUpdate } = require('../models')
-const { captureException } = require('./logHelper')
 
 async function getPopulatedCampaignUpdateObject(id) {
   const campaignUpdate = await CampaignUpdate

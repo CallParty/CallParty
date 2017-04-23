@@ -60,7 +60,7 @@ function startCallConversation(user, userConversation, representatives, campaign
 }
 
 // part 1
-function areYouReadyConvo(user, message) {
+function areYouReadyConvo(user) {
   // begin the conversation
   return botReply(user,
     `Hi ${user.convoData.firstName}. We've got an issue that needs your action.`
@@ -235,7 +235,7 @@ async function readyResponseConvo(user, message) {
   }
 }
 
-function sendRepCard(user, message) {
+function sendRepCard(user) {
   const representative = user.convoData.representatives[user.convoData.currentRepresentativeIndex]
 
   const officeTypeLabels = {

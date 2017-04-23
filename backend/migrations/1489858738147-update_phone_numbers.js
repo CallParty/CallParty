@@ -20,7 +20,7 @@ export async function up () {
     rep.phoneNumbers = [{ officeType: 'capitol', phoneNumber: phone }]
     await rep.save()
   }
-  await Reps.collection.updateMany({}, { $unset: { 'phone': '' } })
+  await Reps.collection.updateMany({}, { $unset: { phone: '' } })
 }
 
 /**

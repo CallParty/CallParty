@@ -20,11 +20,11 @@ module.exports = function (controller) {
 
   // set up CTA for FB page
   var form1 = {
-    'setting_type': 'call_to_actions',
-    'thread_state': 'new_thread',
-    'call_to_actions': [
+    setting_type: 'call_to_actions',
+    thread_state: 'new_thread',
+    call_to_actions: [
       {
-        'payload': 'optin'
+        payload: 'optin'
       }
     ]
   }

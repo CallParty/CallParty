@@ -2,7 +2,6 @@ const mongoose = require('mongoose')
 const CampaignAction = require('./campaignAction')
 
 const Schema = mongoose.Schema
-const ObjectId = mongoose.Types.ObjectId
 
 const campaignCallSchema = new Schema({
   title: String,
