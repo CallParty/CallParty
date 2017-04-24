@@ -34,7 +34,7 @@ before_deploy:
   - sudo apt-add-repository ppa:ansible/ansible -y
   - sudo apt-get update -q
   - sudo apt-get install ansible
-  - sudo apt-get install python-libcloud
+  - sudo apt-get install -t trusty-backports python-libcloud
   - cd $TRAVIS_BUILD_DIR/frontend && npm install && cd $TRAVIS_BUILD_DIR
 
 deploy:
