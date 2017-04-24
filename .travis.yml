@@ -16,12 +16,6 @@ branches:
     - staging
     - prod
 
-before_install:
-  - sudo apt-get install software-properties-common
-  - sudo apt-add-repository ppa:ansible/ansible -y
-  - sudo apt-get update -q
-  - sudo apt-get install ansible
-
 install:
   - cd $TRAVIS_BUILD_DIR/backend && npm install
   - cd $TRAVIS_BUILD_DIR/frontend && npm install
@@ -32,7 +26,13 @@ script:
   - cd $TRAVIS_BUILD_DIR/frontend && eslint .
   - cd $TRAVIS_BUILD_DIR/frontend && npm test
 
-before_deploy: cd $TRAVIS_BUILD_DIR/frontend && npm install && cd $TRAVIS_BUILD_DIR
+before_deploy:
+  - sudo apt-get install software-properties-common
+  - sudo apt-add-repository ppa:ansible/ansible -y
+  - sudo apt-get update -q
+  - sudo apt-get install ansible
+  - apt-get install python-libcloud
+  - cd $TRAVIS_BUILD_DIR/frontend && npm install && cd $TRAVIS_BUILD_DIR
 
 deploy:
   - provider: script
