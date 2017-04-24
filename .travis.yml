@@ -21,6 +21,9 @@ branches:
     - staging
     - prod
 
+before_install:
+- openssl aes-256-cbc -K $encrypted_5d10786c9aae_key -iv $encrypted_5d10786c9aae_iv -in backend/devops/gce_credentials.json.enc -out backend/devops/secret_files/gce_credentials.json -d
+
 install:
   - cd $TRAVIS_BUILD_DIR/backend && npm install
   - cd $TRAVIS_BUILD_DIR/frontend && npm install
