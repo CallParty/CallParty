@@ -16,20 +16,25 @@ branches:
     - staging
     - prod
 
-env:
-  - TEST_DIR=backend
-  - TEST_DIR=frontend
+before_install:
+  - sudo apt-get install software-properties-common
+  - sudo apt-add-repository ppa:ansible/ansible -y
+  - sudo apt-get update -q
+  - sudo apt-get install sudo apt-get install ansible
 
-before_install: cd $TEST_DIR
+install:
+  - cd $TRAVIS_BUILD_DIR/backend && npm install
+  - cd $TRAVIS_BUILD_DIR/frontend && npm install
 
 script:
-  - eslint .
-  - npm test
+  - cd $TRAVIS_BUILD_DIR/backend && eslint .
+  - cd $TRAVIS_BUILD_DIR/backend && npm test
+  - cd $TRAVIS_BUILD_DIR/frontend && eslint .
+  - cd $TRAVIS_BUILD_DIR/frontend && npm test
 
 before_deploy: cd $TRAVIS_BUILD_DIR/frontend && npm install && cd $TRAVIS_BUILD_DIR
 
 deploy:
-
   - provider: script
     script: backend/bash/staging_quick_deploy.sh
     skip_cleanup: true
