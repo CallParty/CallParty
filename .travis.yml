@@ -33,18 +33,18 @@ script:
 
 before_deploy:
   - sudo apt-get install python-dev -y
-  - cd $TRAVIS_BUILD_DIR/backend && pip install -r requirements.txt
+  - cd $TRAVIS_BUILD_DIR/backend && sudo pip install -r requirements.txt
   - cd $TRAVIS_BUILD_DIR/frontend && npm install && cd $TRAVIS_BUILD_DIR
 
 deploy:
   - provider: script
-    script: backend/bash/staging_quick_deploy.sh
+    script: sudo backend/bash/staging_quick_deploy.sh
     skip_cleanup: true
     on:
       branch: staging
 
   - provider: script
-    script: backend/bash/prod_deploy.sh
+    script: sudo backend/bash/prod_deploy.sh
     skip_cleanup: true
     on:
       branch: prod
