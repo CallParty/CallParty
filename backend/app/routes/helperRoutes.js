@@ -49,7 +49,7 @@ module.exports = function (apiRouter) {
       return
     }
 
-    logMessage('++ uploading ssl certs to GCE load balancer')
+    logMessage('++ uploading ssl certs to prod GCE load balancer')
     const key = require(path.resolve(path.join(__dirname, '..', '..', 'devops', 'secret_files', 'gce_credentials.json')))
     const jwtClient = new google.auth.JWT(
       key.client_email,
@@ -106,6 +106,7 @@ module.exports = function (apiRouter) {
             res.sendStatus(500)
             return
           }
+          logMessage('++ successfully uploaded SSL certs to prod GCE load balancer')
           res.sendStatus(200)
         })
       })
