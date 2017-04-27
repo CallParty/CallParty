@@ -36,7 +36,7 @@ script:
 
 before_deploy:
   - cd $TRAVIS_BUILD_DIR
-  - openssl aes-256-cbc -K $encrypted_5d10786c9aae_key -iv $encrypted_5d10786c9aae_iv -in $TRAVIS_BUILD_DIR/backend/devops/secret_files.tar.enc -out secret_files.tar -d
+  - openssl aes-256-cbc -K $encrypted_20503cabd6cf_key -iv $encrypted_20503cabd6cf_iv -in $TRAVIS_BUILD_DIR/backend/devops/secret_files.tar.enc -out secret_files.tar -d
   - tar xvf secret_files.tar -C $TRAVIS_BUILD_DIR/backend/devops
   - sudo apt-get install python-dev -y
   - cd $TRAVIS_BUILD_DIR/backend && pip install -r requirements.txt
