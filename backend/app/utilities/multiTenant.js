@@ -5,8 +5,8 @@ function getBotFromFbId(recipientId) {
   /* returns the string name of the facebook page, which is associated with the given fbId */
   const idToBot = {
     2060548600838593: 'callparty5',
-    356799708039438: 'callingteststaging',
-    243195752776526: 'callparty',
+    392499054435475: 'callingteststaging',
+    243195752776526: 'callparty', // TODO: make this correct
   }
   const bot = idToBot[recipientId]
   if (!bot) {
