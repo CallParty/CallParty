@@ -28,8 +28,6 @@ script:
 before_deploy:
 - openssl aes-256-cbc -K $encrypted_1a228d99b304_key -iv $encrypted_1a228d99b304_iv
   -in secret_files.tar.enc -out backend/devops/secret_files.tar -d
-- openssl aes-256-cbc -K $encrypted_5d10786c9aae_key -iv $encrypted_5d10786c9aae_iv
-  -in secret_files.tar.enc -out backend/devops/secret_files.tar -d
 - tar xvf $TRAVIS_BUILD_DIR/backend/devops/secret_files.tar -C $TRAVIS_BUILD_DIR/backend/devops
 - sudo apt-get install python-dev -y
 - cd $TRAVIS_BUILD_DIR/backend && pip install -r requirements.txt
