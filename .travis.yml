@@ -25,6 +25,8 @@ script:
 - cd $TRAVIS_BUILD_DIR/backend && npm test
 - cd $TRAVIS_BUILD_DIR/frontend && eslint .
 - cd $TRAVIS_BUILD_DIR/frontend && npm test
+after_success:
+- cd $TRAVIS_BUILD_DIR
 before_deploy:
 - openssl aes-256-cbc -K $encrypted_1a228d99b304_key -iv $encrypted_1a228d99b304_iv
   -in secret_files.tar.enc -out backend/devops/secret_files.tar -d
