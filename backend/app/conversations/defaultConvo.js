@@ -1,4 +1,4 @@
-const { botReply } = require('../utilities/botkit')
+const { botReply } = require('../utilities/botReply')
 const { logMessage } = require('../utilities/logHelper')
 
 function defaultConvo(user, message) {

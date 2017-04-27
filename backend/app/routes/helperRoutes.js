@@ -1,9 +1,8 @@
+const { handleMessage } = require('../utilities/listener')
+const { logMessage, captureException } = require('../utilities/logHelper')
 const google = require('googleapis')
 const path = require('path')
 const fs = require('fs')
-
-const facebook_handler = require('../botkit_controller/botkitSetup').handler
-const { logMessage, captureException } = require('../utilities/logHelper')
 
 module.exports = function (apiRouter) {
   // public pages=============================================
@@ -27,8 +26,23 @@ module.exports = function (apiRouter) {
   })
 
   apiRouter.post('/webhook', function (req, res) {
-    facebook_handler(req.body)
-    res.send('ok')
+    let messaging_events = req.body.entry[0].messaging
+    for (let i = 0; i < messaging_events.length; i++) {
+      let event = req.body.entry[0].messaging[i]
+      let senderId = event.sender.id
+      let recipientId = event.recipient.id
+      if (event.message) {
+        handleMessage(senderId, recipientId, event.message)
+      }
+      else if (event.postback) {
+        const message = {
+          text: event.postback.payload,
+          postback: event.postback,
+        }
+        handleMessage(senderId, recipientId, message)
+      }
+    }
+    res.sendStatus(200)
   })
 
   apiRouter.get('/error', function () {
