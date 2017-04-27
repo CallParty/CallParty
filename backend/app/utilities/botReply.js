@@ -6,7 +6,7 @@ const USER_CONVO_STATUS = UserConversation.USER_CONVO_STATUS
 
 async function botReply(user, text, numAttempts) {
   // to avoid production errors, confirm that we only send to prod users when on prod
-  if (user.fbPage === 'callparty' && process.env.ENVIRONMENT !== 'PROD') {
+  if (user.bot === 'callparty' && process.env.ENVIRONMENT !== 'PROD') {
     throw new Error('cannot send messages to callparty bot when not on prod')
   }
   // try to send the message
@@ -73,14 +73,14 @@ function sendFbMessage(recipientId, token, message, callback) {
     messageData = message
   }
   request({
-   url: 'https://graph.facebook.com/v2.6/me/messages',
-   qs: {access_token:token},
-   method: 'POST',
+    url: 'https://graph.facebook.com/v2.6/me/messages',
+    qs: {access_token:token},
+    method: 'POST',
     json: {
-    recipient: {id:recipientId},
+      recipient: {id:recipientId},
       message: messageData,
     }
-    }, callback)
+  }, callback)
 }
 
 function isKnownError(err) {
@@ -89,7 +89,7 @@ function isKnownError(err) {
     knownError =
       err.message.includes('connect ETIMEDOUT') ||
       err.message.includes('connect ECONNREFUSED') ||
-      err.message === "(#200) This person isn't available right now"
+      err.message.includes("This person isn't available right now")
   }
   return knownError
 }
