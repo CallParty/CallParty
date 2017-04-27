@@ -16,7 +16,9 @@ export NVM_DIR="$HOME/.nvm"
 
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm
 
-nvm install 7.6.0 # or stable	
+nvm install 7.6.0 # or stable
+
+gem install travis # used for managing secret_files
 ```
 
 #### Linux & Windows
@@ -53,7 +55,7 @@ cd ../
 ### 3. Configure backend and .env
 
 [Message](mailto:hi@callparty.org) one of the project maintainers for
-a `backend/.env` file to connect to the staging database. 
+a `backend/.env` file to connect to the staging database.
 
 You will also need a facebook bot to test with (as outlined below). Once you have a testbot you also need to set yourself as an admin for the bot for it to send you messages (note that there is a several minute delay for Facebook to propagate the changes once you set the admin)
 
@@ -61,7 +63,7 @@ Alternatively, if you are forking your own version of CallParty then you will ne
 
 #### Environment Variables
 
-Secure variables are stored in this file: 
+Secure variables are stored in this file:
 `/backend/.env`
 
 You will have to create this file and input your own variables in here. You can see a boilerplate of this file located at `/backend/.env-demo`
@@ -77,7 +79,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'));"
 
 ## In Facebook
 
-1. Make a new FB page called CallingTest#X (where "X" is a number that does not already exist). 
+1. Make a new FB page called CallingTest#X (where "X" is a number that does not already exist).
 
 2. Go to [developers.facebook.com](https://developers.facebook.com) and add a new app named CallingTest#X (where "X" is a number )
 
@@ -118,7 +120,7 @@ npm run server
 Then...
 
 ## Setting Up Webhooks
-1. Open [developers.facebook.com](https://developers.facebook.com) 
+1. Open [developers.facebook.com](https://developers.facebook.com)
 2. Make sure you’re admin
 3. Setup Webhooks:
 
@@ -153,7 +155,7 @@ Then...
 
 8. place content from .callingtest# into .env replacing existing
 
-## Run admin locally: 
+## Run admin locally:
 
 1. Open front-end terminal and run:
 
