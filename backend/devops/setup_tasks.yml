@@ -1,6 +1,11 @@
   - name: add nginx ppa
     action: apt_repository repo=ppa:nginx/stable state=present
 
+  - name: add certbot ppa
+    apt_repository:
+      repo: ppa:certbot/certbot
+      state: present
+
   - name: Install Packages
     apt: name={{ item }} update_cache=yes state=latest
     with_items:
@@ -11,6 +16,7 @@
       - mcrypt
       - nginx
       - curl
+      - certbot
 
   - name: install nvm
     git: repo=https://github.com/creationix/nvm.git dest=~/.nvm version=v0.32.1
@@ -35,10 +41,19 @@
       - npm
 
   - name: remove default nginx site
-    action: file path=/etc/nginx/sites-enabled/default state=absent
+    action: file path={{item}} state=absent
+    with_items:
+      - /etc/nginx/sites-enabled/default
+      - /etc/nginx/sites-available/default
 
   - name: write nginx.conf
     action: template src=templates/nginx.conf dest=/etc/nginx/nginx.conf
+
+  - name: write nginx default conf
+    template: src=templates/nginx_default.conf dest=/etc/nginx/sites-available/default
+
+  - name: restart nginx
+    service: name=nginx state=restarted
 
   - name: Install pm2
     npm: name=pm2 global=yes production=yes
@@ -62,5 +77,12 @@
       - { from: 'secret_files/deploy_rsa.pub', to: '/root/.ssh/id_rsa.pub', mode: '0644' }
       - { from: 'secret_files/deploy_rsa', to: '/root/.ssh/id_rsa', mode: '0600' }
 
+  - name: copy over Google Cloud Compute Engine credentials
+    copy: src=secret_files/gce_credentials.json dest="{{ backend_dir }}/gce_credentials.json"
 
+  - name: obtain or renew cert for domain from Let's Encrypt
+    command: certbot certonly --text -n --no-self-upgrade -m hi@callparty.org -d admin.callparty.org,staging.callparty.org --agree-tos --webroot -w /usr/share/nginx/html --expand --allow-subset-of-names
+
+  - name: create cron job for auto renewing Let's Encrypt cert
+    cron: name="renew letsencrypt cert" hour="2,11" minute=0 job="certbot renew --quiet --no-self-upgrade; sudo service nginx restart; curl -X POST http://localhost:8081/api/upload_ssl_certs"
 
