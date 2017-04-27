@@ -3,12 +3,16 @@ const { captureException } = require('./logHelper')
 
 function getBotFromFbId(recipientId) {
   /* returns the string name of the facebook page, which is associated with the given fbId */
-  const idToPage = {
+  const idToBot = {
     2060548600838593: 'callparty5',
     356799708039438: 'callingteststaging',
     243195752776526: 'callparty',
   }
-  return idToPage[recipientId]
+  const bot = idToBot[recipientId]
+  if (!bot) {
+    captureException(new Error(`++ bot not found for fbId: ${recipientId}`))
+  }
+  return bot
 }
 
 function getTokenFromBot(bot) {
