@@ -32,6 +32,8 @@ script:
   - cd $TRAVIS_BUILD_DIR/frontend && npm test
 
 before_deploy:
+  - openssl aes-256-cbc -K $encrypted_5d10786c9aae_key -iv $encrypted_5d10786c9aae_iv -in $TRAVIS_BUILD_DIR/backend/devops/secret_files.tar.enc -out $TRAVIS_BUILD_DIR/backend/devops/secret_files.tar -d
+  - cd $TRAVIS_BUILD_DIR/backend/devops && tar xvf secrets.tar && cd $TRAVIS_BUILD_DIR
   - sudo apt-get install python-dev -y
   - cd $TRAVIS_BUILD_DIR/backend && pip install -r requirements.txt
   - cd $TRAVIS_BUILD_DIR/frontend && npm install && cd $TRAVIS_BUILD_DIR
