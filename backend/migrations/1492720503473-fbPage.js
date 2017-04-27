@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const dotenv = require('dotenv')
 dotenv.load()
 
-const { User, UserConversation } = require('../app/models')
+const { User } = require('../app/models')
 const logMessage = require('../app/utilities/logHelper').logMessage
 
 
@@ -16,17 +16,17 @@ mongoose.connect(process.env.MONGODB_URI)
 export async function up () {
   // Write migration here
   await logMessage('++ running migration')
-  let fbPage = null
+  let bot = null
   if (process.env.ENVIRONMENT === 'STAGING') {
-    fbPage = 'callingteststaging'
+    bot = 'callingteststaging'
   }
   else if (process.env.ENVIRONMENT === 'PROD') {
-    fbPage = 'callparty'
+    bot = 'callparty'
   }
-  await logMessage(`++ setting fbPage to ${fbPage} for all users`)
+  await logMessage(`++ setting bot to ${bot} for all users`)
   const users = await User.find({})
   for (let user of users) {
-    user.fbPage = fbPage
+    user.bot= bot
     await user.save()
   }
   await logMessage('++ completed migration')
