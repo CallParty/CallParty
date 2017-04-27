@@ -24,6 +24,7 @@
     "generate-function": "^2.0.0",
     "generate-object-property": "^1.2.0",
     "geocodio": "^2.0.0",
+    "googleapis": "^19.0.0",
     "js-yaml": "^3.7.0",
     "jsonpointer": "^4.0.0",
     "jsonwebtoken": "^7.2.1",

@@ -4,12 +4,6 @@
   - name: make ssl directory
     action: file dest=/etc/nginx/ssl state=directory
 
-  - name: copy ssl key and cert
-    action: copy src={{item.from}} dest={{item.to}}
-    with_items:
-      - { from: '{{nginx_crt}}', to: '/etc/nginx/ssl/nginx.crt' }
-      - { from: '{{nginx_key}}', to: '/etc/nginx/ssl/nginx.key' }
-
   - name: deploy code from repository
     git: repo={{repo_url}} dest={{src_dir}} remote={{repo_remote}} version={{repo_branch}} accept_hostkey=yes force=yes
     notify:

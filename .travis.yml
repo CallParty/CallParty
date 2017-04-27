@@ -33,3 +33,30 @@ script:
   - cd $TRAVIS_BUILD_DIR/backend && npm test
   - cd $TRAVIS_BUILD_DIR/frontend && eslint .
   - cd $TRAVIS_BUILD_DIR/frontend && npm test
+
+before_deploy:
+  - cd $TRAVIS_BUILD_DIR
+  - openssl aes-256-cbc -K $encrypted_5d10786c9aae_key -iv $encrypted_5d10786c9aae_iv -in $TRAVIS_BUILD_DIR/backend/devops/secret_files.tar.enc -out secret_files.tar -d
+  - tar xvf secret_files.tar -C $TRAVIS_BUILD_DIR/backend/devops
+  - sudo apt-get install python-dev -y
+  - cd $TRAVIS_BUILD_DIR/backend && pip install -r requirements.txt
+  - cd $TRAVIS_BUILD_DIR/frontend && npm install && cd $TRAVIS_BUILD_DIR
+  - openssl aes-256-cbc -K $encrypted_5d10786c9aae_key -iv $encrypted_5d10786c9aae_iv -in backend/devops/secret_files.tar.enc -out backend/devops/secret_files.tar -d
+  - cd $TRAVIS_BUILD_DIR/backend/devops && tar xvf secret_files.tar && cd $TRAVIS_BUILD_DIR
+
+deploy:
+  - provider: script
+    script: backend/bash/staging_deploy.sh
+    skip_cleanup: true
+    on:
+      branch: staging
+
+  - provider: script
+    script: backend/bash/prod_deploy.sh
+    skip_cleanup: true
+    on:
+      branch: prod
+
+notifications:
+  slack:
+    secure: evfeKzmzQWoxfibfVvI0c0aw9AqfMrhKnG5U/jzySsNRjnHB7hLqF3yRE2d63+o4rIfvaedTfUs6+wo0FhpRMoDbc6H8oTVhO50Ev7XnD/nfAlcGGZnU4KSZ2JySIz9dqBghhBJbl7OXW8pMgFsmd9Hrutwu16opdTFBx5fxvNlzjPPwem/gDvbOfjrpKqg0AHW2ryHonYKZ1pbZc+VrpmETnwC+5UewvWAu1TsulKozHLhr3p15xdFx4uy9S1R1MuZzZKgZ5RbeR8hi8egxksHRccBPScDppBzgKbMUGXhTJeXJvIvVcqfncUpm+MYQcZAufKMfbVrGQsyPhFdRvErl3eOeCLgu5oomQyegjoHdEb78oa1pb4ob6/f03iPT3GCVRoxacj64pL1vSLK+X5eiJ72kptdoVHpuD2UJqNhwQzEqc0oL+1Tat/I4qN90R3MD9Qj/Ox/AZrcVuX9hC7iElT981v1lnEO2SUMCYEn/Rk53imGq6AUPchDlkfWyPXjXl/CUWk3wqXWC0NwLr3yM60J8s8Hv/DqcKkt3ZYbLCDKj8s7wV2FER+Jvx8zp/c7M9yt3WDes+4zDNJpVjKnBrwjQ8vX16SxaYQB28jZD4hZLW48EguPDyfOhe29EoyM4TA7pnsf9859YuTku8VcTzYL+wLERXy0rHphZjR0=
