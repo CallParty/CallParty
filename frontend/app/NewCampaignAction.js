@@ -1,5 +1,6 @@
 import API from './helpers/API'
 import React, { Component } from 'react'
+import Loader from 'react-loader'
 import Select from 'react-select'
 import RadioGroup from 'react-radio'
 import { Link } from 'react-router'
@@ -64,23 +65,32 @@ class NewCampaignAction extends Component {
   }
 
   componentWillMount() {
-    API.campaign(this.props.params.id, data => {
+    const dataPromises = []
+    const campaignPromise = API.campaign(this.props.params.id, data => {
       this.setState({
         campaign: data
       })
     })
-    API.committees(data => this.setState({ committees: data }))
-    API.districts(data => this.setState({ districts: data }))
+    dataPromises.push(campaignPromise)
+    const comitteesPromise = API.committees(data => this.setState({ committees: data }))
+    dataPromises.push(comitteesPromise)
+    const districtPromise = API.districts(data => this.setState({ districts: data }))
+    dataPromises.push(districtPromise)
     this.inputs = {}
 
     // if a cloneId param was passed, then pre-populate fields based on that campaignAction
     if (this.props.location && this.props.location.query && this.props.location.query.cloneId) {
-      API.getClonedAction(this.props.location.query.cloneId, data => {
+      const clonePromise = API.getClonedAction(this.props.location.query.cloneId, data => {
         this.setState({
           campaignAction: data
         })
       })
+      dataPromises.push(clonePromise)
     }
+    // when all data has been fetched, set loaded to true
+    Promise.all(dataPromises).then(() => {
+      this.setState({loaded: true})
+    })
   }
 
   onSelectChange(key, val) {
@@ -267,44 +277,46 @@ class NewCampaignAction extends Component {
     }
 
     return (
-      <div className="camp-act-container">
-        <div className="meta">
-          <h1>New {{CampaignCall: 'Call', CampaignUpdate: 'Update'}[this.state.campaignAction.type]}</h1>
-          <h3>Campaign: <Link to={`/${this.state.campaign.id}`}>{this.state.campaign.title}</Link></h3>
-        </div>
-        <div className="camp-act-input">
-          <form onSubmit={this.onSubmit}>
-            {targetingTypeRadioButtons}
-
-            {this.state.campaignAction.targetingType === 'segmenting'
-              ? this.getSegmentingTargeting()
-              : this.getBorrowedTargeting()
-            }
-
-            <div>
-              {this.getActionForm()}
-            </div>
-
-            <input type="submit" value="Create" />
-          </form>
-
-          <div className="preview">
-            { this.getActionPreview() }
+      <Loader loaded={this.state.loaded}>
+        <div className="camp-act-container">
+          <div className="meta">
+            <h1>New {{CampaignCall: 'Call', CampaignUpdate: 'Update'}[this.state.campaignAction.type]}</h1>
+            <h3>Campaign: <Link to={`/${this.state.campaign.id}`}>{this.state.campaign.title}</Link></h3>
           </div>
+          <div className="camp-act-input">
+            <form onSubmit={this.onSubmit}>
+              {targetingTypeRadioButtons}
 
-          <Modal
-            isOpen={this.state.confirmationModalIsOpen}
-            style={CONFIRMATION_MODAL_STYLE}
-            contentLabel="Confirm"
-          >
-            <p style={{ marginBottom: '10px' }}>Are you sure?</p>
-            <div>
-              <button onClick={this.createCampaignAction} style={{ marginRight: '10px' }}>Yes</button>
-              <button onClick={this.closeConfirmationModal}>No</button>
+              {this.state.campaignAction.targetingType === 'segmenting'
+                ? this.getSegmentingTargeting()
+                : this.getBorrowedTargeting()
+              }
+
+              <div>
+                {this.getActionForm()}
+              </div>
+
+              <input type="submit" value="Create" />
+            </form>
+
+            <div className="preview">
+              { this.getActionPreview() }
             </div>
-          </Modal>
+
+            <Modal
+              isOpen={this.state.confirmationModalIsOpen}
+              style={CONFIRMATION_MODAL_STYLE}
+              contentLabel="Confirm"
+            >
+              <p style={{ marginBottom: '10px' }}>Are you sure?</p>
+              <div>
+                <button onClick={this.createCampaignAction} style={{ marginRight: '10px' }}>Yes</button>
+                <button onClick={this.closeConfirmationModal}>No</button>
+              </div>
+            </Modal>
+          </div>
         </div>
-      </div>
+      </Loader>
     )
   }
 }
