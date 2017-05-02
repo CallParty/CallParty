@@ -4,7 +4,6 @@ const Schema = mongoose.Schema
 
 const campaignUpdateSchema = new Schema({
   message: String,
-  campaignCall: { type: Schema.Types.ObjectId, ref: 'CampaignCall' }
 }, {
   discriminatorKey: 'type',
 })

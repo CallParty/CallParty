@@ -111,10 +111,10 @@ class NewCampaignAction extends Component {
     const campaignAction = this.state.campaignAction
     let fieldsToValidate = []
     if (this.props.actionType === 'CampaignCall') {
-      fieldsToValidate = ['title', 'message', 'task', 'issueLink', 'shareLink']
+      fieldsToValidate = ['label', 'subject', 'message', 'task', 'issueLink', 'shareLink']
     }
     else if (this.props.actionType=== 'CampaignUpdate') {
-      fieldsToValidate = ['message']
+      fieldsToValidate = ['label', 'message']
     }
     else {
       throw new Error('Invalid action type')

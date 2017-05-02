@@ -5,6 +5,15 @@ function CampaignUpdateForm(props) {
   return (
     <div>
       <fieldset>
+        <label>Label</label>
+        <input
+          maxLength="640"
+          type="text"
+          value={campaignAction.label}
+          onChange={onInputChange.bind(this, 'label')}
+        />
+      </fieldset>
+      <fieldset>
         <label>Message</label>
         <textarea
           maxLength="640"

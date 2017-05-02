@@ -4,7 +4,7 @@ const CampaignAction = require('./campaignAction')
 const Schema = mongoose.Schema
 
 const campaignCallSchema = new Schema({
-  title: String,
+  subject: String,
   message: String,
   task: String,
   issueLink: String,
@@ -13,12 +13,6 @@ const campaignCallSchema = new Schema({
   toObject: { virtuals: true },
   toJSON: { virtuals: true },
   discriminatorKey: 'type'
-})
-
-campaignCallSchema.virtual('campaignUpdates', {
-  ref: 'CampaignUpdate',
-  localField: '_id',
-  foreignField: 'campaignCall'
 })
 
 campaignCallSchema.virtual('userActions', {

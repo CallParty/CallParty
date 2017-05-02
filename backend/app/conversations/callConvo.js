@@ -10,7 +10,7 @@ const { logMessage } = require('../utilities/logHelper')
 function startCallConversation(user, userConversation, representatives, campaignCall) {
 
   // for testing so that we can ensure that an error on one user, does not botch the whole run
-  if (campaignCall.title === 'TestErrorLogging' && user.firstName === 'Max' && user.lastName === 'Fowler') {
+  if (campaignCall.subject === 'TestErrorLogging' && user.firstName === 'Max' && user.lastName === 'Fowler') {
     throw new Error('Testing error logging within conversation initiation')
   }
 
@@ -27,7 +27,7 @@ function startCallConversation(user, userConversation, representatives, campaign
       issueMessage: campaignCall.message,
       issueLink: campaignCall.issueLink,
       shareLink: campaignCall.shareLink,
-      issueSubject: campaignCall.title,
+      issueSubject: campaignCall.subject,
       issueTask: campaignCall.task,
       campaignCall: campaignCall.toObject({ virtuals: false }), // without toObject mongoose goes into an infinite loop on insert
       userConversationId: userConversation._id,
