@@ -96,6 +96,11 @@ exports.newCampaignAction = async function(req, res) {
     throw new Error('Invalid action type')
   }
 
+  // validation
+  if (actionData.targetingType === 'borrowed' && !actionData.targetAction) {
+    throw new Error('Cannot create action with type borrowed without targetAction')
+  }
+
   await campaignAction.save()
   const matchingUsersWithRepresentatives = await campaignAction.getMatchingUsersWithRepresentatives()
   // for each targeted user create a UserConversation
