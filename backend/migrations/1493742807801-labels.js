@@ -3,7 +3,7 @@ const dotenv = require('dotenv')
 dotenv.load()
 
 const { CampaignCall, CampaignUpdate } = require('../app/models')
-const logMessage = require('../app/utilities/logHelper').logMessage
+const { logMessage, captureException } = require('../app/utilities/logHelper')
 
 
 
@@ -19,24 +19,39 @@ export async function up () {
   await logMessage('++ running migration')
 
   await logMessage(`++ setting label to title for all campaign calls`)
-  const actions = await this('CampaignCall').find()
+  const actions = await CampaignCall.find({})
   // const actions = await CampaignCall.find({})
   for (let action of actions) {
-    await logMessage(`++ renaming to ${action.title}`)
-    action.label = action.title
-    await action.save()
+    try {
+      let label = action._doc.title
+      await logMessage(`++ renaming call to ${label}`)
+      action.label = label
+      if (!action.targetingType) {
+        action.targetingType = 'borrowed'
+      }
+      await action.save()
+    } catch (err) {
+      await logMessage(`error: ${err.message}`)
+      captureException(err)
+    }
   }
 
-  // await logMessage(`++ setting label to 'Update: action.title' for all campaign updates`)
-  // const updates = await CampaignUpdate.find({}).populate('targetAction')
-  // for (let update of updates) {
-  //   let label = 'Update'
-  //   if (update.targetAction) {
-  //     label = `Update: ${update.targetAction.label}`
-  //   }
-  //   update.label = label
-  //   await update.save()
-  // }
+  await logMessage(`++ setting label to 'Update: action.title' for all campaign updates`)
+  const updates = await CampaignUpdate.find({}).populate('targetAction')
+  for (let update of updates) {
+    try {
+      let label = 'Update'
+      if (update.targetAction) {
+        label = `Update: ${update.targetAction.label}`
+      }
+      await logMessage(`++ renaming update to ${label}`)
+      update.label = label
+      await update.save()
+    }
+    catch (err) {
+      await logMessage('error')
+    }
+  }
 
   await logMessage('++ completed migration')
 }
