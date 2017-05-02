@@ -247,7 +247,7 @@ export default class CampaignActionDetail extends React.Component {
       <Loader loaded={this.state.loaded}>
         <div className="campaign-action-detail">
           <div className="meta">
-            <h1>{this.state.action.title}</h1>
+            <h1>{this.state.action.label}</h1>
             <h4>Created at {createdAt}</h4>
           </div>
 
