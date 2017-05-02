@@ -237,7 +237,7 @@ class NewCampaignAction extends Component {
   getBorrowedTargeting() {
     const options = this.state.campaign.campaignActions.map(a => ({
       value: a.id,
-      label: a.title
+      label: a.label
     }))
     return (
       <fieldset>
