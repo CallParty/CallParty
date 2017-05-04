@@ -9,6 +9,7 @@ const campaignActionSchema = new Schema({
   sent: { type: Boolean, default: false },
   sentAt: Date,
   campaign: { type: Schema.Types.ObjectId, ref: 'Campaign' },
+  bot: String, // this should always be the same as associated Campaign, but storing here for convenience
 
   // TARGETING
   targetingType: { type: String, enum: ['segmenting', 'borrowed'] },
@@ -84,7 +85,7 @@ campaignActionSchema.methods.getMatchingRepresentatives = async function() {
   return repsQuery.exec()
 }
 
-campaignActionSchema.methods.getMatchingUsers = async function() {
+campaignActionSchema.methods.getMatchingUsers = async function(bot) {
 
   if (this.targetingType === 'borrowed') {
     await this.populate('targetAction').execPopulate()
@@ -96,7 +97,7 @@ campaignActionSchema.methods.getMatchingUsers = async function() {
   let userQuery = this.model('User')
 
   // iteratively add filters to query based on targeting criteria
-  const matchParams = { active: true, unsubscribed: false }
+  const matchParams = { active: true, unsubscribed: false, bot: this.bot}
   const hasDistrictsFilter = this.districts && this.districts.length > 0
   if (hasDistrictsFilter) {
     matchParams.district = { $in: this.districts }

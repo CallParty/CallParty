@@ -10,7 +10,8 @@ const campaignSchema = new Schema({
   createdAt: { type: Date, default: () => moment.utc().toDate() },
 }, {
   toObject: { virtuals: true },
-  toJSON: { virtuals: true }
+  toJSON: { virtuals: true },
+  bot: String,
 })
 
 campaignSchema.virtual('campaignActions', {
