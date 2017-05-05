@@ -59,6 +59,7 @@ if (process.env.DEBUG_ENDPOINTS === 'true') {
   unauthenticatedPaths.push(new RegExp('/api/start/.*', 'i'))
   unauthenticatedPaths.push(new RegExp('/api/send/.*', 'i'))
 }
+// all authenticated API endpoints will have access to the current user's bot at req.user.bot
 app.use(jwt({ secret: process.env.JWT_SECRET }).unless({
   path: unauthenticatedPaths,
 }))
