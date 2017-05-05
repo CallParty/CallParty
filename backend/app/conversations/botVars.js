@@ -15,6 +15,10 @@ const botTypes = {
   callparty: 'callparty',
   callingteststaging: 'callparty',
   callparty5: 'callparty',
+  callparty4: 'callparty',
+  callparty3: 'callparty',
+  callparty2: 'callparty',
+  callparty1: 'callparty',
   govtrack: 'govtrack',
   gtrackstaging: 'govtrack'
 }
