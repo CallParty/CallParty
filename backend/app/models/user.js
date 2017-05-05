@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const moment = require('moment')
 const Schema = mongoose.Schema
 const { getTokenFromBot } = require('../utilities/multiTenant')
-const { botTypes } = require('./botVars')
+const { botTypes } = require('../conversations/botVars')
 
 const userSchema = new Schema({
   bot: String,
