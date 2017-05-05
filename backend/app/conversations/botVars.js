@@ -16,7 +16,7 @@ const botTypes = {
   callingteststaging: 'callparty',
   callparty5: 'callparty',
   govtrack: 'govtrack',
-  govtrackstaging: 'govtrack'
+  gtrackstaging: 'govtrack'
 }
 
 module.exports = {
