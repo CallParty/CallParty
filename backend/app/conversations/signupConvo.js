@@ -8,6 +8,7 @@ const { User } = require('../models')
 const { setUserCallback } = require('../methods/userMethods')
 const { logMessage } = require('../utilities/logHelper')
 const { getBotFromFbId, getTokenFromBot } = require('../utilities/multiTenant')
+const { botVars } = require('./botVars')
 
 mongoose.Promise = Promise
 
@@ -40,7 +41,7 @@ function startSignupConversation(senderId, recipientId) {
 
 
 function askForAddressConvo(user) {
-  const organization = 'CallParty' // this should be looked up from the db eventually
+  const organization = botVars.orgName[user.bot]
   return botReply(user,
     `Hi there! Nice to meet you. ` +
     `I'm a bot made by the people at ${organization} to let you know when to call Congress about important issues, ` +
