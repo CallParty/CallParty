@@ -63,6 +63,7 @@ exports.newCampaignAction = async function(req, res) {
   const data = req.body
   const actionData = {
     campaign: ObjectId(req.params.id),
+    label: data.label,
     // targeting
     targetingType: data.targetingType,
     // rep targeting
@@ -77,7 +78,7 @@ exports.newCampaignAction = async function(req, res) {
   let campaignAction = null
   if (data.type === 'CampaignCall') {
     Object.assign(actionData, {
-      title: data.title,
+      subject: data.subject,
       message: data.message,
       issueLink: data.issueLink,
       shareLink: data.shareLink,

@@ -209,7 +209,7 @@ export default class CampaignActionDetail extends React.Component {
     if (this.state.action.targetingType === 'segmenting') {
       targeting = [memberTypeTargeting, ...partyTargeting, ...committeeTargeting, ...districtTargeting]
     } else if (this.state.action.targetingType === 'borrowed') {
-      targeting = [`action: ${this.state.action.targetAction.title} `]
+      targeting = [`borrowed from: ${this.state.action.targetAction.label} `]
     }
     return (
       <ul className="targeting">
@@ -247,7 +247,7 @@ export default class CampaignActionDetail extends React.Component {
       <Loader loaded={this.state.loaded}>
         <div className="campaign-action-detail">
           <div className="meta">
-            <h1>{this.state.action.title}</h1>
+            <h1>{this.state.action.label}</h1>
             <h4>Created at {createdAt}</h4>
           </div>
 

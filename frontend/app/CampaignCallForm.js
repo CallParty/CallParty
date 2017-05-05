@@ -5,6 +5,15 @@ function CampaignCallForm(props) {
   return (
     <div>
       <fieldset>
+        <label>Label</label>
+        <input
+          maxLength="640"
+          type="text"
+          value={campaignAction.label}
+          onChange={onInputChange.bind(this, 'label')}
+        />
+      </fieldset>
+      <fieldset>
         <label>Message</label>
         <textarea
           maxLength="640"
@@ -35,8 +44,8 @@ function CampaignCallForm(props) {
         <input
           maxLength="640"
           type="text"
-          value={campaignAction.title}
-          onChange={onInputChange.bind(this, 'title')}
+          value={campaignAction.subject}
+          onChange={onInputChange.bind(this, 'subject')}
         />
       </fieldset>
       <fieldset>

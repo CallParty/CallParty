@@ -4,7 +4,7 @@ const Schema = mongoose.Schema
 const ObjectId = mongoose.Types.ObjectId
 
 const campaignActionSchema = new Schema({
-  title: String,
+  label: String,
   createdAt: { type: Date, default: () => moment.utc().toDate() },
   sent: { type: Boolean, default: false },
   sentAt: Date,

@@ -151,7 +151,7 @@ class Campaign extends Component {
               <tr>
                 <th>#</th>
                 <th>Type</th>
-                <th>Subject</th>
+                <th>Label</th>
                 <th>Date Created</th>
                 <th>Clone?</th>
               </tr>
@@ -177,7 +177,7 @@ function CampaignAction(props) {
     <tr onClick={redirectToCampaignActionPage}>
       <td>{props.num}</td>
       <td>{ACTION_TYPES[props.type]}</td>
-      <td>{props.title}</td>
+      <td>{props.label}</td>
       <td>{createdAt}</td>
       <td><Link to={createDuplicateUrl} onClick={e => e.stopPropagation()}>Clone</Link></td>
     </tr>
