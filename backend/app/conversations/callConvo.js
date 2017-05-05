@@ -6,6 +6,8 @@ const { UserAction } = require('../models')
 const { UserConversation, Reps, Campaign } = require('../models')
 const ACTION_TYPE_PAYLOADS = UserAction.ACTION_TYPE_PAYLOADS
 const { logMessage } = require('../utilities/logHelper')
+const { botVars } = require('./botVars')
+
 
 function startCallConversation(user, userConversation, representatives, campaignCall) {
 
@@ -161,7 +163,7 @@ function firstTimeAreYouReadyConvo(user) {
 async function firstTimeReadyResponseConvo(user, message) {
   if (!Object.values(ACTION_TYPE_PAYLOADS).includes(message.text)) {
     logMessage(`++ User responded to firstTimeReadyResponseConvo with unexpected message: ${message.text}`)
-    return botReply(user, "I'm sorry, I didn't understand that! Try choosing from one of the options above, or shoot us an email to talk to a person at hi@callparty.org.")
+    return botReply(user, `I'm sorry, I didn't understand that! Try choosing from one of the options above, or shoot us an email to talk to a person at ${botVars.orgEmail[user.botType]}.`)
   }
 
   await UserAction.create({
@@ -356,54 +358,61 @@ function noNextRepResponse(user, message, numCalls) {
       `)
     }
   }).then(() => {
-    const share_msg = {
-      attachment: {
-        type: 'template',
-        payload: {
-          template_type: 'generic',
-          elements: [{
-            title: 'Share this issue with your friends to make it a party',
-            subtitle: user.convoData.issueSubject,
-            image_url: 'https://storage.googleapis.com/callparty/cpshare.jpg',
-            buttons: [
-              {
-                type: 'element_share',
-                share_contents: {
-                  attachment: {
-                    type: 'template',
-                    payload: {
-                      template_type: 'generic',
-                      elements: [{
-                        title: 'Call your Members of Congress and join the CallParty!',
-                        subtitle: user.convoData.issueSubject,
-                        image_url: 'https://storage.googleapis.com/callparty/cpshare.jpg',
-                        default_action: {
-                          type: 'web_url',
-                          url: user.convoData.shareLink
-                        },
-                        buttons: [
-                          {
+    // if callparty then send share link
+    if (user.botType === 'callparty') {
+      const share_msg = {
+        attachment: {
+          type: 'template',
+          payload: {
+            template_type: 'generic',
+            elements: [{
+              title: 'Share this issue with your friends to make it a party',
+              subtitle: user.convoData.issueSubject,
+              image_url: 'https://storage.googleapis.com/callparty/cpshare.jpg',
+              buttons: [
+                {
+                  type: 'element_share',
+                  share_contents: {
+                    attachment: {
+                      type: 'template',
+                      payload: {
+                        template_type: 'generic',
+                        elements: [{
+                          title: 'Call your Members of Congress and join the CallParty!',
+                          subtitle: user.convoData.issueSubject,
+                          image_url: 'https://storage.googleapis.com/callparty/cpshare.jpg',
+                          default_action: {
                             type: 'web_url',
-                            url: user.convoData.shareLink,
-                            title: 'View More Info'
-                          }
-                        ]
-                      }]
+                            url: user.convoData.shareLink
+                          },
+                          buttons: [
+                            {
+                              type: 'web_url',
+                              url: user.convoData.shareLink,
+                              title: 'View More Info'
+                            }
+                          ]
+                        }]
+                      }
                     }
                   }
-                }
-              },
-              {
-                type: 'web_url',
-                url: user.convoData.shareLink,
-                title: 'View More Info'
-              },
-            ]
-          }]
+                },
+                {
+                  type: 'web_url',
+                  url: user.convoData.shareLink,
+                  title: 'View More Info'
+                },
+              ]
+            }]
+          }
         }
       }
+      return botReply(user, share_msg).then(() => setUserCallback(user, null))
     }
-    return botReply(user, share_msg).then(() => setUserCallback(user, null))
+    // no share fo gov track
+    else {
+      return setUserCallback(user, null)
+    }
   })
 }
 
