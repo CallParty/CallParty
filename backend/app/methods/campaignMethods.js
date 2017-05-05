@@ -5,10 +5,16 @@ const USER_CONVO_STATUS = UserConversation.USER_CONVO_STATUS
 const ObjectId = mongoose.Types.ObjectId
 
 exports.newCampaign = function(req, res) {
+
+  // get bot from currently logged in admin
+  const bot = process.env.DEFAULT_BOT // TODO: actually get this from admin user associated with session token
+
+  // process request
   const data = req.body
   const campaign = new Campaign({
     title: data.title,
-    description: data.description
+    description: data.description,
+    bot: bot,
   })
   campaign.save(function (err) {
     if (err) return res.status(400).send(err)
@@ -17,7 +23,12 @@ exports.newCampaign = function(req, res) {
 }
 
 exports.modifyCampaign = function(req, res) {
-  Campaign.update({
+
+  // get bot from currently logged in admin
+  const bot = process.env.DEFAULT_BOT // TODO: actually get this from admin user associated with session token
+
+  // update campaign
+  return Campaign.update({_id: req._id, bot: bot}, {
     _id: req._id,
     title: req.campaign_title,
     description: req.campaign_description,
@@ -30,8 +41,13 @@ exports.modifyCampaign = function(req, res) {
 }
 
 exports.getCampaign = function(req, res) {
-  Campaign
-    .findOne({ _id: req.params.id })
+
+  // get bot from currently logged in admin
+  const bot = process.env.DEFAULT_BOT // TODO: actually get this from admin user associated with session token
+
+  // return campaign
+  return Campaign
+    .findOne({ _id: req.params.id, bot: bot })
     .populate({
       path: 'campaignActions',
       populate: {
@@ -45,8 +61,12 @@ exports.getCampaign = function(req, res) {
 }
 
 exports.getCampaigns = function(req, res) {
+  // get bot from currently logged in admin
+  const bot = process.env.DEFAULT_BOT // TODO: actually get this from admin user associated with session token
+
+  // return campaigns
   Campaign
-    .find({})
+    .find({bot: bot})
     .populate({
       path: 'campaignActions',
       populate: {
@@ -60,9 +80,21 @@ exports.getCampaigns = function(req, res) {
 }
 
 exports.newCampaignAction = async function(req, res) {
+
+  // get bot from currently logged in admin
+  const bot = process.env.DEFAULT_BOT // TODO: actually get this from admin user associated with session token
+
+  // assert that campaign.bot is the same as currently logged in bot
+  const campaign = await Campaign.findOne({ _id: req.params.id, bot: bot })
+  if (campaign.bot !== bot) {
+    throw new Error('++ cannot create campaign action for campaign of other bot')
+  }
+
+  // process request
   const data = req.body
   const actionData = {
     campaign: ObjectId(req.params.id),
+    bot:  bot,
     label: data.label,
     // targeting
     targetingType: data.targetingType,
@@ -94,6 +126,11 @@ exports.newCampaignAction = async function(req, res) {
   }
   else {
     throw new Error('Invalid action type')
+  }
+
+  // validation
+  if (actionData.targetingType === 'borrowed' && !actionData.targetAction) {
+    throw new Error('Cannot create action with type borrowed without targetAction')
   }
 
   await campaignAction.save()
