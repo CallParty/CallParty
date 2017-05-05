@@ -1,5 +1,3 @@
-const auth = require('basic-auth')
-const jwt = require('jsonwebtoken')
 const campaignMethods = require('../methods/campaignMethods')
 const committeeMethods = require('../methods/committeeMethods')
 const campaignCallMethods = require('../methods/campaignCallMethods')
@@ -12,22 +10,9 @@ const {
   downloadCommitteeMembershipYamlFile,
   loadCommitteesFromFiles
 } = require('../utilities/committees')
+const { handleAuthTokenRequest } = require('../utilities/auth')
 const { CampaignAction } = require('../models')
 
-function handleTokenRequest(req, res) {
-  const user = auth(req)
-
-  if (!user || !user.name || !user.pass) {
-    return res.sendStatus(401)
-  }
-
-  if (user.name !== process.env.ADMIN_USERNAME || user.pass !== process.env.ADMIN_PASSWORD) {
-    return res.sendStatus(401)
-  }
-
-  const token = jwt.sign({ admin: true }, process.env.JWT_SECRET, { expiresIn: '2h' })
-  res.json({ token: token })
-}
 
 module.exports = function(apiRouter) {
   apiRouter.get('/campaigns', campaignMethods.getCampaigns)
@@ -38,7 +23,7 @@ module.exports = function(apiRouter) {
   apiRouter.get('/campaign_actions/:id', async function(req, res) {
 
     // get bot from currently logged in admin
-    const bot = process.env.DEFAULT_BOT // TODO: actually get this from admin user associated with session token
+    const bot = req.user.bot
 
     // process request
     const { type } = await CampaignAction.findOne({ _id: req.params.id, bot: bot }).select({ type: 1, _id: 0 }).exec()
@@ -59,7 +44,7 @@ module.exports = function(apiRouter) {
   apiRouter.get('/clone_action/:id', async function(req, res) {
 
     // get bot from currently logged in admin
-    const bot = process.env.DEFAULT_BOT // TODO: actually get this from admin user associated with session token
+    const bot = req.user.bot
 
     /* this function returns a campaign action without its virtuals populated (to be used as a clone input) */
     const { type } = await CampaignAction.findOne({ _id: req.params.id, bot: bot }).select({ type: 1, _id: 0 }).exec()
@@ -93,6 +78,6 @@ module.exports = function(apiRouter) {
     res.json({ success: true })
   })
 
-  apiRouter.get('/token', handleTokenRequest)
-  apiRouter.post('/token', handleTokenRequest)
+  apiRouter.get('/token', handleAuthTokenRequest)
+  apiRouter.post('/token', handleAuthTokenRequest)
 }
