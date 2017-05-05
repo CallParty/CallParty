@@ -4,12 +4,12 @@ const Schema = mongoose.Schema
 const ObjectId = mongoose.Types.ObjectId
 
 const campaignActionSchema = new Schema({
+  bot: String, // this should always be the same as associated Campaign, but storing here for convenience
   label: String,
   createdAt: { type: Date, default: () => moment.utc().toDate() },
   sent: { type: Boolean, default: false },
   sentAt: Date,
   campaign: { type: Schema.Types.ObjectId, ref: 'Campaign' },
-  bot: String, // this should always be the same as associated Campaign, but storing here for convenience
 
   // TARGETING
   targetingType: { type: String, enum: ['segmenting', 'borrowed'] },

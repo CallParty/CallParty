@@ -85,7 +85,7 @@ exports.newCampaignAction = async function(req, res) {
   const bot = process.env.DEFAULT_BOT // TODO: actually get this from admin user associated with session token
 
   // assert that campaign.bot is the same as currently logged in bot
-  await campaign = Campaign.findOne({ _id: req.params.id, bot: bot })
+  const campaign = await Campaign.findOne({ _id: req.params.id, bot: bot })
   if (campaign.bot !== bot) {
     throw new Error('++ cannot create campaign action for campaign of other bot')
   }

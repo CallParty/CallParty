@@ -3,6 +3,7 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const campaignSchema = new Schema({
+  bot: String,
   title: String,
   description: String,
   active: Boolean,
@@ -11,7 +12,6 @@ const campaignSchema = new Schema({
 }, {
   toObject: { virtuals: true },
   toJSON: { virtuals: true },
-  bot: String,
 })
 
 campaignSchema.virtual('campaignActions', {

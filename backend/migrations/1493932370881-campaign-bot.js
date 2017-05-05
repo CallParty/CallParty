@@ -20,12 +20,14 @@ export async function up () {
   await logMessage(`++ setting bot to ${bot} for all Campaigns`)
   const campaigns = await Campaign.find({})
   for (let campaign of campaigns) {
+    console.log('++ saving campaign')
     campaign.bot = bot
     await campaign.save()
   }
   await logMessage(`++ setting bot to ${bot} for all CampaignAction`)
   const actions = await CampaignAction.find({})
   for (let action of actions) {
+    console.log('++ saving action')
     action.bot = bot
     await action.save()
   }
