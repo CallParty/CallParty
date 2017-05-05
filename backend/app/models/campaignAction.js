@@ -85,7 +85,7 @@ campaignActionSchema.methods.getMatchingRepresentatives = async function() {
   return repsQuery.exec()
 }
 
-campaignActionSchema.methods.getMatchingUsers = async function(bot) {
+campaignActionSchema.methods.getMatchingUsers = async function() {
 
   if (this.targetingType === 'borrowed') {
     await this.populate('targetAction').execPopulate()
