@@ -1,5 +1,4 @@
 
-
 const botVars = {
   orgName: {
     callparty: 'CallParty',
@@ -11,14 +10,16 @@ const botVars = {
   }
 }
 
-// duplicate certain keys for testing
-Object.keys(botVars).forEach(function(key) {
-  let keyVals = botVars[key]
-  keyVals['callingteststaging'] = keyVals['callparty']
-  keyVals['callparty5'] = keyVals['callparty']
-  keyVals['govtrackstaging'] = keyVals['govtrack']
-})
+// this mapping from bot to botType allows testing bots to share botVars with prod bots more easily
+const botTypes = {
+  callparty: 'callparty',
+  callingteststaging: 'callparty',
+  callparty5: 'callparty',
+  govtrack: 'govtrack',
+  govtrackstaging: 'govtrack'
+}
 
 module.exports = {
   botVars,
+  botTypes,
 }

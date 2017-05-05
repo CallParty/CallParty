@@ -163,7 +163,7 @@ function firstTimeAreYouReadyConvo(user) {
 async function firstTimeReadyResponseConvo(user, message) {
   if (!Object.values(ACTION_TYPE_PAYLOADS).includes(message.text)) {
     logMessage(`++ User responded to firstTimeReadyResponseConvo with unexpected message: ${message.text}`)
-    return botReply(user, `I'm sorry, I didn't understand that! Try choosing from one of the options above, or shoot us an email to talk to a person at ${botVars.orgEmail[user.bot]}.`)
+    return botReply(user, `I'm sorry, I didn't understand that! Try choosing from one of the options above, or shoot us an email to talk to a person at ${botVars.orgEmail[user.botType]}.`)
   }
 
   await UserAction.create({
@@ -359,7 +359,7 @@ function noNextRepResponse(user, message, numCalls) {
     }
   }).then(() => {
     // if callparty then send share link
-    if (user.bot === 'callparty') {
+    if (user.botType === 'callparty') {
       const share_msg = {
         attachment: {
           type: 'template',

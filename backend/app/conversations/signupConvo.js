@@ -41,7 +41,7 @@ function startSignupConversation(senderId, recipientId) {
 
 
 function askForAddressConvo(user) {
-  const organization = botVars.orgName[user.bot]
+  const organization = botVars.orgName[user.botType]
   return botReply(user,
     `Hi there! Nice to meet you. ` +
     `I'm a bot made by the people at ${organization} to let you know when to call Congress about important issues, ` +
