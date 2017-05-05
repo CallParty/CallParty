@@ -4,6 +4,7 @@ const Schema = mongoose.Schema
 const ObjectId = mongoose.Types.ObjectId
 
 const campaignActionSchema = new Schema({
+  bot: String, // this should always be the same as associated Campaign, but storing here for convenience
   label: String,
   createdAt: { type: Date, default: () => moment.utc().toDate() },
   sent: { type: Boolean, default: false },
@@ -84,7 +85,7 @@ campaignActionSchema.methods.getMatchingRepresentatives = async function() {
   return repsQuery.exec()
 }
 
-campaignActionSchema.methods.getMatchingUsers = async function() {
+campaignActionSchema.methods.getMatchingUsers = async function(bot) {
 
   if (this.targetingType === 'borrowed') {
     await this.populate('targetAction').execPopulate()
@@ -96,7 +97,7 @@ campaignActionSchema.methods.getMatchingUsers = async function() {
   let userQuery = this.model('User')
 
   // iteratively add filters to query based on targeting criteria
-  const matchParams = { active: true, unsubscribed: false }
+  const matchParams = { active: true, unsubscribed: false, bot: this.bot}
   const hasDistrictsFilter = this.districts && this.districts.length > 0
   if (hasDistrictsFilter) {
     matchParams.district = { $in: this.districts }

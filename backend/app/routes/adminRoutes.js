@@ -36,7 +36,12 @@ module.exports = function(apiRouter) {
   apiRouter.post('/campaigns/:id/action/new', campaignMethods.newCampaignAction)
 
   apiRouter.get('/campaign_actions/:id', async function(req, res) {
-    const { type } = await CampaignAction.findById(req.params.id).select({ type: 1, _id: 0 }).exec()
+
+    // get bot from currently logged in admin
+    const bot = process.env.DEFAULT_BOT // TODO: actually get this from admin user associated with session token
+
+    // process request
+    const { type } = await CampaignAction.findOne({ _id: req.params.id, bot: bot }).select({ type: 1, _id: 0 }).exec()
     if (!type) {
       return res.status(404).json({ error: 'CampaignAction not found.' })
     }
@@ -52,8 +57,12 @@ module.exports = function(apiRouter) {
   })
 
   apiRouter.get('/clone_action/:id', async function(req, res) {
+
+    // get bot from currently logged in admin
+    const bot = process.env.DEFAULT_BOT // TODO: actually get this from admin user associated with session token
+
     /* this function returns a campaign action without its virtuals populated (to be used as a clone input) */
-    const { type } = await CampaignAction.findById(req.params.id).select({ type: 1, _id: 0 }).exec()
+    const { type } = await CampaignAction.findOne({ _id: req.params.id, bot: bot }).select({ type: 1, _id: 0 }).exec()
     if (!type) {
       return res.status(404).json({ error: 'CampaignAction not found.' })
     }

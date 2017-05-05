@@ -4,9 +4,9 @@ const Schema = mongoose.Schema
 const { getTokenFromBot } = require('../utilities/multiTenant')
 
 const userSchema = new Schema({
+  bot: String,
   userId: String,
   fbId: String,
-  bot: String,
   state: String,
   districtNumber: String,
   district: String,
