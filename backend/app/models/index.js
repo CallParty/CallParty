@@ -10,6 +10,7 @@ const Committee = require('./committee')
 const Subcommittee = require('./subcommittee')
 const RepresentativeCommittee = require('./representativeCommittee')
 const RepresentativeSubcommittee = require('./representativeSubcommittee')
+const AdminUser = require('./adminUser')
 
 module.exports = {
   User,
@@ -23,5 +24,6 @@ module.exports = {
   Committee,
   Subcommittee,
   RepresentativeCommittee,
-  RepresentativeSubcommittee
+  RepresentativeSubcommittee,
+  AdminUser
 }
