@@ -3,6 +3,12 @@ const { logMessage } = require('../utilities/logHelper')
 
 exports.newAdmin = async function(req, res) {
 
+  // only callparty user can create admin
+  const bot = req.user.bot
+  if (['callparty', 'callingteststaging'].indexOf(bot) < 0) {
+    throw new Error('++ only callparty users can create admin')
+  }
+
   // parse data
   const data = req.body
   await logMessage(`++ @here creating new admin: ${JSON.stringify(data)}`)
