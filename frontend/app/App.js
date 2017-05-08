@@ -19,7 +19,6 @@ class Container extends Component {
     this.state = {
       currentAdmin: null,
       loaded: false,
-      breadcrumbs: '',
     }
     this.refreshReps = this.refreshReps.bind(this)
   }
@@ -55,6 +54,7 @@ class Container extends Component {
 
   get breadcrumbTitle() {
     if (this.state.currentAdmin) {
+      // TODO: this line of the code is never reached
       this.state.currentAdmin.bot
     } else {
       return 'CallParty'
