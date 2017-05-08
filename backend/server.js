@@ -53,7 +53,8 @@ const unauthenticatedPaths = [
   '/api/webhook',
   '/api/error',
   '/api/slack',
-  '/api/upload_ssl_certs'
+  '/api/upload_ssl_certs',
+  '/api/admins'
 ]
 if (process.env.DEBUG_ENDPOINTS === 'true') {
   unauthenticatedPaths.push(new RegExp('/api/start/.*', 'i'))

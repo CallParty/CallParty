@@ -76,6 +76,10 @@ export default {
     return post('/api/campaigns', data).then(data => cb(data))
   },
 
+  newAdmin: function(data, cb = response => response) {
+    return post('/api/admins', data).then(data => cb(data))
+  },
+
   newCampaignCall: function(id, data, cb = response => response) {
     return post(`/api/campaigns/${id}/call/new`, data).then(data => cb(data))
   },
@@ -106,6 +110,10 @@ export default {
 
   committees: function(cb = response => response) {
     return get('/api/committees').then(data => cb(data))
+  },
+
+  getCurrentAdmin: function(cb = response => response) {
+    return get('/api/currentAdmin').then(data => cb(data))
   },
 
   districts: function(cb = response => response) {

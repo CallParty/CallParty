@@ -1,8 +1,10 @@
 import React, { Component } from 'react'
 import { Router, Route, Link, IndexRoute, browserHistory } from 'react-router'
+import Loader from 'react-loader'
 import NotificationSystem from 'react-notification-system'
 import classNames from 'classnames'
 import { Campaigns, Campaign, NewCampaign } from './Campaign'
+import { SuperAdmin } from './SuperAdmin'
 import NewCampaignUpdate from './NewCampaignUpdate'
 import NewCampaignCall from './NewCampaignCall'
 import CampaignActionDetail from './CampaignActionDetail'
@@ -14,11 +16,26 @@ import API from './helpers/API'
 class Container extends Component {
   constructor(props) {
     super(props)
+    this.state = {
+      currentAdmin: null,
+      loaded: false,
+      breadcrumbs: '',
+    }
     this.refreshReps = this.refreshReps.bind(this)
   }
 
   static get contextTypes() {
     return { notify: React.PropTypes.func.isRequired }
+  }
+
+  componentWillMount() {
+    this.fetchCurrentAdmin()
+  }
+
+  fetchCurrentAdmin = () => {
+    return API.getCurrentAdmin().then(data => {
+      this.setState({ currentAdmin: data, loaded: true })
+    })
   }
 
   logout() {
@@ -37,7 +54,11 @@ class Container extends Component {
   }
 
   get breadcrumbTitle() {
-    return 'CallParty'
+    if (this.state.currentAdmin) {
+      this.state.currentAdmin.bot
+    } else {
+      return 'CallParty'
+    }
   }
 
   get breadcrumbs() {
@@ -83,23 +104,27 @@ class Container extends Component {
     const logoutButton = isNotLogin ? <a onClick={this.logout} href=""><button>Sign Out</button></a> : null
     const refreshButton = isNotLogin ? <a onClick={this.refreshReps} href=""><button className="warn">Refresh Rep Data</button></a> : null
     const breadcrumbs = isNotLogin ? this.breadcrumbs : null
+    const loggedInAs = isNotLogin && this.state.currentAdmin ? <a className="logged-in-as">Logged in as {this.state.currentAdmin.username}</a> : null
 
     return (
-      <div className="body-container">
-        <header className="main-header">
-          <div className="main-header-logo">
-            <Link to="/"><img src="http://callparty.org/assets/images/callparty.png" alt="Call Party Logo" /></Link>
+      <Loader loaded={this.state.loaded}>
+        <div className="body-container">
+          <header className="main-header">
+            <div className="main-header-logo">
+              <Link to="/"><img src="http://callparty.org/assets/images/callparty.png" alt="Call Party Logo" /></Link>
+            </div>
+            <div className="main-header-nav">
+              {loggedInAs}
+              {refreshButton}
+              {logoutButton}
+            </div>
+          </header>
+          <div className="breadcrumbs-container">
+            {breadcrumbs}
           </div>
-          <div className="main-header-nav">
-            {refreshButton}
-            {logoutButton}
-          </div>
-        </header>
-        <div className="breadcrumbs-container">
-          {breadcrumbs}
+          {React.cloneElement(this.props.children, { fetchCurrentAdmin: this.fetchCurrentAdmin })}
         </div>
-        {this.props.children}
-      </div>
+      </Loader>
     )
   }
 }
@@ -131,6 +156,7 @@ class App extends Component {
             <Route component={RequireAuthenticationContainer}>
               <IndexRoute component={Campaigns} />
               <Route path="new" component={NewCampaign} />
+              <Route path="superadmin" component={SuperAdmin} />
               <Route path=":id">
                 <IndexRoute component={Campaign} />
                 <Route path="actions/:actionId" component={CampaignActionDetail} />
