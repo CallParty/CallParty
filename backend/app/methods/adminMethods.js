@@ -9,13 +9,13 @@ exports.newAdmin = async function(req, res) {
 
   // check if admin with this username or bot already exists
   const alreadyUsername = await AdminUser.findOne({ username: data.username })
-  // if (alreadyUsername) {
-  //   throw new Error(`++ cannot create two adminUser with username ${data.username}`)
-  // }
+  if (alreadyUsername) {
+    throw new Error(`++ cannot create two adminUser with username ${data.username}`)
+  }
   const alreadyBot = await AdminUser.findOne({ bot: data.bot })
-  // if (alreadyBot) {
-  //   throw new Error(`++ cannot create two adminUser with bot ${data.bot}`)
-  // }
+  if (alreadyBot) {
+    throw new Error(`++ cannot create two adminUser with bot ${data.bot}`)
+  }
 
   // create admin
   const admin = new AdminUser({
