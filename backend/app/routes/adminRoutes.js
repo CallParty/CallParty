@@ -1,6 +1,7 @@
 const campaignMethods = require('../methods/campaignMethods')
 const committeeMethods = require('../methods/committeeMethods')
 const campaignCallMethods = require('../methods/campaignCallMethods')
+const adminMethods = require('../methods/adminMethods')
 const campaignUpdateMethods = require('../methods/campaignUpdateMethods')
 const { getDistricts } = require('../utilities/getDistricts')
 const { logMessage } = require('../utilities/logHelper')
@@ -15,6 +16,8 @@ const { CampaignAction } = require('../models')
 
 
 module.exports = function(apiRouter) {
+  apiRouter.post('/admins', adminMethods.newAdmin)
+  apiRouter.get('/currentAdmin', adminMethods.getCurrentAdmin)
   apiRouter.get('/campaigns', campaignMethods.getCampaigns)
   apiRouter.get('/campaigns/:id', campaignMethods.getCampaign)
   apiRouter.post('/campaigns', campaignMethods.newCampaign)

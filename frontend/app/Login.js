@@ -24,7 +24,8 @@ export default class Login extends React.Component {
           redirectPath: React.PropTypes.string,
           unauthorized: React.PropTypes.bool
         })
-      })
+      }),
+      fetchCurrentAdmin: React.PropTypes.func
     }
   }
 
@@ -71,6 +72,7 @@ export default class Login extends React.Component {
     const redirectPath = this.props.location.state && this.props.location.state.redirectPath
     const path = redirectPath || '/'
     browserHistory.push(path)
+    this.props.fetchCurrentAdmin()
   }
 
   onLoginFailure() {
