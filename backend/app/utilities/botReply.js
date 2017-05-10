@@ -89,7 +89,9 @@ function isKnownError(err) {
     knownError =
       err.message.includes('connect ETIMEDOUT') ||
       err.message.includes('connect ECONNREFUSED') ||
-      err.message.includes("This person isn't available right now")
+      err.message.includes("This person isn't available right now") ||
+      err.message.includes('Unexpected internal error') ||
+      err.message.includes('An unknown error occurred')
   }
   return knownError
 }
