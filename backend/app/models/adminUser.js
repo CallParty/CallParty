@@ -6,33 +6,21 @@ const SALT_WORK_FACTOR = 10
 const adminUserSchema = new Schema({
   username: { type: String, required: true, index: { unique: true } },
   password: { type: String, required: true },
-  bot: { type: String, required: true }
+  bot: { type: Schema.Types.ObjectId, ref: 'Bot', index: { unique: true } },
 })
 
-adminUserSchema.pre('save', function hashPassword(next) {
-  const user = this
-
-  if (!user.isModified('password')) {
-    return next()
-  }
-
-  bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
-    if (err) {
-      return next(err)
-    }
-
-    bcrypt.hash(user.password, salt, function(err, hash) {
-      if (err) {
-        return next(err)
-      }
-
-      user.password = hash
-      next()
-    })
-  })
-})
+adminUserSchema.methods.hashPassword = async function hashPassword(password) {
+  const salt = await bcrypt.genSalt(SALT_WORK_FACTOR)
+  const hash = await bcrypt.hash(password, salt)
+  return hash
+}
 
 adminUserSchema.methods.comparePassword = function comparePassword(candidatePassword) {
+  // if password hasn't been set yet, then it's open login
+  if (!this.password) {
+    return true
+  }
+  // otherwise actually compare password
   return new Promise((resolve, reject) => {
     bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
       if (err) {

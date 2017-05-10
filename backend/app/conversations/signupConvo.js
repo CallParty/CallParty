@@ -7,7 +7,7 @@ const botReply = require('../utilities/botReply').botReply
 const { User } = require('../models')
 const { setUserCallback } = require('../methods/userMethods')
 const { logMessage } = require('../utilities/logHelper')
-const { getBotFromFbId, getTokenFromBot } = require('../utilities/multiTenant')
+const { getBotFromFbId } = require('../utilities/multiTenant')
 const { botVars } = require('./botVars')
 
 mongoose.Promise = Promise
@@ -17,7 +17,7 @@ function startSignupConversation(senderId, recipientId) {
 
   // figure out which bot the user sent a message to, based on the recipientId
   const bot = getBotFromFbId(recipientId)
-  const fbToken = getTokenFromBot(bot)
+  const fbToken = bot.fbToken
 
   const facebookGraphRequestOptions = {
     uri: `https://graph.facebook.com/${senderId}`,
@@ -40,7 +40,7 @@ function startSignupConversation(senderId, recipientId) {
 }
 
 
-function askForAddressConvo(user) {
+async function askForAddressConvo(user) {
   const organization = botVars.orgName[user.botType]
   return botReply(user,
     `Hi there! Nice to meet you. ` +

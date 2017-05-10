@@ -16,7 +16,7 @@ const { CampaignAction } = require('../models')
 
 
 module.exports = function(apiRouter) {
-  apiRouter.post('/admins', adminMethods.newAdmin)
+  apiRouter.post('/updatePassword', adminMethods.updatePassword)
   apiRouter.get('/currentAdmin', adminMethods.getCurrentAdmin)
   apiRouter.get('/campaigns', campaignMethods.getCampaigns)
   apiRouter.get('/campaigns/:id', campaignMethods.getCampaign)

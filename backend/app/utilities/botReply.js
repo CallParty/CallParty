@@ -6,7 +6,8 @@ const USER_CONVO_STATUS = UserConversation.USER_CONVO_STATUS
 
 async function botReply(user, text, numAttempts) {
   // to avoid production errors, confirm that we only send to prod users when on prod
-  if (user.bot === 'callparty' && process.env.ENVIRONMENT !== 'PROD') {
+  await user.populate('bot').execPopulate()
+  if (user.bot.bot === 'callparty' && process.env.ENVIRONMENT !== 'PROD') {
     throw new Error('cannot send messages to callparty bot when not on prod')
   }
   // try to send the message
@@ -39,8 +40,9 @@ function botReplyHelper(user, text) {
   // for early testing going to keep this log in here
   logMessage(`++ sending message to ${user.fbId}: ${typeof text !== 'string' ? JSON.stringify(text) : text}`, '#_msg')
   // return promisified bot message
-  return new Promise(function (resolve, reject) {
-    sendFbMessage(user.fbId, user.fbToken, text, function (err, response) {
+  return new Promise(async function (resolve, reject) {
+    await user.populate('bot').execPopulate()
+    sendFbMessage(user.fbId, user.bot.fbToken, text, function (err, response) {
       // if there was an error, lets try to log info about it for debugging purposes
       if (err) {
         // try to convert the user to an object for extra debugging info

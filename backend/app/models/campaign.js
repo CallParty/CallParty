@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const campaignSchema = new Schema({
-  bot: String,
+  bot: { type: Schema.Types.ObjectId, ref: 'Bot' },
   title: String,
   description: String,
   active: Boolean,
