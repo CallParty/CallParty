@@ -21,6 +21,7 @@ class Container extends Component {
       loaded: false,
     }
     this.refreshReps = this.refreshReps.bind(this)
+    this.fetchCurrentAdmin = this.fetchCurrentAdmin.bind(this)
   }
 
   static get contextTypes() {
@@ -31,7 +32,7 @@ class Container extends Component {
     this.fetchCurrentAdmin()
   }
 
-  fetchCurrentAdmin = () => {
+  fetchCurrentAdmin() {
     return API.getCurrentAdmin().then(data => {
       this.setState({ currentAdmin: data, loaded: true })
     })
