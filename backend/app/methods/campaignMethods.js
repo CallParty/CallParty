@@ -7,7 +7,7 @@ const ObjectId = mongoose.Types.ObjectId
 exports.newCampaign = function(req, res) {
 
   // get bot from currently logged in admin
-  const bot = req.user.bot
+  const bot = req.adminUser.bot
 
   // process request
   const data = req.body
@@ -25,7 +25,7 @@ exports.newCampaign = function(req, res) {
 exports.modifyCampaign = function(req, res) {
 
   // get bot from currently logged in admin
-  const bot = req.user.bot
+  const bot = req.adminUser.bot
 
   // update campaign
   return Campaign.update({_id: req._id, bot: bot}, {
@@ -43,7 +43,7 @@ exports.modifyCampaign = function(req, res) {
 exports.getCampaign = function(req, res) {
 
   // get bot from currently logged in admin
-  const bot = req.user.bot
+  const bot = req.adminUser.bot
 
   // return campaign
   return Campaign
@@ -62,7 +62,7 @@ exports.getCampaign = function(req, res) {
 
 exports.getCampaigns = function(req, res) {
   // get bot from currently logged in admin
-  const bot = req.user.bot
+  const bot = req.adminUser.bot
 
   // return campaigns
   Campaign
@@ -82,7 +82,7 @@ exports.getCampaigns = function(req, res) {
 exports.newCampaignAction = async function(req, res) {
 
   // get bot from currently logged in admin
-  const bot = req.user.bot
+  const bot = req.adminUser.bot
 
   // assert that campaign.bot is the same as currently logged in bot
   const campaign = await Campaign.findOne({ _id: req.params.id, bot: bot })

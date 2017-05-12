@@ -20,10 +20,18 @@ async function handleAuthTokenRequest(req, res) {
     return res.sendStatus(401)
   }
 
-  const token = jwt.sign({ bot: adminUser.bot }, process.env.JWT_SECRET, { expiresIn: '2h' })
+  const token = jwt.sign({ adminUserId: adminUser._id }, process.env.JWT_SECRET, { expiresIn: '2h' })
   res.json({ token: token })
 }
 
+async function adminUserMiddleware(req, res, next) {
+  if (req.user && req.user.adminUserId) {
+    req.adminUser = await AdminUser.findById(req.user.adminUserId).exec()
+  }
+  next()
+}
+
 module.exports = {
-  handleAuthTokenRequest
+  handleAuthTokenRequest,
+  adminUserMiddleware
 }

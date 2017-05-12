@@ -4,7 +4,7 @@ const { logMessage } = require('../utilities/logHelper')
 exports.newAdmin = async function(req, res) {
 
   // only callparty user can create admin
-  const bot = req.user.bot
+  const bot = req.adminUser.bot
   if (['callparty', 'callingteststaging'].indexOf(bot) < 0) {
     throw new Error('++ only callparty users can create admin')
   }
@@ -38,8 +38,8 @@ exports.newAdmin = async function(req, res) {
 }
 
 exports.getCurrentAdmin = async function(req, res) {
-  const bot = req.user.bot
-  const currentAdmin = await AdminUser.findOne({bot: bot})
+  const bot = req.adminUser.bot
+  const currentAdmin = await AdminUser.findOne({ bot: bot })
   res.json({
     username: currentAdmin.username,
     bot: currentAdmin.bot,
