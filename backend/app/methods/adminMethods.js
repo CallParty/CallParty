@@ -38,10 +38,8 @@ exports.newAdmin = async function(req, res) {
 }
 
 exports.getCurrentAdmin = async function(req, res) {
-  const bot = req.adminUser.bot
-  const currentAdmin = await AdminUser.findOne({ bot: bot })
   res.json({
-    username: currentAdmin.username,
-    bot: currentAdmin.bot,
+    username: req.adminUser.username,
+    bot: req.adminUser.bot,
   })
 }
