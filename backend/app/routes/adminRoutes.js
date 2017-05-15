@@ -26,7 +26,7 @@ module.exports = function(apiRouter) {
   apiRouter.get('/campaign_actions/:id', async function(req, res) {
 
     // get bot from currently logged in admin
-    const bot = req.user.bot
+    const bot = req.adminUser.bot
 
     // process request
     const { type } = await CampaignAction.findOne({ _id: req.params.id, bot: bot }).select({ type: 1, _id: 0 }).exec()
@@ -47,7 +47,7 @@ module.exports = function(apiRouter) {
   apiRouter.get('/clone_action/:id', async function(req, res) {
 
     // get bot from currently logged in admin
-    const bot = req.user.bot
+    const bot = req.adminUser.bot
 
     /* this function returns a campaign action without its virtuals populated (to be used as a clone input) */
     const { type } = await CampaignAction.findOne({ _id: req.params.id, bot: bot }).select({ type: 1, _id: 0 }).exec()

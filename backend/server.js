@@ -64,6 +64,10 @@ app.use(jwt({ secret: process.env.JWT_SECRET }).unless({
   path: unauthenticatedPaths,
 }))
 
+const { adminUserMiddleware } = require('./app/utilities/auth')
+
+app.use(adminUserMiddleware)
+
 // routes
 require('./app/routes/helperRoutes')(apiRouter)
 require('./app/routes/sendRoutes')(apiRouter, io)
