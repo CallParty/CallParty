@@ -34,17 +34,17 @@ export async function up () {
   if (process.env.ENVIRONMENT !== 'PROD') {
     bots = [
       {
-        bot: 'callparty5',
+        _id: 'callparty5',
         fbId: '2060548600838593',
         botType: 'callparty'
       },
       {
-        bot: 'callingteststaging',
+        _id: 'callingteststaging',
         fbId: '392499054435475',
         botType: 'callparty'
       },
       {
-        bot: 'gtrackstaging',
+        _id: 'gtrackstaging',
         fbId: '427053054354007',
         botType: 'govtrack'
       },
@@ -53,47 +53,47 @@ export async function up () {
   else if (process.env.ENVIRONMENT === 'PROD') {
     bots = [
       {
-        bot: 'callparty',
+        _id: 'callparty',
         fbId: '243195752776526',
         botType: 'callparty'
       },
     ]
   }
   for (let botData of bots) {
-    const fbToken = getTokenFromBotId(botData.bot)
+    const fbToken = getTokenFromBotId(botData._id)
     botData.fbToken = fbToken
     await logMessage(`++ creating ${JSON.stringify(botData)}`)
-    const bot = Bot(botData)
+    const bot = new Bot(botData)
     await bot.save()
   }
 
-  const dBot = await Bot.findOne({bot: defaultBot})
+  const dBot = await Bot.findById(defaultBot)
 
   // update refs, such that they point to the bots
   await logMessage(`++ setting bot for all Campaigns`)
   const campaigns = await Campaign.find({})
   for (let campaign of campaigns) {
     console.log(`++ saving campaign from ${campaign.bot} to ${dBot._id}`)
-    campaign.bot = dBot
+    campaign.bot = dBot._id
     await campaign.save()
   }
   await logMessage(`++ setting bot for all CampaignAction`)
   const actions = await CampaignAction.find({})
   for (let action of actions) {
     console.log(`++ saving action from ${action.bot} to ${dBot._id}`)
-    action.bot = dBot
+    action.bot = dBot._id
     await action.save()
   }
   await logMessage(`++ setting bot for all User`)
   const users = await User.find({})
   for (let user of users) {
-    user.bot = dBot
+    user.bot = dBot._id
     await user.save()
   }
   await logMessage(`++ setting bot for all AdminUser`)
   const admins = await AdminUser.find({})
   for (let admin of admins) {
-    admin.bot = dBot
+    admin.bot = dBot._id
     await admin.save()
   }
 

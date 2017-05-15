@@ -3,7 +3,7 @@ const moment = require('moment')
 const Schema = mongoose.Schema
 
 const userSchema = new Schema({
-  bot: { type: Schema.Types.ObjectId, ref: 'Bot' },
+  bot: { type: String, ref: 'Bot' },
   userId: String,
   fbId: String,
   state: String,

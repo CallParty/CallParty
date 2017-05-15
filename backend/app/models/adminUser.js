@@ -6,7 +6,7 @@ const SALT_WORK_FACTOR = 10
 const adminUserSchema = new Schema({
   username: { type: String, required: true, index: { unique: true } },
   password: { type: String, required: true },
-  bot: { type: Schema.Types.ObjectId, ref: 'Bot', index: { unique: true } },
+  bot: { type: String, ref: 'Bot', required: true },
 })
 
 adminUserSchema.methods.hashPassword = async function hashPassword(password) {
