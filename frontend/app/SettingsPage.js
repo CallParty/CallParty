@@ -58,7 +58,7 @@ class SettingsPage extends Component {
       <h1 className="settings-header">Settings</h1>
       <div>
         <h2> Change Password </h2>
-        <br></br>
+        <br />
         <form onSubmit={this.onSubmit}>
           <fieldset>
             <label>New Password</label>

@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const { Campaign, CampaignCall, CampaignUpdate, UserConversation, Bot } = require('../models')
+const { Campaign, CampaignCall, CampaignUpdate, UserConversation } = require('../models')
 const USER_CONVO_STATUS = UserConversation.USER_CONVO_STATUS
 
 const ObjectId = mongoose.Types.ObjectId
