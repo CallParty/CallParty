@@ -13,6 +13,8 @@
 
   - name: npm install backend/package.json
     npm: path={{backend_dir}} executable=/usr/local/bin/npm
+    become: true
+    become_user: ubuntu
 
   - name: ensure public directory
     action: file dest={{public_dir}} state=directory
