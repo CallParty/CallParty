@@ -6,17 +6,17 @@ const geocoding = require('../utilities/geocoding')
 const botReply = require('../utilities/botReply').botReply
 const { User } = require('../models')
 const { setUserCallback } = require('../methods/userMethods')
-const { logMessage } = require('../utilities/logHelper')
+const { logMessage, captureException } = require('../utilities/logHelper')
 const { getBotFromFbId } = require('../utilities/multiTenant')
 const { botVars } = require('./botVars')
 
 mongoose.Promise = Promise
 
 
-function startSignupConversation(senderId, recipientId) {
+async function startSignupConversation(senderId, recipientId) {
 
   // figure out which bot the user sent a message to, based on the recipientId
-  const bot = getBotFromFbId(recipientId)
+  const bot = await getBotFromFbId(recipientId)
   const fbToken = bot.fbToken
 
   const facebookGraphRequestOptions = {
@@ -36,7 +36,10 @@ function startSignupConversation(senderId, recipientId) {
     .then(function(user) {
       return askForAddressConvo(user)
     })
-    .catch(function(err) { throw new Error(err) })
+    .catch(function(err) {
+      captureException(err)
+      throw new Error(err)
+    })
 }
 
 
