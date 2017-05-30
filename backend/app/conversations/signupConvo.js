@@ -8,7 +8,6 @@ const { User } = require('../models')
 const { setUserCallback } = require('../methods/userMethods')
 const { logMessage, captureException } = require('../utilities/logHelper')
 const { getBotFromFbId } = require('../utilities/multiTenant')
-const { botVars } = require('./botVars')
 
 mongoose.Promise = Promise
 
@@ -44,7 +43,7 @@ async function startSignupConversation(senderId, recipientId) {
 
 
 async function askForAddressConvo(user) {
-  const organization = botVars.orgName[user.bot.botType]
+  const organization = user.bot.orgName
   return botReply(user,
     `Hi there! Nice to meet you. ` +
     `I'm a bot made by the people at ${organization} to let you know when to call Congress about important issues, ` +
