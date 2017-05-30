@@ -1,11 +1,9 @@
 const mongoose = require('mongoose')
 const moment = require('moment')
 const Schema = mongoose.Schema
-const { getTokenFromBot } = require('../utilities/multiTenant')
-const { botTypes } = require('../conversations/botVars')
 
 const userSchema = new Schema({
-  bot: String,
+  bot: { type: String, ref: 'Bot' },
   userId: String,
   fbId: String,
   state: String,
@@ -27,19 +25,6 @@ const userSchema = new Schema({
 }, {
   toObject: { virtuals: true },
   toJSON: { virtuals: true }
-})
-
-userSchema.virtual('fbToken').get(function() {
-  const fbToken = getTokenFromBot(this.bot)
-  return fbToken
-})
-
-userSchema.virtual('botType').get(function() {
-  const botType = botTypes[this.bot]
-  if (!botType) {
-    throw new Error(`++ found user with bot without boty type ${this.bot}`)
-  }
-  return botType
 })
 
 userSchema.virtual('userConversations', {

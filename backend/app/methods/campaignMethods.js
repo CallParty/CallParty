@@ -4,7 +4,7 @@ const USER_CONVO_STATUS = UserConversation.USER_CONVO_STATUS
 
 const ObjectId = mongoose.Types.ObjectId
 
-exports.newCampaign = function(req, res) {
+exports.newCampaign = async function(req, res) {
 
   // get bot from currently logged in admin
   const bot = req.adminUser.bot
@@ -60,7 +60,7 @@ exports.getCampaign = function(req, res) {
     })
 }
 
-exports.getCampaigns = function(req, res) {
+exports.getCampaigns = async function(req, res) {
   // get bot from currently logged in admin
   const bot = req.adminUser.bot
 
@@ -86,7 +86,7 @@ exports.newCampaignAction = async function(req, res) {
 
   // assert that campaign.bot is the same as currently logged in bot
   const campaign = await Campaign.findOne({ _id: req.params.id, bot: bot })
-  if (campaign.bot !== bot) {
+  if (String(campaign.bot) !== bot) {
     throw new Error('++ cannot create campaign action for campaign of other bot')
   }
 

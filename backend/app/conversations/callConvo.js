@@ -9,7 +9,7 @@ const { logMessage } = require('../utilities/logHelper')
 const { botVars } = require('./botVars')
 
 
-function startCallConversation(user, userConversation, representatives, campaignCall) {
+async function startCallConversation(user, userConversation, representatives, campaignCall) {
 
   // for testing so that we can ensure that an error on one user, does not botch the whole run
   if (campaignCall.subject === 'TestErrorLogging' && user.firstName === 'Max' && user.lastName === 'Fowler') {
@@ -46,7 +46,7 @@ function startCallConversation(user, userConversation, representatives, campaign
       })),
       currentRepresentativeIndex: 0,
       numUserCalls: 0,  // the number of calls this user has made for this campaignCall
-      isFirstTimeCaller: isFirstTimeCaller
+      isFirstTimeCaller: isFirstTimeCaller,
     }
     // save params as convoData
     user.convoData = convoData
@@ -163,7 +163,7 @@ function firstTimeAreYouReadyConvo(user) {
 async function firstTimeReadyResponseConvo(user, message) {
   if (!Object.values(ACTION_TYPE_PAYLOADS).includes(message.text)) {
     logMessage(`++ User responded to firstTimeReadyResponseConvo with unexpected message: ${message.text}`)
-    return botReply(user, `I'm sorry, I didn't understand that! Try choosing from one of the options above, or shoot us an email to talk to a person at ${botVars.orgEmail[user.botType]}.`)
+    return botReply(user, `I'm sorry, I didn't understand that! Try choosing from one of the options above, or shoot us an email to talk to a person at ${botVars.orgEmail[user.bot.botType]}.`)
   }
 
   await UserAction.create({
@@ -359,7 +359,7 @@ function noNextRepResponse(user, message, numCalls) {
     }
   }).then(() => {
     // if callparty then send share link
-    if (user.botType === 'callparty') {
+    if (user.bot.botType === 'callparty') {
       const share_msg = {
         attachment: {
           type: 'template',

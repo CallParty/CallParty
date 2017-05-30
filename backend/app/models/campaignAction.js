@@ -4,7 +4,7 @@ const Schema = mongoose.Schema
 const ObjectId = mongoose.Types.ObjectId
 
 const campaignActionSchema = new Schema({
-  bot: String, // this should always be the same as associated Campaign, but storing here for convenience
+  bot: { type: String, ref: 'Bot' }, // this should always be the same as associated Campaign, but storing here for convenience
   label: String,
   createdAt: { type: Date, default: () => moment.utc().toDate() },
   sent: { type: Boolean, default: false },

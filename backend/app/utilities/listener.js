@@ -13,7 +13,7 @@ function handleMessage(senderId, recipientId, message) {
 
   // default message handler uses callbacks
   else {
-    User.findOne({fbId: senderId}).exec().then(function(user) {
+    User.findOne({fbId: senderId}).populate('bot').exec().then(function(user) {
       // if the user does not already exist, then run sign up flow
       if (!user) {
         startSignupConversation(senderId, recipientId)

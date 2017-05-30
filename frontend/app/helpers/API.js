@@ -76,8 +76,8 @@ export default {
     return post('/api/campaigns', data).then(data => cb(data))
   },
 
-  newAdmin: function(data, cb = response => response) {
-    return post('/api/admins', data).then(data => cb(data))
+  updatePassword: function(data, cb = response => response) {
+    return post('/api/updatePassword', data).then(data => cb(data))
   },
 
   newCampaignCall: function(id, data, cb = response => response) {
