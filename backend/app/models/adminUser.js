@@ -16,11 +16,6 @@ adminUserSchema.methods.hashPassword = async function hashPassword(password) {
 }
 
 adminUserSchema.methods.comparePassword = function comparePassword(candidatePassword) {
-  // if password hasn't been set yet, then it's open login
-  if (!this.password) {
-    return true
-  }
-  // otherwise actually compare password
   return new Promise((resolve, reject) => {
     bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
       if (err) {
