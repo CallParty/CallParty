@@ -31,7 +31,7 @@ async function startSignupConversation(senderId, recipientId) {
         { fbId: senderId },
         { firstName: fbUserData.first_name, lastName: fbUserData.last_name, bot: bot },
         { upsert: true, new: true, setDefaultsOnInsert: true }
-      ).exec()
+      ).populate('bot').exec()
     })
     .then(function(user) {
       return askForAddressConvo(user)
