@@ -4,7 +4,6 @@ mongoose.Promise = require('es6-promise')
 mongoose.connect(process.env.MONGODB_URI)
 
 const { AdminUser } = require('../app/models')
-const { logMessage } = require('../app/utilities/logHelper')
 
 const argv = require('yargs')
   .usage('Usage: $0 [options]')
