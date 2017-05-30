@@ -30,39 +30,35 @@ export async function up () {
   // Write migration here
   let defaultBot = process.env.DEFAULT_BOT
   await logMessage('++ running migration')
-  let bots = []
-  if (process.env.ENVIRONMENT !== 'PROD') {
-    bots = [
-      {
-        _id: 'callparty5',
-        fbId: '2060548600838593',
-        botType: 'callparty'
-      },
-      {
-        _id: 'callingteststaging',
-        fbId: '392499054435475',
-        botType: 'callparty'
-      },
-      {
-        _id: 'gtrackstaging',
-        fbId: '427053054354007',
-        botType: 'govtrack'
-      },
-    ]
-  }
-  else if (process.env.ENVIRONMENT === 'PROD') {
-    bots = [
+  let bots = [
+    {
+      _id: 'callparty5',
+      fbId: '2060548600838593',
+      botType: 'callparty'
+    },
+    {
+      _id: 'callingteststaging',
+      fbId: '392499054435475',
+      botType: 'callparty'
+    },
+    {
+      _id: 'gtrackstaging',
+      fbId: '427053054354007',
+      botType: 'govtrack'
+    }
+  ]
+  if (process.env.ENVIRONMENT === 'PROD') {
+    bots.push(
       {
         _id: 'callparty',
         fbId: '243195752776526',
         botType: 'callparty'
-      },
-    ]
+      })
   }
   for (let botData of bots) {
     const fbToken = getTokenFromBotId(botData._id)
     botData.fbToken = fbToken
-    await logMessage(`++ creating ${JSON.stringify(botData)}`)
+    await logMessage(`++ creating bot ${JSON.stringify(botData)}`)
     const bot = new Bot(botData)
     await bot.save()
   }
