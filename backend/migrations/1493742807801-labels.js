@@ -9,7 +9,9 @@ const { logMessage, captureException } = require('../app/utilities/logHelper')
 
 mongoose.Promise = require('es6-promise')
 console.log(process.env.MONGODB_URI)
-mongoose.connect(process.env.MONGODB_URI)
+if (!mongoose.connection.readyState) {
+  mongoose.connect(process.env.MONGODB_URI)
+}
 
 /**
  * Make any changes you need to make to the database here

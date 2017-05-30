@@ -8,7 +8,9 @@ const logMessage = require('../app/utilities/logHelper').logMessage
 
 
 mongoose.Promise = require('es6-promise')
-mongoose.connect(process.env.MONGODB_URI)
+if (!mongoose.connection.readyState) {
+  mongoose.connect(process.env.MONGODB_URI)
+}
 
 /**
  * Make any changes you need to make to the database here
