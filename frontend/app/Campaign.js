@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Link, browserHistory } from 'react-router'
 import moment from 'moment'
+import Loader from 'react-loader'
 import API from './helpers/API'
 
 const DATE_FORMAT = 'h:mma on M/DD/YYYY'
@@ -19,7 +20,8 @@ class Campaigns extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      campaigns: []
+      campaigns: [],
+      loaded: false
     }
 
     this.viewCampaign = this.viewCampaign.bind(this)
@@ -28,7 +30,8 @@ class Campaigns extends Component {
   componentWillMount() {
     API.campaigns(data => {
       this.setState({
-        campaigns: data
+        campaigns: data,
+        loaded: true
       })
     })
   }
@@ -39,26 +42,28 @@ class Campaigns extends Component {
     })
 
     return (
-      <div className="table">
-        <div className="table-header">
-          <h1>Campaigns</h1>
-          <div className="table-header-buttons">
-            <Link className="button" to="/new">New Campaign</Link>
+      <Loader loaded={this.state.loaded}>
+        <div className="table">
+          <div className="table-header">
+            <h1>Campaigns</h1>
+            <div className="table-header-buttons">
+              <Link className="button" to="/new">New Campaign</Link>
+            </div>
           </div>
+          <table>
+            <tbody>
+              <tr>
+                <th>#</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Date Created</th>
+                <th>Last Conversation Sent</th>
+              </tr>
+              {campaigns}
+            </tbody>
+          </table>
         </div>
-        <table>
-          <tbody>
-            <tr>
-              <th>#</th>
-              <th>Title</th>
-              <th>Description</th>
-              <th>Date Created</th>
-              <th>Last Conversation Sent</th>
-            </tr>
-            {campaigns}
-          </tbody>
-        </table>
-      </div>
+      </Loader>
     )
   }
 

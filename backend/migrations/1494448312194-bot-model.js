@@ -9,7 +9,9 @@ const secrets = require('../devops/secret_files/secret.json')
 
 
 mongoose.Promise = require('es6-promise')
-mongoose.connect(process.env.MONGODB_URI)
+if (!mongoose.connection.readyState) {
+  mongoose.connect(process.env.MONGODB_URI)
+}
 
 
 function getTokenFromBotId(botId) {
