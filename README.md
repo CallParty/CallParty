@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/CallParty/CallParty.svg?branch=master)](https://travis-ci.org/CallParty/CallParty)
 
-<img width="350" height="200" src="http://callparty.org/assets/images/cp_wordmark.png" alt="Call Party Logo" />
+<img width="350" height="200" src="http://callparty.org/assets/images/cp_wordmark.png" alt="CallParty Logo" />
 
 # CallParty
 
@@ -8,14 +8,14 @@ CallParty is a FB Messenger bot to send calls to action for political issues, li
 
 You can sign up for CallParty here [https://www.facebook.com/CallPartyOrg/](https://www.facebook.com/CallPartyOrg/).
 
-[Learn more about Call Party by visiting our site!](http://callparty.org/)
+[Learn more about CallParty by visiting our site!](http://callparty.org/)
 
 –––
-## Contributing to Call Party and Open Source
+## Contributing to CallParty and Open Source
 
 To learn more about *contributing to CallParty* check out the [contributing guide](./CONTRIBUTING.md).
 
-### Running Your Local Instance of Call Party
+### Running Your Local Instance of CallParty
 
 [Make sure to check out the local setup instructions for how to set up Call Party the first time](./docs/LOCAL_SETUP_INSTRUCTIONS.md). Below is a quickstart for *users who already have Call Party set up* on their machine.
 
