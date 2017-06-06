@@ -204,7 +204,7 @@ export default class CampaignActionDetail extends React.Component {
     }
 
     const committees = this.state.action.committees || []
-    const committeeTargeting = committees.length === 0 ? ['All committees'] : committees
+    const committeeTargeting = committees.length === 0 ? ['All committees'] : committees.map(ua => ua.name)
 
     const districts = this.state.action.districts || []
     const districtTargeting = districts.length === 0 ? ['All districts'] : districts

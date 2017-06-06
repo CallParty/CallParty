@@ -3,7 +3,7 @@ const { CampaignCall } = require('../models')
 async function getPopulatedCampaignCallObject(id) {
   return CampaignCall
     .findById(id)
-    .populate('campaignUpdates userActions')
+    .populate('campaignUpdates userActions committees')
     .populate({
       path: 'userConversations',
       populate: {
