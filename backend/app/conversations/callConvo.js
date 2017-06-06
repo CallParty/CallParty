@@ -105,7 +105,7 @@ function firstTimeIntroConvo(user) {
     `Hi ${user.convoData.firstName}. We've got an issue to call about.`
   )
   .then(() => {
-    return botReply(user, `${user.convoData.issueMessage}. ` +
+    return botReply(user, `${user.convoData.issueMessage} ` +
       `You can find out more about it here ${user.convoData.issueLink}.`
     )
   })

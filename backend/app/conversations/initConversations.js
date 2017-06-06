@@ -44,18 +44,14 @@ async function initConvos(campaignAction, io) {
     }
 
     // this block of code emits a websocket event that the admin frontend can use to update itself in realtime
-    try {
-      const actionObject = await getPopulatedCampaignActionObject(campaignAction._id, campaignAction.type)
-      io.sockets.emit(`campaign_action/${campaignAction._id}`, JSON.stringify({ campaign_action: actionObject }))
-    } catch (err) {
-      captureException(err)
-    }
+    emitCampaignAction(campaignAction, io)
   }
 
   // finally save that the campaignAction finished sending
   campaignAction.sent = true
   campaignAction.sentAt = moment.utc().toDate()
   await campaignAction.save()
+  emitCampaignAction(campaignAction, io)
 
   // log metrics about success/errors to slack
   const finalUserConvos = await UserConversation.find({campaignAction: campaignAction._id}).exec()
@@ -78,6 +74,18 @@ async function initConvos(campaignAction, io) {
 
   // log completion to slack
   await logMessage(`++++ finished initializing conversations for ${campaignAction.type}: ${campaignAction.title} (${campaignAction._id})`)
+}
+
+async function emitCampaignAction(campaignAction, io) {
+  /*
+   * emits a websocket event that the admin frontend can use to update itself in realtime
+   */
+  try {
+    const actionObject = await getPopulatedCampaignActionObject(campaignAction._id, campaignAction.type)
+    io.sockets.emit(`campaign_action/${campaignAction._id}`, JSON.stringify({ campaign_action: actionObject }))
+  } catch (err) {
+    captureException(err)
+  }
 }
 
 async function sendUserConversation(userConversation) {
