@@ -4,8 +4,9 @@ const { logMessage, captureException } = require('../utilities/logHelper')
 const { getPopulatedCampaignActionObject } = require('../utilities/campaignActions')
 const { startCallConversation } = require('./callConvo')
 const { startUpdateConversation } = require('./updateConvo')
-const { UserConversation } = require('../models')
+const { UserConversation, CampaignAction } = require('../models')
 const USER_CONVO_STATUS = UserConversation.USER_CONVO_STATUS
+const CAMPAIGN_ACTION_STATUS = CampaignAction.CAMPAIGN_ACTION_STATUS
 
 async function initConvos(campaignAction, io) {
   /*
@@ -23,6 +24,11 @@ async function initConvos(campaignAction, io) {
   await logMessage(
     `++++ initialize conversations for ${campaignAction.type}: ${campaignAction.title} (${campaignAction._id})`
   )
+
+  // save that the campaignAction is sending
+  campaignAction.status = CAMPAIGN_ACTION_STATUS.sending
+  await campaignAction.save()
+  emitCampaignAction(campaignAction, io)
 
   // now loop through the users and send any conversations which have not already been sent
   for (let i = 0; i < userConversations.length; i++) {
@@ -48,7 +54,7 @@ async function initConvos(campaignAction, io) {
   }
 
   // finally save that the campaignAction finished sending
-  campaignAction.sent = true
+  campaignAction.status = CAMPAIGN_ACTION_STATUS.sent
   campaignAction.sentAt = moment.utc().toDate()
   await campaignAction.save()
   emitCampaignAction(campaignAction, io)

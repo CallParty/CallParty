@@ -149,7 +149,7 @@ export default class CampaignActionDetail extends React.Component {
     this.closeConfirmationModal()
     const notifyCallback = () => {
       const action = this.state.action
-      action.sent = true
+      action.status = 'sending'
       this.setState({ action: action })
 
       this.context.notify({
@@ -257,9 +257,10 @@ export default class CampaignActionDetail extends React.Component {
             <h4>Created at {createdAt}</h4>
           </div>
 
-          {this.state.action.sent
-            ? null
-            : <div className="preview-warning">This is a preview and has not been sent yet</div>}
+          {this.state.action.status === 'preview'
+            ? <div className="preview-warning">This is a preview and has not been sent yet</div>
+            : null
+          }
 
           <div className="meta">
             <h1>{actionTypeLabels[this.state.action.type]}</h1>
@@ -279,9 +280,9 @@ export default class CampaignActionDetail extends React.Component {
 
           <div className="sent-to">
             <h1>Sent To</h1>
-            {this.state.action.sent
-              ? null
-              : <button className="send-button" onClick={() => this.setState({ confirmationModalIsOpen: true })}>{`Send to ${numSendTo} Users`}</button>
+            {this.state.action.status === 'preview'
+              ? <button className="send-button" onClick={() => this.setState({ confirmationModalIsOpen: true })}>{`Send to ${numSendTo} Users`}</button>
+              : null
             }
           </div>
 
