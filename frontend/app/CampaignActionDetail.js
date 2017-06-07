@@ -114,10 +114,14 @@ export default class CampaignActionDetail extends React.Component {
   }
 
   get statistics() {
-    const userConversationsCount  = this.state.action.userConversations ? this.state.action.userConversations.length : 0
+    const userConversations = this.state.action.userConversations
+    let messagesSentCount = 0
+    if (userConversations) {
+      messagesSentCount = userConversations.filter(ua => ua.status === 'sent').length
+    }
     const stats = [
       { label: 'Members targeted', value: this.representativesCount },
-      { label: 'Constituents targeted', value: userConversationsCount }
+      { label: 'Messages sent', value: messagesSentCount }
     ]
 
     if (this.state.action.type === 'CampaignCall') {
@@ -200,7 +204,7 @@ export default class CampaignActionDetail extends React.Component {
     }
 
     const committees = this.state.action.committees || []
-    const committeeTargeting = committees.length === 0 ? ['All committees'] : committees
+    const committeeTargeting = committees.length === 0 ? ['All committees'] : committees.map(ua => ua.name)
 
     const districts = this.state.action.districts || []
     const districtTargeting = districts.length === 0 ? ['All districts'] : districts
@@ -231,7 +235,9 @@ export default class CampaignActionDetail extends React.Component {
 
     const userConversations = this.state.action.userConversations
     let userConvos = null
+    let numSendTo = 0
     if (userConversations) {
+      numSendTo = userConversations.length
       const sortedUserConversations = this.state.action.userConversations.sort(compareUserConvos)
       userConvos = sortedUserConversations.map((userConvo, i) => {
         return <UserConvoItem
@@ -273,9 +279,10 @@ export default class CampaignActionDetail extends React.Component {
 
           <div className="sent-to">
             <h1>Sent To</h1>
-            <button className="send-button" onClick={() => this.setState({ confirmationModalIsOpen: true })}>
-              {this.state.action.sent ? 'Send to remaining list' : 'Send'}
-            </button>
+            {this.state.action.sent
+              ? null
+              : <button className="send-button" onClick={() => this.setState({ confirmationModalIsOpen: true })}>{`Send to ${numSendTo} Users`}</button>
+            }
           </div>
 
           <Modal

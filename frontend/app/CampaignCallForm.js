@@ -22,12 +22,30 @@ function CampaignCallForm(props) {
         />
       </fieldset>
       <fieldset>
-        <label>Issue Link</label>
+        <label>Issue Link &mdash; You can find out more about the issue here</label>
         <input
           maxLength="640"
           type="text"
           value={campaignAction.issueLink}
           onChange={onInputChange.bind(this, 'issueLink')}
+        />
+      </fieldset>
+      <fieldset>
+        <label>Subject &mdash; You're a constituent calling about</label>
+        <input
+          maxLength="640"
+          type="text"
+          value={campaignAction.subject}
+          onChange={onInputChange.bind(this, 'subject')}
+        />
+      </fieldset>
+      <fieldset>
+        <label>Task &mdash; I’d like [repType] [repName] to...</label>
+        <input
+          maxLength="640"
+          type="text"
+          value={campaignAction.task}
+          onChange={onInputChange.bind(this, 'task')}
         />
       </fieldset>
       <fieldset>
@@ -38,24 +56,6 @@ function CampaignCallForm(props) {
           value={campaignAction.shareLink}
           onChange={onInputChange.bind(this, 'shareLink')}
          />
-      </fieldset>
-      <fieldset>
-        <label>Subject</label>
-        <input
-          maxLength="640"
-          type="text"
-          value={campaignAction.subject}
-          onChange={onInputChange.bind(this, 'subject')}
-        />
-      </fieldset>
-      <fieldset>
-        <label>Task</label>
-        <input
-          maxLength="640"
-          type="text"
-          value={campaignAction.task}
-          onChange={onInputChange.bind(this, 'task')}
-        />
       </fieldset>
     </div>
   )
