@@ -18,7 +18,7 @@ const campaignActionSchema = new Schema({
   // rep targeting
   memberTypes: [{ type: String, enum: ['rep', 'sen'] }],
   parties: [{ type: String, enum: ['Democrat', 'Republican', 'Independent'] }],
-  committees: Array,
+  committees: [{type: mongoose.Schema.Types.ObjectId, ref: 'Committee'}],
   // user targeting
   districts: Array,
 

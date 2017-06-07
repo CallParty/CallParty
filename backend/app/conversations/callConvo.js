@@ -35,6 +35,7 @@ async function startCallConversation(user, userConversation, representatives, ca
       representatives: representatives.map(representative => ({
         repType: representative.legislatorTitle,
         repName: representative.official_full,
+        repTitle: representative.repTitle,
         repId: representative._id,
         repImage: representative.image_url,
         repPhoneNumbers: [
@@ -174,7 +175,7 @@ async function firstTimeReadyResponseConvo(user, message) {
 
   if (message.text === ACTION_TYPE_PAYLOADS.isReady) {
     const representative = user.convoData.representatives[0]
-    return botReply(user, `Here’s your first script and the information for your representative: "Hello, my name is ${user.convoData.firstName} and I’m a constituent of ${representative.repName}. I’m calling about ${user.convoData.issueSubject}. I’d like to ask that ${representative.repName} ${user.convoData.issueTask}. Thanks for listening, have a good day!"`)
+    return botReply(user, `Here’s your first script and the information for your representative: "Hello, my name is ${user.convoData.firstName} and I’m a constituent of ${representative.repTitle}. I’m calling about ${user.convoData.issueSubject}. I’d like to ask that ${representative.repTitle} ${user.convoData.issueTask}. Thanks for listening, have a good day!"`)
     .then(() => sendRepCard(user, message))
   }
   else if (message.text === ACTION_TYPE_PAYLOADS.noCall) {
@@ -204,12 +205,12 @@ async function readyResponseConvo(user, message) {
     let msgToSend
     if (hasOneRep) {
       msgToSend = stripIndent`
-      Great! You'll be calling ${representative.repType} ${representative.repName}.
+      Great! You'll be calling ${representative.repTitle}.
       You'll either talk to a staffer or leave a voicemail.
       When you call:
 
       \u2022 Be sure to say you're a constituent calling about ${user.convoData.issueSubject}
-      \u2022 Let them know "I'd like ${representative.repType} ${representative.repName} to ${user.convoData.issueTask}"
+      \u2022 Let them know "I'd like ${representative.repTitle} to ${user.convoData.issueTask}"
       \u2022 Share any personal feelings or stories you have on the issue
       \u2022 Answer any questions the staffer has, and be friendly!
     `
@@ -222,7 +223,7 @@ async function readyResponseConvo(user, message) {
       \u2022 Share any personal feelings or stories you have on the issue
       \u2022 Answer any questions the staffer has, and be friendly!
 
-      Your first call is ${representative.repType} ${representative.repName}:
+      Your first call is ${representative.repTitle}:
     `
     }
     return botReply(user, msgToSend)
@@ -420,11 +421,11 @@ function hasNextRepResponse(user, message, numCalls) {
   let botReplyPromise
   if (numCalls <= 1) {
     botReplyPromise = botReply(user, stripIndent`
-      Congrats, you're the first caller on this issue! Next is ${nextRep.repType} ${nextRep.repName}.
+      Congrats, you're the first caller on this issue! Next is ${nextRep.repTitle}.
     `)
   } else {
     botReplyPromise = botReply(user, stripIndent`
-      Excellent, we're at ${numCalls} calls! Next is ${nextRep.repType} ${nextRep.repName}.
+      Excellent, we're at ${numCalls} calls! Next is ${nextRep.repTitle}.
     `)
   }
   return botReplyPromise.then(() => sendRepCard(user, message))
