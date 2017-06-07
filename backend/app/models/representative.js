@@ -61,5 +61,9 @@ representativeSchema.virtual('legislatorTitle').get(function() {
   return legislatorTypeLabels[this.legislator_type]
 })
 
+representativeSchema.virtual('repTitle').get(function() {
+  return this.legislatorTitle + ' ' + this.last_name
+})
+
 var Reps = mongoose.model('Reps', representativeSchema)
 module.exports = Reps
