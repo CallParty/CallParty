@@ -3,11 +3,22 @@ const moment = require('moment')
 const Schema = mongoose.Schema
 const ObjectId = mongoose.Types.ObjectId
 
+const CAMPAIGN_ACTION_STATUS = {
+  error: 'error',
+  preview: 'preview',
+  sending: 'sending',
+  sent: 'sent',
+}
+
 const campaignActionSchema = new Schema({
   bot: { type: String, ref: 'Bot' }, // this should always be the same as associated Campaign, but storing here for convenience
   label: String,
   createdAt: { type: Date, default: () => moment.utc().toDate() },
   sent: { type: Boolean, default: false },
+  status: {
+    type: String,
+    enum: Object.values(CAMPAIGN_ACTION_STATUS)
+  },
   sentAt: Date,
   campaign: { type: Schema.Types.ObjectId, ref: 'Campaign' },
 
@@ -139,5 +150,7 @@ campaignActionSchema.methods.getMatchingUsersWithRepresentatives = function () {
     return Object.values(repsByUser)
   })
 }
+
+campaignActionSchema.statics.CAMPAIGN_ACTION_STATUS = CAMPAIGN_ACTION_STATUS
 
 module.exports = mongoose.model('CampaignAction', campaignActionSchema)

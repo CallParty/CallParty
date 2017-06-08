@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
-const { Campaign, CampaignCall, CampaignUpdate, UserConversation } = require('../models')
+const { Campaign, CampaignCall, CampaignUpdate, UserConversation, CampaignAction } = require('../models')
 const USER_CONVO_STATUS = UserConversation.USER_CONVO_STATUS
+const CAMPAIGN_ACTION_STATUS = CampaignAction.CAMPAIGN_ACTION_STATUS
 
 const ObjectId = mongoose.Types.ObjectId
 
@@ -96,6 +97,7 @@ exports.newCampaignAction = async function(req, res) {
     campaign: ObjectId(req.params.id),
     bot:  bot,
     label: data.label,
+    status: CAMPAIGN_ACTION_STATUS.preview,
     // targeting
     targetingType: data.targetingType,
     // rep targeting
