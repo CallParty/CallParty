@@ -53,7 +53,7 @@ async function startCallConversation(user, userConversation, representatives, ca
   userConversation.convoData = convoData
   await userConversation.save()
 
-  await user.execPopulate('currentConvo')
+  await user.populate('currentConvo').execPopulate()
 
   if (isFirstTimeCaller) {
     return firstTimeIntroConvo(user, null)
