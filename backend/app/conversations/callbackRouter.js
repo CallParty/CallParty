@@ -27,9 +27,10 @@ const callbackRoutes = {
 
 }
 
-const runCallback = function(callbackPath, user, message) {
+const runCallback = async function(callbackPath, user, message) {
   const cb = callbackRoutes[callbackPath]
   if (cb) {
+    await user.populate('currentConvo').execPopulate()
     cb(user, message)
   }
   else {

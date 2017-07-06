@@ -47,9 +47,9 @@ function compareUserConvos(a, b) {
 function UserConvoItem(props) {
   let numUserCalls = null
   let numRepresentatives = null
-  if (props.userConvo.user && props.userConvo.user.convoData) {
-    numUserCalls = props.userConvo.user.convoData.numUserCalls
-    numRepresentatives = props.userConvo.user.convoData.representatives.length
+  if (props.userConvo.convoData) {
+    numUserCalls = props.userConvo.convoData.numUserCalls || 0
+    numRepresentatives = props.userConvo.convoData.representatives.length
   }
 
   const datePrompted = props.userConvo.datePrompted

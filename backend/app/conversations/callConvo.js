@@ -16,61 +16,61 @@ async function startCallConversation(user, userConversation, representatives, ca
   }
 
   // then begin the conversation
-  const repsPromise = Reps.find({ _id: { $in: representatives } }).exec()
-  return repsPromise.then((representatives) => {
-    const isFirstTimeCaller = user.firstTimeCaller
-    // only send one representative if it's the user's first time calling
-    if (isFirstTimeCaller) {
-      representatives = representatives.slice(0, 1)
-    }
-    const convoData = {
-      firstName: user.firstName,
-      issueMessage: campaignCall.message,
-      issueLink: campaignCall.issueLink,
-      shareLink: campaignCall.shareLink,
-      issueSubject: campaignCall.subject,
-      issueTask: campaignCall.task,
-      campaignCall: campaignCall.toObject({ virtuals: false }), // without toObject mongoose goes into an infinite loop on insert
-      userConversationId: userConversation._id,
-      representatives: representatives.map(representative => ({
-        repType: representative.legislatorTitle,
-        repShortTitle: representative.shortTitle,
-        repName: representative.official_full,
-        repTitle: representative.repTitle,
-        repId: representative._id,
-        repImage: representative.image_url,
-        repPhoneNumbers: [
-          representative.phoneNumbers.filter(({ officeType }) => officeType === 'district')[0],
-          representative.phoneNumbers.filter(({ officeType }) => officeType === 'capitol')[0]
-        ].filter(Boolean), // filter out undefined values
-        repWebsite: representative.url,
-      })),
-      currentRepresentativeIndex: 0,
-      numUserCalls: 0,  // the number of calls this user has made for this campaignCall
-      isFirstTimeCaller: isFirstTimeCaller,
-    }
-    // save params as convoData
-    user.convoData = convoData
+  representatives = await Reps.find({ _id: { $in: representatives } }).exec()
 
-    return user.save().then(() => {
-      if (isFirstTimeCaller) {
-        return firstTimeIntroConvo(user, null)
-      } else {
-        return areYouReadyConvo(user, null)
-      }
-    })
-  })
+  const isFirstTimeCaller = user.firstTimeCaller
+  // only send one representative if it's the user's first time calling
+  if (isFirstTimeCaller) {
+    representatives = representatives.slice(0, 1)
+  }
+  const convoData = {
+    firstName: user.firstName,
+    issueMessage: campaignCall.message,
+    issueLink: campaignCall.issueLink,
+    shareLink: campaignCall.shareLink,
+    issueSubject: campaignCall.subject,
+    issueTask: campaignCall.task,
+    campaignCall: campaignCall.toObject({ virtuals: false }), // without toObject mongoose goes into an infinite loop on insert
+    userConversationId: userConversation._id,
+    representatives: representatives.map(representative => ({
+      repType: representative.legislatorTitle,
+      repShortTitle: representative.shortTitle,
+      repName: representative.official_full,
+      repTitle: representative.repTitle,
+      repId: representative._id,
+      repImage: representative.image_url,
+      repPhoneNumbers: [
+        representative.phoneNumbers.filter(({ officeType }) => officeType === 'district')[0],
+        representative.phoneNumbers.filter(({ officeType }) => officeType === 'capitol')[0]
+      ].filter(Boolean), // filter out undefined values
+      repWebsite: representative.url,
+    })),
+    currentRepresentativeIndex: 0,
+    numUserCalls: 0,  // the number of calls this user has made for this campaignCall
+    isFirstTimeCaller: isFirstTimeCaller,
+  }
+  // save params as convoData
+  userConversation.convoData = convoData
+  await userConversation.save()
+
+  await user.populate('currentConvo').execPopulate()
+
+  if (isFirstTimeCaller) {
+    return firstTimeIntroConvo(user, null)
+  } else {
+    return areYouReadyConvo(user, null)
+  }
 }
 
 // part 1
 function areYouReadyConvo(user) {
   // begin the conversation
   return botReply(user,
-    `Hi ${user.convoData.firstName}. We've got an issue that needs your action.`
+    `Hi ${user.currentConvo.convoData.firstName}. We've got an issue that needs your action.`
   )
   .then(() => {
-    return botReply(user, `${user.convoData.issueMessage} ` +
-      `You can find out more about it here ${user.convoData.issueLink}.`
+    return botReply(user, `${user.currentConvo.convoData.issueMessage} ` +
+      `You can find out more about it here ${user.currentConvo.convoData.issueLink}.`
     )
   }).then(() => {
     const msg_attachment = {
@@ -104,11 +104,11 @@ function firstTimeIntroConvo(user) {
   user.firstTimeCaller = false
   user.save()
   return botReply(user,
-    `Hi ${user.convoData.firstName}. We've got an issue to call about.`
+    `Hi ${user.currentConvo.convoData.firstName}. We've got an issue to call about.`
   )
   .then(() => {
-    return botReply(user, `${user.convoData.issueMessage} ` +
-      `You can find out more about it here ${user.convoData.issueLink}.`
+    return botReply(user, `${user.currentConvo.convoData.issueMessage} ` +
+      `You can find out more about it here ${user.currentConvo.convoData.issueLink}.`
     )
   })
   .then(() => {
@@ -169,14 +169,14 @@ async function firstTimeReadyResponseConvo(user, message) {
 
   await UserAction.create({
     actionType: message.text,
-    campaignCall: user.convoData.campaignCall._id,
-    representative: user.convoData.representatives[user.convoData.currentRepresentativeIndex].repId,
+    campaignCall: user.currentConvo.convoData.campaignCall._id,
+    representative: user.currentConvo.convoData.representatives[user.currentConvo.convoData.currentRepresentativeIndex].repId,
     user: user._id,
   })
 
   if (message.text === ACTION_TYPE_PAYLOADS.isReady) {
-    const representative = user.convoData.representatives[0]
-    return botReply(user, `Here’s your first script and the information for your representative: "Hello, my name is ${user.convoData.firstName} and I’m a constituent of ${representative.repTitle}. I’m calling about ${user.convoData.issueSubject}. I’d like to ask that ${representative.repTitle} ${user.convoData.issueTask}. Thanks for listening, have a good day!"`)
+    const representative = user.currentConvo.convoData.representatives[0]
+    return botReply(user, `Here’s your first script and the information for your representative: "Hello, my name is ${user.currentConvo.convoData.firstName} and I’m a constituent of ${representative.repTitle}. I’m calling about ${user.currentConvo.convoData.issueSubject}. I’d like to ask that ${representative.repTitle} ${user.currentConvo.convoData.issueTask}. Thanks for listening, have a good day!"`)
     .then(() => sendRepCard(user, message))
   }
   else if (message.text === ACTION_TYPE_PAYLOADS.noCall) {
@@ -195,14 +195,14 @@ async function readyResponseConvo(user, message) {
 
   await UserAction.create({
     actionType: message.text,
-    campaignCall: user.convoData.campaignCall._id,
-    representative: user.convoData.representatives[user.convoData.currentRepresentativeIndex].repId,
+    campaignCall: user.currentConvo.convoData.campaignCall._id,
+    representative: user.currentConvo.convoData.representatives[user.currentConvo.convoData.currentRepresentativeIndex].repId,
     user: user._id,
   })
 
   if (message.text === ACTION_TYPE_PAYLOADS.isReady) {
-    const hasOneRep = user.convoData.representatives.length === 1
-    const representative = user.convoData.representatives[0]
+    const hasOneRep = user.currentConvo.convoData.representatives.length === 1
+    const representative = user.currentConvo.convoData.representatives[0]
     let msgToSend
     if (hasOneRep) {
       msgToSend = stripIndent`
@@ -210,17 +210,17 @@ async function readyResponseConvo(user, message) {
       You'll either talk to a staffer or leave a voicemail.
       When you call:
 
-      \u2022 Be sure to say you're a constituent calling about ${user.convoData.issueSubject}
-      \u2022 Let them know "I'd like ${representative.repTitle} to ${user.convoData.issueTask}"
+      \u2022 Be sure to say you're a constituent calling about ${user.currentConvo.convoData.issueSubject}
+      \u2022 Let them know "I'd like ${representative.repTitle} to ${user.currentConvo.convoData.issueTask}"
       \u2022 Share any personal feelings or stories you have on the issue
       \u2022 Answer any questions the staffer has, and be friendly!
     `
     } else {
       msgToSend = stripIndent`
-      Great! You'll be calling ${user.convoData.representatives.length} Members of Congress. You'll either talk to a staffer or leave a voicemail. When you call:
+      Great! You'll be calling ${user.currentConvo.convoData.representatives.length} Members of Congress. You'll either talk to a staffer or leave a voicemail. When you call:
 
-      \u2022 Be sure to say you're a constituent calling about ${user.convoData.issueSubject}
-      \u2022 Let them know you'd like them to "${user.convoData.issueTask}"
+      \u2022 Be sure to say you're a constituent calling about ${user.currentConvo.convoData.issueSubject}
+      \u2022 Let them know you'd like them to "${user.currentConvo.convoData.issueTask}"
       \u2022 Share any personal feelings or stories you have on the issue
       \u2022 Answer any questions the staffer has, and be friendly!
 
@@ -239,7 +239,7 @@ async function readyResponseConvo(user, message) {
 }
 
 function sendRepCard(user) {
-  const representative = user.convoData.representatives[user.convoData.currentRepresentativeIndex]
+  const representative = user.currentConvo.convoData.representatives[user.currentConvo.convoData.currentRepresentativeIndex]
 
   const officeTypeLabels = {
     district: 'Local',
@@ -264,8 +264,8 @@ function sendRepCard(user) {
             // TODO: for some reason facebook is throwing error with this default_action included
             // default_action: {
             //   type: 'phone_number',
-            //   title: user.convoData.repPhoneNumber,
-            //   payload: user.convoData.repPhoneNumber
+            //   title: user.currentConvo.convoData.repPhoneNumber,
+            //   payload: user.currentConvo.convoData.repPhoneNumber
             // },
             buttons: [
               ...phoneNumberButtons,
@@ -347,7 +347,7 @@ function noNextRepResponse(user, message, numCalls) {
       `)
     }
     // if the user is only person who has made calls, then it's weird to tell them how many calls so far so remove that part
-    else if (numCalls === user.convoData.numUserCalls) {
+    else if (numCalls === user.currentConvo.convoData.numUserCalls) {
       return botReply(user, stripIndent`
         Woo thanks for your work! We'll reach out when we have updates and an outcome on the issue.
       `)
@@ -368,7 +368,7 @@ function noNextRepResponse(user, message, numCalls) {
             template_type: 'generic',
             elements: [{
               title: 'Share this issue with your friends to make it a party',
-              subtitle: user.convoData.issueSubject,
+              subtitle: user.currentConvo.convoData.issueSubject,
               image_url: 'https://storage.googleapis.com/callparty/cpshare.jpg',
               buttons: [
                 {
@@ -380,16 +380,16 @@ function noNextRepResponse(user, message, numCalls) {
                         template_type: 'generic',
                         elements: [{
                           title: 'Call your Members of Congress and join the CallParty!',
-                          subtitle: user.convoData.issueSubject,
+                          subtitle: user.currentConvo.convoData.issueSubject,
                           image_url: 'https://storage.googleapis.com/callparty/cpshare.jpg',
                           default_action: {
                             type: 'web_url',
-                            url: user.convoData.shareLink
+                            url: user.currentConvo.convoData.shareLink
                           },
                           buttons: [
                             {
                               type: 'web_url',
-                              url: user.convoData.shareLink,
+                              url: user.currentConvo.convoData.shareLink,
                               title: 'View More Info'
                             }
                           ]
@@ -400,7 +400,7 @@ function noNextRepResponse(user, message, numCalls) {
                 },
                 {
                   type: 'web_url',
-                  url: user.convoData.shareLink,
+                  url: user.currentConvo.convoData.shareLink,
                   title: 'View More Info'
                 },
               ]
@@ -418,7 +418,7 @@ function noNextRepResponse(user, message, numCalls) {
 }
 
 function hasNextRepResponse(user, message, numCalls) {
-  const nextRep = user.convoData.representatives[user.convoData.currentRepresentativeIndex]
+  const nextRep = user.currentConvo.convoData.representatives[user.currentConvo.convoData.currentRepresentativeIndex]
   let botReplyPromise
   if (numCalls <= 1) {
     botReplyPromise = botReply(user, stripIndent`
@@ -433,7 +433,7 @@ function hasNextRepResponse(user, message, numCalls) {
 }
 
 async function userMadeCallResponse(user, message) {
-  const campaign = await Campaign.findById(user.convoData.campaignCall.campaign).populate('campaignActions').exec()
+  const campaign = await Campaign.findById(user.currentConvo.convoData.campaignCall.campaign).populate('campaignActions').exec()
   const numCalls = await UserAction.count({
     campaignCall: {
       $in: campaign.campaignCalls.map(call => call._id)
@@ -446,17 +446,17 @@ async function userMadeCallResponse(user, message) {
     }
   }).exec()
 
-  user.convoData.currentRepresentativeIndex++
-  user.convoData.numUserCalls++
-  user.markModified('convoData')
-  user = await user.save()
+  user.currentConvo.convoData.currentRepresentativeIndex++
+  user.currentConvo.convoData.numUserCalls++
+  user.currentConvo.markModified('convoData')
+  await user.currentConvo.save()
 
   // log message in case we reached invalid state
   if (numCalls < 1) {
     logMessage('++ @here: this if clause is only executed if the user made a call. So if there are 0 calls something is weird')
   }
   // but continue regardless
-  const hasNextRep = user.convoData.currentRepresentativeIndex < user.convoData.representatives.length
+  const hasNextRep = user.currentConvo.convoData.currentRepresentativeIndex < user.currentConvo.convoData.representatives.length
   if (!hasNextRep) {
     return noNextRepResponse(user, message, numCalls)
   } else {
@@ -474,13 +474,13 @@ function somethingWentWrongResponse(user) {
     }
   })
 
-  user.convoData.currentRepresentativeIndex++
-  user.markModified('convoData')
-  const updateUserPromise = user.save()
+  user.currentConvo.convoData.currentRepresentativeIndex++
+  user.currentConvo.markModified('convoData')
+  const updateUserConvoPromise = user.currentConvo.save()
 
-  return Promise.all([updateUserPromise, messagePromise])
+  return Promise.all([updateUserConvoPromise, messagePromise])
     .then(() => {
-      const hasNextRep = user.convoData.currentRepresentativeIndex < user.convoData.representatives.length
+      const hasNextRep = user.currentConvo.convoData.currentRepresentativeIndex < user.currentConvo.convoData.representatives.length
       if (hasNextRep) {
         return botReply(user, stripIndent`
           We're sorry to hear that, but good on you for trying!
@@ -524,8 +524,8 @@ async function howDidItGoResponseConvo(user, message) {
 
   await UserAction.create({
     actionType: message.text,
-    campaignCall: user.convoData.campaignCall._id,
-    representative: user.convoData.representatives[user.convoData.currentRepresentativeIndex].repId,
+    campaignCall: user.currentConvo.convoData.campaignCall._id,
+    representative: user.currentConvo.convoData.representatives[user.currentConvo.convoData.currentRepresentativeIndex].repId,
     user: user._id,
   })
 
@@ -546,8 +546,8 @@ async function tryNextRepResponseConvo(user, message) {
 
   await UserAction.create({
     actionType: message.text,
-    campaignCall: user.convoData.campaignCall._id,
-    representative: user.convoData.representatives[user.convoData.currentRepresentativeIndex].repId,
+    campaignCall: user.currentConvo.convoData.campaignCall._id,
+    representative: user.currentConvo.convoData.representatives[user.currentConvo.convoData.currentRepresentativeIndex].repId,
     user: user._id,
   })
 
@@ -565,7 +565,7 @@ async function tryNextRepResponseConvo(user, message) {
 // thanks for sharing
 function thanksForSharingConvo(user, message) {
   logMessage(`++ ${user.firstName} ${user.lastName} (${user.fbId}) said in response to something went wrong: "${message.text}"`, '#_feedback')
-  return UserConversation.update({ _id: user.convoData.userConversationId }, { dateCompleted: moment.utc().toDate() }).exec()
+  return UserConversation.update({ _id: user.currentConvo.convoData.userConversationId }, { dateCompleted: moment.utc().toDate() }).exec()
     .then(() => botReply(user, `Got it – we'll reach back out if we can be helpful.`))
     .then(function () {
       // Should be logged to sentry and then slack.

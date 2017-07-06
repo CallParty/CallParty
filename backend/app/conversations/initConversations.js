@@ -111,7 +111,7 @@ async function sendUserConversation(userConversation) {
 
   // set this userConversation as the currentConvo for this user
   const user = userConversation.user
-  user.currentConvo = userConversation._id
+  user.currentConvo = userConversation
   await user.save()
   const convoData = userConversation.convoData
 
