@@ -245,10 +245,13 @@ class NewCampaignAction extends Component {
   }
 
   getBorrowedTargeting() {
-    const options = this.state.campaign.campaignActions.map(a => ({
-      value: a.id,
-      label: a.label
-    }))
+    let options = []
+    if (this.state.campaign.campaignActions) {
+      options = this.state.campaign.campaignActions.map(a => ({
+        value: a.id,
+        label: a.label
+      }))
+    }
     return (
       <fieldset>
         <label htmlFor="callToActionReference">Choose the item with targeting you would like to send to</label>
