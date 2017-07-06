@@ -248,7 +248,7 @@ function sendRepCard(user) {
   const phoneNumberButtons = representative.repPhoneNumbers.map(({ officeType, phoneNumber }) => ({
     type: 'phone_number',
     title: `${officeTypeLabels[officeType]}: ${phoneNumber}`,
-    payload: phoneNumber
+    payload: `+1${phoneNumber.split('-').join('')}`
   }))
 
   return botReply(user, {
