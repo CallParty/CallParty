@@ -201,7 +201,7 @@ class NewCampaignAction extends Component {
     const districtOptions = this.state.districts.map(c => ({ value: c, label: c }))
     return (
       <fieldset>
-        <label>Segment Targeting</label>
+        <label>Targeting Filters</label>
         <div>
           <Select
             name="memberTypes"
@@ -251,7 +251,7 @@ class NewCampaignAction extends Component {
     }))
     return (
       <fieldset>
-        <label htmlFor="callToActionReference">Target Action</label>
+        <label htmlFor="callToActionReference">Choose the item with targeting you would like to send to</label>
         <Select
           name="targetAction"
           value={this.state.campaignAction.targetAction}
@@ -269,8 +269,8 @@ class NewCampaignAction extends Component {
         <fieldset>
           <label>Targeting Type</label>
           <RadioGroup name="targetingType" value={this.state.campaignAction.targetingType} onChange={this.onTargetingTypeChange}>
-            <input type="radio" value="segmenting" />segmenting
-            <input type="radio" value="borrowed" />borrowed
+            <input type="radio" value="segmenting" />new
+            <input type="radio" value="borrowed" />existing
           </RadioGroup>
         </fieldset>
       )
