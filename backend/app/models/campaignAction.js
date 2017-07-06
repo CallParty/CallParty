@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const moment = require('moment')
 const Schema = mongoose.Schema
+const { logMessage } = require('../utilities/logHelper')
 const ObjectId = mongoose.Types.ObjectId
 
 const CAMPAIGN_ACTION_STATUS = {
@@ -101,6 +102,12 @@ campaignActionSchema.methods.getMatchingUsers = async function() {
   if (this.targetingType === 'borrowed') {
     await this.populate('targetAction').execPopulate()
     await this.targetAction.populate({ path: 'userConversations', populate: { path: 'user' }}).execPopulate()
+    // this if clause is for debugging a weird intermittent bug where userConversations is sometimes but not always
+    // loaded here https://github.com/CallParty/CallParty/issues/347
+    if (!this.targetAction.userConversations) {
+      logMessage('++ warning: re-fetching userConversations for target action')
+      await this.targetAction.populate({ path: 'userConversations', populate: { path: 'user' }}).execPopulate()
+    }
     return this.targetAction.userConversations.map(ua => ua.user)
   }
 
