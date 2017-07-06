@@ -280,7 +280,7 @@ class NewCampaignAction extends Component {
       <Loader loaded={this.state.loaded}>
         <div className="camp-act-container">
           <div className="meta">
-            <h1>New {{CampaignCall: 'Call', CampaignUpdate: 'Update'}[this.state.campaignAction.type]}</h1>
+            <h1>New {{CampaignCall: 'Call', CampaignUpdate: 'Message'}[this.state.campaignAction.type]}</h1>
             <h3>Campaign: <Link to={`/${this.state.campaign.id}`}>{this.state.campaign.title}</Link></h3>
           </div>
           <div className="camp-act-input">
