@@ -127,7 +127,7 @@ function firstTimeAreYouReadyConvo(user) {
     }
   })
   .then(() => botReply(user, stripIndent`
-    Awesome. When you call, you're going to tell them your name, that you're a constituent (because you only want to be calling your own Members of Congress), and why you're calling. Always include a specific action you'd like the representative to take, and feel free to share any personal feelings or stories so they understand why it matters to you.
+    Awesome. When you call, you're going to tell them your name, that you're a constituent (because you only want to be calling your own Members of Congress), and why you're calling. We'll give you a specific action to tell your representative to take, and feel free to share any personal feelings or stories so they understand why it matters to you.
   `))
   .then(() => botReply(user, stripIndent`
      The staffer will probably ask for your address or phone number to confirm you're a constituent. Thank them, and that's it!

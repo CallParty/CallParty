@@ -148,7 +148,7 @@ class Campaign extends Component {
             <h2>Conversations</h2>
             <div className="table-header-buttons">
               <Link className="button" to={`/${this.props.params.id}/call/new`}>New Call</Link>
-              <Link className="button" to={`/${this.props.params.id}/update/new`}>New Update</Link>
+              <Link className="button" to={`/${this.props.params.id}/update/new`}>New Message</Link>
             </div>
           </div>
           <table>
