@@ -34,6 +34,7 @@ async function startCallConversation(user, userConversation, representatives, ca
       userConversationId: userConversation._id,
       representatives: representatives.map(representative => ({
         repType: representative.legislatorTitle,
+        repShortTitle: representative.shortTitle,
         repName: representative.official_full,
         repTitle: representative.repTitle,
         repId: representative._id,
@@ -258,7 +259,7 @@ function sendRepCard(user) {
         image_aspect_ratio: 'square',
         elements: [
           {
-            title: `${representative.repType} ${representative.repName}`,
+            title: `${representative.repShortTitle} ${representative.repName}`,
             image_url: representative.repImage,
             // TODO: for some reason facebook is throwing error with this default_action included
             // default_action: {
