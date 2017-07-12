@@ -58,11 +58,11 @@ module.exports = function (apiRouter) {
   apiRouter.post('/upload_ssl_certs', async function (req, res) {
     logMessage('++ received request to /upload_ssl_certs')
 
-    // if (process.env.ENVIRONMENT !== 'PROD') {
-    //   logMessage('++ environment is not PROD, will not attempt to upload SSL certificates to GCE load balancer')
-    //   res.sendStatus(200)
-    //   return
-    // }
+    if (process.env.ENVIRONMENT !== 'PROD') {
+      logMessage('++ environment is not PROD, will not attempt to upload SSL certificates to GCE load balancer')
+      res.sendStatus(200)
+      return
+    }
 
     logMessage('++ uploading ssl certs to prod GCE load balancer')
     const key = require(path.resolve(path.join(__dirname, '..', '..', 'devops', 'secret_files', 'gce_credentials.json')))
@@ -86,10 +86,8 @@ module.exports = function (apiRouter) {
       let certificate
       let privateKey
       try {
-        // certificate = fs.readFileSync('/etc/letsencrypt/live/admin.callparty.org/fullchain.pem', 'utf-8')
-        // privateKey = fs.readFileSync('/etc/letsencrypt/live/admin.callparty.org/privkey.pem', 'utf-8')
-        certificate = fs.readFileSync('/Users/maxfowler/computer/projects/callparty/callparty/backend/devops/secret_files/certs/admin.callparty.org/fullchain.pem', 'utf-8')
-        privateKey = fs.readFileSync('/Users/maxfowler/computer/projects/callparty/callparty/backend/devops/secret_files/certs/admin.callparty.org/privkey.pem', 'utf-8')
+        certificate = fs.readFileSync('/etc/letsencrypt/live/admin.callparty.org/fullchain.pem', 'utf-8')
+        privateKey = fs.readFileSync('/etc/letsencrypt/live/admin.callparty.org/privkey.pem', 'utf-8')
       } catch (e) {
         captureException(e)
         res.sendStatus(500)
