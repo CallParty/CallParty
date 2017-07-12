@@ -55,7 +55,7 @@ module.exports = function (apiRouter) {
   })
 
   apiRouter.post('/upload_ssl_certs', function (req, res) {
-    logMessage('++ receved request to /upload_ssl_certs')
+    logMessage('++ received request to /upload_ssl_certs')
 
     if (process.env.ENVIRONMENT !== 'PROD') {
       logMessage('++ environment is not PROD, will not attempt to upload SSL certificates to GCE load balancer')
@@ -93,6 +93,20 @@ module.exports = function (apiRouter) {
         return
       }
 
+      logMessage('++ deleting old SSL certificate')
+      compute.sslCertificates.delete({
+        project: process.env.GCLOUD_PROJECT,
+        resource: {
+          name: 'callparty-prod-certificate'
+        }
+      }, function (err, result, response) {
+        if (err) {
+          captureException(err)
+          res.sendStatus(500)
+          return
+        }
+
+      logMessage('++ uploading new SSL certificate')
       compute.sslCertificates.insert({
         project: process.env.GCLOUD_PROJECT,
         resource: {
