@@ -3,6 +3,7 @@ const { logMessage, captureException } = require('../utilities/logHelper')
 const google = require('googleapis')
 const path = require('path')
 const fs = require('fs')
+const dateTime = require('node-datetime')
 
 module.exports = function (apiRouter) {
   // public pages=============================================
@@ -57,11 +58,11 @@ module.exports = function (apiRouter) {
   apiRouter.post('/upload_ssl_certs', async function (req, res) {
     logMessage('++ received request to /upload_ssl_certs')
 
-    if (process.env.ENVIRONMENT !== 'PROD') {
-      logMessage('++ environment is not PROD, will not attempt to upload SSL certificates to GCE load balancer')
-      res.sendStatus(200)
-      return
-    }
+    // if (process.env.ENVIRONMENT !== 'PROD') {
+    //   logMessage('++ environment is not PROD, will not attempt to upload SSL certificates to GCE load balancer')
+    //   res.sendStatus(200)
+    //   return
+    // }
 
     logMessage('++ uploading ssl certs to prod GCE load balancer')
     const key = require(path.resolve(path.join(__dirname, '..', '..', 'devops', 'secret_files', 'gce_credentials.json')))
@@ -85,42 +86,38 @@ module.exports = function (apiRouter) {
       let certificate
       let privateKey
       try {
-        certificate = fs.readFileSync('/etc/letsencrypt/live/admin.callparty.org/fullchain.pem', 'utf-8')
-        privateKey = fs.readFileSync('/etc/letsencrypt/live/admin.callparty.org/privkey.pem', 'utf-8')
+        // certificate = fs.readFileSync('/etc/letsencrypt/live/admin.callparty.org/fullchain.pem', 'utf-8')
+        // privateKey = fs.readFileSync('/etc/letsencrypt/live/admin.callparty.org/privkey.pem', 'utf-8')
+        certificate = fs.readFileSync('/Users/maxfowler/computer/projects/callparty/callparty/backend/devops/secret_files/certs/admin.callparty.org/fullchain.pem', 'utf-8')
+        privateKey = fs.readFileSync('/Users/maxfowler/computer/projects/callparty/callparty/backend/devops/secret_files/certs/admin.callparty.org/privkey.pem', 'utf-8')
       } catch (e) {
         captureException(e)
         res.sendStatus(500)
         return
       }
 
-      logMessage('++ deleting old SSL certificate')
-      compute.sslCertificates.delete({
+      // upload new SSL cert
+      var dt = dateTime.create()
+      const dateStr = dt.format('Y-m-d') + '-' +(new Date().getTime())
+      logMessage(`++ uploading new SSL certificate ${dateStr}`)
+      compute.sslCertificates.insert({
         project: process.env.GCLOUD_PROJECT,
-        sslCertificate: 'callparty-prod-certificate'
+        resource: {
+          name: `callparty-prod-certificate-${dateStr}`,
+          certificate: certificate,
+          privateKey: privateKey
+        }
       }, function (err, result, response) {
         if (err) {
           captureException(err)
           res.sendStatus(500)
           return
         }
-        // upload after delete
-        logMessage('++ uploading new SSL certificate')
-        compute.sslCertificates.insert({
-          project: process.env.GCLOUD_PROJECT,
-          resource: {
-            name: 'callparty-prod-certificate',
-            certificate: certificate,
-            privateKey: privateKey
-          }
-        }, function (err, result, response) {
-          if (err) {
-            captureException(err)
-            res.sendStatus(500)
-            return
-          }
 
+        // wait 5000, so that certificate can become ready
+        setTimeout(function () {
           const sslCertificateUrl = response.body.targetLink
-          compute.setSslCertificates({
+          compute.targetHttpsProxies.setSslCertificates({
             project: process.env.GCLOUD_PROJECT,
             targetHttpsProxy: 'callparty-prod-loadbalancer-target-proxy-2',
             resource: {
@@ -135,7 +132,7 @@ module.exports = function (apiRouter) {
             logMessage('++ successfully uploaded SSL certs to prod GCE load balancer')
             res.sendStatus(200)
           })
-        })
+        }, 5000)
       })
     })
   })
