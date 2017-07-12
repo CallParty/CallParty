@@ -105,38 +105,38 @@ module.exports = function (apiRouter) {
           res.sendStatus(500)
           return
         }
-      })
-
-      logMessage('++ uploading new SSL certificate')
-      compute.sslCertificates.insert({
-        project: process.env.GCLOUD_PROJECT,
-        resource: {
-          name: 'callparty-prod-certificate',
-          certificate: certificate,
-          privateKey: privateKey
-        }
-      }, function (err, result, response) {
-        if (err) {
-          captureException(err)
-          res.sendStatus(500)
-          return
-        }
-
-        const sslCertificateUrl = response.body.targetLink
-        compute.setSslCertificates({
+        // upload after delete
+        logMessage('++ uploading new SSL certificate')
+        compute.sslCertificates.insert({
           project: process.env.GCLOUD_PROJECT,
-          targetHttpsProxy: 'callparty-prod-loadbalancer-target-proxy-2',
           resource: {
-            sslCertificates: [sslCertificateUrl]
+            name: 'callparty-prod-certificate',
+            certificate: certificate,
+            privateKey: privateKey
           }
-        }, function (err) {
+        }, function (err, result, response) {
           if (err) {
             captureException(err)
             res.sendStatus(500)
             return
           }
-          logMessage('++ successfully uploaded SSL certs to prod GCE load balancer')
-          res.sendStatus(200)
+
+          const sslCertificateUrl = response.body.targetLink
+          compute.setSslCertificates({
+            project: process.env.GCLOUD_PROJECT,
+            targetHttpsProxy: 'callparty-prod-loadbalancer-target-proxy-2',
+            resource: {
+              sslCertificates: [sslCertificateUrl]
+            }
+          }, function (err) {
+            if (err) {
+              captureException(err)
+              res.sendStatus(500)
+              return
+            }
+            logMessage('++ successfully uploaded SSL certs to prod GCE load balancer')
+            res.sendStatus(200)
+          })
         })
       })
     })
