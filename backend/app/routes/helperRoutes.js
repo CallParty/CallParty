@@ -96,9 +96,7 @@ module.exports = function (apiRouter) {
       logMessage('++ deleting old SSL certificate')
       compute.sslCertificates.delete({
         project: process.env.GCLOUD_PROJECT,
-        resource: {
-          name: 'callparty-prod-certificate'
-        }
+        sslCertificate: 'callparty-prod-certificate'
       }, function (err, result, response) {
         if (err) {
           captureException(err)
