@@ -54,7 +54,7 @@ module.exports = function (apiRouter) {
     res.send('slack test')
   })
 
-  apiRouter.post('/upload_ssl_certs', function (req, res) {
+  apiRouter.post('/upload_ssl_certs', async function (req, res) {
     logMessage('++ received request to /upload_ssl_certs')
 
     if (process.env.ENVIRONMENT !== 'PROD') {
@@ -105,6 +105,7 @@ module.exports = function (apiRouter) {
           res.sendStatus(500)
           return
         }
+      })
 
       logMessage('++ uploading new SSL certificate')
       compute.sslCertificates.insert({
