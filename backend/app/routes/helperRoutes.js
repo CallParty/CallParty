@@ -3,6 +3,7 @@ const { logMessage, captureException } = require('../utilities/logHelper')
 const google = require('googleapis')
 const path = require('path')
 const fs = require('fs')
+const dateTime = require('node-datetime')
 
 module.exports = function (apiRouter) {
   // public pages=============================================
@@ -54,8 +55,8 @@ module.exports = function (apiRouter) {
     res.send('slack test')
   })
 
-  apiRouter.post('/upload_ssl_certs', function (req, res) {
-    logMessage('++ receved request to /upload_ssl_certs')
+  apiRouter.post('/upload_ssl_certs', async function (req, res) {
+    logMessage('++ received request to /upload_ssl_certs')
 
     if (process.env.ENVIRONMENT !== 'PROD') {
       logMessage('++ environment is not PROD, will not attempt to upload SSL certificates to GCE load balancer')
@@ -93,10 +94,14 @@ module.exports = function (apiRouter) {
         return
       }
 
+      // upload new SSL cert
+      var dt = dateTime.create()
+      const dateStr = dt.format('Y-m-d') + '-' +(new Date().getTime())
+      logMessage(`++ uploading new SSL certificate ${dateStr}`)
       compute.sslCertificates.insert({
         project: process.env.GCLOUD_PROJECT,
         resource: {
-          name: 'callparty-prod-certificate',
+          name: `callparty-prod-certificate-${dateStr}`,
           certificate: certificate,
           privateKey: privateKey
         }
@@ -107,22 +112,25 @@ module.exports = function (apiRouter) {
           return
         }
 
-        const sslCertificateUrl = response.body.targetLink
-        compute.setSslCertificates({
-          project: process.env.GCLOUD_PROJECT,
-          targetHttpsProxy: 'callparty-prod-loadbalancer-target-proxy-2',
-          resource: {
-            sslCertificates: [sslCertificateUrl]
-          }
-        }, function (err) {
-          if (err) {
-            captureException(err)
-            res.sendStatus(500)
-            return
-          }
-          logMessage('++ successfully uploaded SSL certs to prod GCE load balancer')
-          res.sendStatus(200)
-        })
+        // wait 5000, so that certificate can become ready
+        setTimeout(function () {
+          const sslCertificateUrl = response.body.targetLink
+          compute.targetHttpsProxies.setSslCertificates({
+            project: process.env.GCLOUD_PROJECT,
+            targetHttpsProxy: 'callparty-prod-loadbalancer-target-proxy-2',
+            resource: {
+              sslCertificates: [sslCertificateUrl]
+            }
+          }, function (err) {
+            if (err) {
+              captureException(err)
+              res.sendStatus(500)
+              return
+            }
+            logMessage('++ successfully uploaded SSL certs to prod GCE load balancer')
+            res.sendStatus(200)
+          })
+        }, 5000)
       })
     })
   })
