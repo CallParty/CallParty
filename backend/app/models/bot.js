@@ -8,7 +8,7 @@ const ORG_NAMES = {
 
 const ORG_EMAILS = {
   callparty: 'hi@callparty.org',
-  govtrack: 'hi@govtrack.org'
+  govtrack: 'hello@govtrack.us'
 }
 
 const botSchema = new Schema({
