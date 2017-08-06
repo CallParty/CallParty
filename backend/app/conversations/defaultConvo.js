@@ -10,7 +10,7 @@ function defaultConvo(user, message) {
 
   const replyMessage = shouldReplyWithThumbsUp ?
     `👍` :
-    `I'm sorry I didn't understand that! If you have a question, comment, or suggestion, a real person will respond here shortly. You can also email us at hi@callparty.org`
+    `I'm sorry, I didn't understand that! If you have a question, comment, or suggestion, a real person will respond here shortly. You can also email us at ${user.bot.orgEmail}.`
 
   return botReply(user, replyMessage)
 }

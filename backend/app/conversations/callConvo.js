@@ -190,7 +190,7 @@ async function firstTimeReadyResponseConvo(user, message) {
 async function readyResponseConvo(user, message) {
   if (!Object.values(ACTION_TYPE_PAYLOADS).includes(message.text)) {
     logMessage(`++ User responded to readyResponseConvo with unexpected message: ${message.text}`)
-    return botReply(user, "I'm sorry, I didn't understand that! Try choosing from one of the options above, or shoot us an email to talk to a person at hi@callparty.org.")
+    return botReply(user, `I'm sorry, I didn't understand that! Try choosing from one of the options above, or shoot us an email to talk to a person at ${user.bot.orgEmail}.`)
   }
 
   await UserAction.create({
@@ -519,7 +519,7 @@ function somethingWentWrongResponse(user) {
 async function howDidItGoResponseConvo(user, message) {
   if (!Object.values(ACTION_TYPE_PAYLOADS).includes(message.text)) {
     logMessage(`++ User responded to howDidItGoResponseConvo with unexpected message: ${message.text}`)
-    return botReply(user, "I'm sorry, I didn't understand that! Try choosing from one of the options above, or shoot us an email to talk to a person at hi@callparty.org.")
+    return botReply(user, `I'm sorry, I didn't understand that! Try choosing from one of the options above, or shoot us an email to talk to a person at ${user.bot.orgEmail}.`)
   }
 
   await UserAction.create({
@@ -541,7 +541,7 @@ async function howDidItGoResponseConvo(user, message) {
 async function tryNextRepResponseConvo(user, message) {
   if (!Object.values(ACTION_TYPE_PAYLOADS).includes(message.text)) {
     logMessage(`++ User responded to tryNextRepResponseConvo with unexpected message: ${message.text}`)
-    return botReply(user, "I'm sorry, I didn't understand that! Try choosing from one of the options above, or shoot us an email to talk to a person at hi@callparty.org.")
+    return botReply(user, `I'm sorry, I didn't understand that! Try choosing from one of the options above, or shoot us an email to talk to a person at ${user.bot.orgEmail}.`)
   }
 
   await UserAction.create({
