@@ -2,8 +2,7 @@ const { botReply } = require('../utilities/botReply')
 const { logMessage } = require('../utilities/logHelper')
 
 function defaultConvo(user, message) {
-  logMessage(`++ [${user.botId}] ${user.firstName} ${user.lastName} (${user.fbId}) 
-    said something the bot didn't understand: "${message.text}"`, '#_unexpected')
+  logMessage(`++ [${user.botId}] ${user.firstName} ${user.lastName} (${user.fbId}) said something the bot didn't understand: "${message.text}"`, '#_unexpected')
 
   const whitelistRegex = new RegExp(/bye|thank u|thank you|thanks+|sounds good|👍|cool|ok|okay|yay|thumbs up|k|kk|excellent|<3|rad/, 'i')
 
