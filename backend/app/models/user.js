@@ -33,6 +33,10 @@ userSchema.virtual('userConversations', {
   foreignField: 'user'
 })
 
+userSchema.virtual('botId').get(function() {
+  return this.bot._id
+})
+
 module.exports = mongoose.model('User', userSchema)
 
 //---Dummy User:

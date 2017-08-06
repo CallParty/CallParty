@@ -158,6 +158,10 @@ campaignActionSchema.methods.getMatchingUsersWithRepresentatives = function () {
   })
 }
 
+campaignActionSchema.virtual('botId').get(function() {
+  return this.bot._id
+})
+
 campaignActionSchema.statics.CAMPAIGN_ACTION_STATUS = CAMPAIGN_ACTION_STATUS
 
 module.exports = mongoose.model('CampaignAction', campaignActionSchema)
