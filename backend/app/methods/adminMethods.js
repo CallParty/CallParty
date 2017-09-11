@@ -23,5 +23,6 @@ exports.getCurrentAdmin = async function(req, res) {
   res.json({
     username: req.adminUser.username,
     bot: req.adminUser.bot,
+    isDebugAdmin: req.adminUser.isDebugAdmin
   })
 }
