@@ -212,7 +212,7 @@ export default class CampaignActionDetail extends React.Component {
     let targeting = []
     if (this.state.action.targetingType === 'segmenting') {
       targeting = [memberTypeTargeting, ...partyTargeting, ...committeeTargeting, ...districtTargeting]
-    } else if (this.state.action.targetingType === 'borrowed') {
+    } else if (this.state.action.targetingType === 'borrowed' && this.state.action.targetAction) {
       targeting = [`borrowed from: ${this.state.action.targetAction.label} `]
     }
     return (
