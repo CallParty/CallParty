@@ -96,6 +96,10 @@ export default {
     return post(`/api/campaigns/${id}/action/new`, data).then(data => cb(data))
   },
 
+  updateDebugAdmin: function(data, cb = response => response) {
+    return post(`/api/updateDebugAdmin`, data).then(data => cb(data))
+  },
+
   newCampaignUpdate: function(id, data, cb = response => response) {
     return post(`/api/campaigns/${id}/update/new`, data).then(data => cb(data))
   },

@@ -7,6 +7,7 @@ import { Campaigns, Campaign, NewCampaign } from './Campaign'
 import { SettingsPage } from './SettingsPage'
 import NewCampaignUpdate from './NewCampaignUpdate'
 import NewCampaignCall from './NewCampaignCall'
+import { DebugAdminInput } from './DebugAdminInput'
 import CampaignActionDetail from './CampaignActionDetail'
 import RequireAuthenticationContainer from './RequireAuthenticationContainer'
 import Login from './Login'
@@ -108,6 +109,7 @@ class Container extends Component {
     const settingsButton = isNotLogin ? <Link to="/settings"><button className="warn">Settings</button></Link> : null
     const breadcrumbs = hasBreadcrumbs ? this.breadcrumbs : null
     const loggedInAs = isNotLogin && this.state.currentAdmin ? <a className="logged-in-as">Logged in as {this.state.currentAdmin.username}</a> : null
+    const isDebugAdmin = this.state.currentAdmin && this.state.currentAdmin.isDebugAdmin
 
     return (
       <Loader loaded={this.state.loaded}>
@@ -115,6 +117,7 @@ class Container extends Component {
           <header className="main-header">
             <div className="main-header-logo">
               <Link to="/"><img src="http://callparty.org/assets/images/callparty.png" alt="Call Party Logo" /></Link>
+              {isDebugAdmin && <DebugAdminInput bot={this.state.currentAdmin.bot} />}
             </div>
             <div className="main-header-nav">
               {loggedInAs}
