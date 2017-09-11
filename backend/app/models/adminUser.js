@@ -7,6 +7,7 @@ const adminUserSchema = new Schema({
   username: { type: String, required: true, index: { unique: true } },
   password: { type: String, required: true },
   bot: { type: String, ref: 'Bot', required: true },
+  isDebugAdmin: { type: Boolean, default: false }
 })
 
 adminUserSchema.methods.hashPassword = async function hashPassword(password) {

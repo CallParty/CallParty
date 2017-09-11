@@ -81,6 +81,22 @@ module.exports = function(apiRouter) {
     res.json({ success: true })
   })
 
+  apiRouter.post('/updateDebugAdmin', async function(req, res) {
+    // get currently logged in admin
+    const adminUser = req.adminUser
+    // if not isSuperUser then return forbidden
+    if (!adminUser.isDebugAdmin) {
+      return res.json({error: 'Forbidden'})
+    }
+    // else update the bot of the debugAdmin
+    else {
+      const data = req.body
+      adminUser.bot = data.bot
+      adminUser.save()
+      return res.json(adminUser)
+    }
+  })
+
   apiRouter.get('/token', handleAuthTokenRequest)
   apiRouter.post('/token', handleAuthTokenRequest)
 }
