@@ -111,12 +111,14 @@ class Campaign extends Component {
     this.state = {
       campaignActions: [],
       title: '',
+      loaded: false,
     }
   }
 
   componentWillMount() {
     API.campaign(this.props.params.id, data => {
       this.setState(data)
+      this.setState({loaded: true})
     })
   }
 
@@ -137,34 +139,37 @@ class Campaign extends Component {
     })
 
     return (
-      <div className="campaign">
-        <div className="meta">
-          <h1>Campaign: <span>{this.state.title}</span></h1>
-          <p>Description: {this.state.description}</p>
-          <p>Created at {createdAt}</p>
-        </div>
-        <div className="table">
-          <div className="table-header">
-            <h2>Conversations</h2>
-            <div className="table-header-buttons">
-              <Link className="button" to={`/${this.props.params.id}/call/new`}>New Call</Link>
-              <Link className="button" to={`/${this.props.params.id}/update/new`}>New Message</Link>
-            </div>
+      <Loader loaded={this.state.loaded}>
+        <div className="campaign">
+          <div className="meta">
+            <h1>Campaign: <span>{this.state.title}</span></h1>
+            <p>Description: {this.state.description}</p>
+            <p>Created at {createdAt}</p>
           </div>
-          <table>
-            <tbody>
-              <tr>
-                <th>#</th>
-                <th>Type</th>
-                <th>Label</th>
-                <th>Date Created</th>
-                <th>Clone?</th>
-              </tr>
-              {campaignActions}
-            </tbody>
-          </table>
+          <div className="table">
+            <div className="table-header">
+              <h2>Conversations</h2>
+              <div className="table-header-buttons">
+                <Link className="button" to={`/${this.props.params.id}/call/new`}>New Call</Link>
+                <Link className="button" to={`/${this.props.params.id}/update/new`}>New Message</Link>
+              </div>
+            </div>
+            <table>
+              <tbody>
+                <tr>
+                  <th>#</th>
+                  <th>Type</th>
+                  <th>Label</th>
+                  <th>Date Created</th>
+                  <th>Clone?</th>
+                </tr>
+                {campaignActions}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>)
+      </Loader>
+    )
   }
 }
 
