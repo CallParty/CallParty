@@ -11,6 +11,9 @@
     tags:
       quick
 
+  - name: make srv_dir writeable by webgroup
+    action: file path={{srv_dir}} mode=u=rwX,g=rwX,o=X recurse=yes group=webgroup owner=ubuntu
+
   - name: npm install backend/package.json
     npm: path={{backend_dir}} executable=/usr/local/bin/npm
     become: true

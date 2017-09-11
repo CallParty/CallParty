@@ -4,3 +4,4 @@ nginx_key: secret_files/admin.callparty.org_nginx.key
 node_env: secret_files/prod_env
 frontend_build_dir: prod
 domain_name: admin.callparty.org
+use_ssl: false
