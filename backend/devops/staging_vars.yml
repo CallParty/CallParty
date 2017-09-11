@@ -4,3 +4,4 @@ nginx_key: secret_files/staging.callparty.org_nginx.key
 node_env: secret_files/staging_env
 frontend_build_dir: staging
 domain_name: staging.callparty.org
+use_ssl: true
