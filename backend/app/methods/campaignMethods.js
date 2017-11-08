@@ -51,9 +51,6 @@ exports.getCampaign = function(req, res) {
     .findOne({ _id: req.params.id, bot: bot })
     .populate({
       path: 'campaignActions',
-      populate: {
-        path: 'userConversations'
-      }
     })
     .exec(function(err, campaign) {
       if (err) return res.send(err)
@@ -69,10 +66,7 @@ exports.getCampaigns = async function(req, res) {
   Campaign
     .find({bot: bot})
     .populate({
-      path: 'campaignActions',
-      populate: {
-        path: 'userConversations'
-      }
+      path: 'campaignActions'
     })
     .exec(function(err, campaigns) {
       if (err) return res.send(err)
