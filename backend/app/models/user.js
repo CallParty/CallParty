@@ -34,7 +34,13 @@ userSchema.virtual('userConversations', {
 })
 
 userSchema.virtual('botId').get(function() {
-  return this.bot._id
+  // TODO: figure out why for some users bot is null
+  if (this.bot) {
+    return this.bot._id
+  }
+  else {
+    return null
+  }
 })
 
 module.exports = mongoose.model('User', userSchema)
