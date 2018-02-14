@@ -1,5 +1,5 @@
 const { captureException, logMessage } = require('./logHelper')
-const { UserConversation } = require('../models')
+const { UserConversation, Message } = require('../models')
 const request = require('request')
 const USER_CONVO_STATUS = UserConversation.USER_CONVO_STATUS
 
@@ -66,6 +66,7 @@ function botReplyHelper(user, text) {
 
 function sendFbMessage(recipientId, token, message, callback) {
   let messageData
+
   // if its a string, then put message data in format facebook expects
   if (typeof message === 'string' || message instanceof String) {
     messageData = {text: message}
@@ -82,7 +83,18 @@ function sendFbMessage(recipientId, token, message, callback) {
       recipient: {id:recipientId},
       message: messageData,
     }
-  }, callback)
+  }, function(err, resp) {
+    // save that this message was sent
+    const message = new Message({
+      mid: resp.body.message_id
+    })
+    message.save(function (err) {
+      if (err) {
+        console.log('++ error saving message')
+      }
+    })
+    return callback(err, resp)
+  })
 }
 
 function isKnownError(err) {
