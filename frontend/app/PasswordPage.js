@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
 import API from './helpers/API'
+import { SettingsNav } from './SettingsNav'
 
 
-class SettingsPage extends Component {
+class PasswordPage extends Component {
   constructor(props) {
     super(props)
 
@@ -54,33 +55,35 @@ class SettingsPage extends Component {
   }
 
   render() {
-    return <div>
-      <h1 className="settings-header">Settings</h1>
+    return (
       <div>
-        <h2> Change Password </h2>
-        <br />
-        <form onSubmit={this.onSubmit}>
-          <fieldset>
-            <label>New Password</label>
-            <input
-              type="password"
-              value={this.state.password1}
-              onChange={this.onInputChange.bind(this, 'password1')} />
-          </fieldset>
-          <fieldset>
-            <label>Confirm Password</label>
-            <input
-              type="password"
-              value={this.state.password2}
-              onChange={this.onInputChange.bind(this, 'password2')} />
-          </fieldset>
-          <input type="submit" value="Reset Password" />
-        </form>
-      </div>
+        <SettingsNav />
+        <div>
+          <h2> Change Password </h2>
+          <br />
+          <form onSubmit={this.onSubmit}>
+            <fieldset>
+              <label>New Password</label>
+              <input
+                type="password"
+                value={this.state.password1}
+                onChange={this.onInputChange.bind(this, 'password1')} />
+            </fieldset>
+            <fieldset>
+              <label>Confirm Password</label>
+              <input
+                type="password"
+                value={this.state.password2}
+                onChange={this.onInputChange.bind(this, 'password2')} />
+            </fieldset>
+            <input type="submit" value="Reset Password" />
+          </form>
+        </div>
     </div>
+    )
   }
 }
 
 export {
-  SettingsPage
+  PasswordPage
 }
