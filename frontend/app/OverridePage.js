@@ -77,10 +77,6 @@ class OverridePage extends Component {
       </div>
     )
   }
-
-  viewCampaign(campaign) {
-    this.props.router.push(`/${campaign.id}`)
-  }
 }
 
 class UserItem extends Component {
