@@ -120,6 +120,14 @@ export default {
     return get('/api/districts').then(data => cb(data))
   },
 
+  overrides: function(cb = response => response) {
+    return get('/api/overrides').then(data => cb(data))
+  },
+
+  removeOverride: function(userId, cb = response => response) {
+    return post('/api/remove-override', {userId: userId}).then(data => cb(data))
+  },
+
   login: function(username, password, cb, onErr) {
     const encodedCredentials = btoa(`${username}:${password}`)
     return fetch('/api/token', {

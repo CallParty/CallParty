@@ -4,7 +4,8 @@ import Loader from 'react-loader'
 import NotificationSystem from 'react-notification-system'
 import classNames from 'classnames'
 import { Campaigns, Campaign, NewCampaign } from './Campaign'
-import { SettingsPage } from './SettingsPage'
+import { PasswordPage } from './PasswordPage'
+import { OverridePage } from './OverridePage'
 import NewCampaignUpdate from './NewCampaignUpdate'
 import NewCampaignCall from './NewCampaignCall'
 import CampaignActionDetail from './CampaignActionDetail'
@@ -105,7 +106,7 @@ class Container extends Component {
     const hasBreadcrumbs = isNotLogin && this.props.location.pathname !== '/settings'
     const logoutButton = isNotLogin ? <a onClick={this.logout} href=""><button>Sign Out</button></a> : null
     const refreshButton = isNotLogin ? <a onClick={this.refreshReps} href=""><button className="warn">Refresh Rep Data</button></a> : null
-    const settingsButton = isNotLogin ? <Link to="/settings"><button className="warn">Settings</button></Link> : null
+    const settingsButton = isNotLogin ? <Link to="/settings/password"><button className="warn">Settings</button></Link> : null
     const breadcrumbs = hasBreadcrumbs ? this.breadcrumbs : null
     const loggedInAs = isNotLogin && this.state.currentAdmin ? <a className="logged-in-as">Logged in as {this.state.currentAdmin.username}</a> : null
 
@@ -119,7 +120,6 @@ class Container extends Component {
             <div className="main-header-nav">
               {loggedInAs}
               {settingsButton}
-              {refreshButton}
               {logoutButton}
             </div>
           </header>
@@ -160,7 +160,8 @@ class App extends Component {
             <Route component={RequireAuthenticationContainer}>
               <IndexRoute component={Campaigns} />
               <Route path="new" component={NewCampaign} />
-              <Route path="settings" component={SettingsPage} />
+              <Route path="settings/password" component={PasswordPage} />
+              <Route path="settings/override" component={OverridePage} />
               <Route path=":id">
                 <IndexRoute component={Campaign} />
                 <Route path="actions/:actionId" component={CampaignActionDetail} />
