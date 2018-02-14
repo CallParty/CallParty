@@ -1,4 +1,4 @@
-const { handleMessage } = require('../utilities/listener')
+const { handleMessage, handleEcho } = require('../utilities/listener')
 const { logMessage, captureException } = require('../utilities/logHelper')
 const google = require('googleapis')
 const path = require('path')
@@ -33,7 +33,11 @@ module.exports = function (apiRouter) {
       let senderId = event.sender.id
       let recipientId = event.recipient.id
       if (event.message) {
-        handleMessage(senderId, recipientId, event.message)
+        if (event.message.is_echo) {
+          handleEcho(senderId, recipientId, event.message)
+        } else {
+          handleMessage(senderId, recipientId, event.message)
+        }
       }
       else if (event.postback) {
         const message = {

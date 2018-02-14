@@ -12,6 +12,7 @@ const RepresentativeCommittee = require('./representativeCommittee')
 const RepresentativeSubcommittee = require('./representativeSubcommittee')
 const AdminUser = require('./adminUser')
 const Bot = require('./bot')
+const Message = require('./message')
 
 module.exports = {
   User,
@@ -27,5 +28,6 @@ module.exports = {
   RepresentativeCommittee,
   RepresentativeSubcommittee,
   AdminUser,
-  Bot
+  Bot,
+  Message
 }

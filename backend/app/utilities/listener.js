@@ -1,7 +1,9 @@
 var startSignupConversation = require('./../conversations/signupConvo').startSignupConversation
+const { logMessage } = require('../utilities/logHelper')
 var unsubscribeConvo = require('./../conversations/unsubscribeConvo').unsubscribeConvo
+const { setUserCallback } = require('../methods/userMethods')
 var runCallback = require('./../conversations/callbackRouter').runCallback
-const { User } = require('../models/index')
+const { User, Message } = require('../models/index')
 
 
 function handleMessage(senderId, recipientId, message) {
@@ -28,6 +30,31 @@ function handleMessage(senderId, recipientId, message) {
   }
 }
 
+async function handleEcho(senderId, recipientId, message) {
+  /* handles the echo of a message that the admin page sent */
+
+  // if this was a message sent by CallParty bot, then do nothing
+  const sentMid = await Message.findOne({mid: message.mid})
+  if (sentMid) {
+    // this is an echo that should be ignored
+  }
+
+  // otherwise, switch this user to override mode
+  else {
+    const user = await User.findOne({fbId: recipientId})
+    // if the user does not already exist, then something weird has happened
+    if (!user) {
+      throw new Error('Should not be overriding to send message to unregistered user')
+    }
+    // if they do exist, then change the callback of the user to override
+    else {
+      logMessage(`++ setting user to override mode ${recipientId}`, '#_override')
+      setUserCallback(user, '/override')
+    }
+  }
+}
+
 module.exports = {
   handleMessage,
+  handleEcho
 }
