@@ -4,7 +4,21 @@ import Loader from 'react-loader'
 import API from './helpers/API'
 
 
-class OverridePage extends Component {
+function compareUsers(a, b) {
+  if (a.override > b.override) {
+    return -1
+  } else if (b.override > a.override) {
+    return 1
+  } else {
+    if (a.firstName === b.firstName) {
+      return (a.lastName > b.lastName)
+    } else {
+      return (a.firstName > b.firstName)
+    }
+  }
+}
+
+class UsersPage extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -12,7 +26,7 @@ class OverridePage extends Component {
       loaded: false
     }
 
-    this.clickUser = this.clickUser.bind(this)
+    this.clickUserOverride = this.clickUserOverride.bind(this)
   }
 
   static get contextTypes() {
@@ -20,7 +34,7 @@ class OverridePage extends Component {
   }
 
   componentWillMount() {
-    API.overrides(data => {
+    API.users(data => {
       this.setState({
         users: data,
         loaded: true
@@ -28,12 +42,19 @@ class OverridePage extends Component {
     })
   }
 
-  clickUser(user) {
-    API.removeOverride(
+  clickUserOverride(user) {
+    let newOverrideValue = 1
+    let successMessage = 'Override Set'
+    if (user.override) {
+      newOverrideValue = 0
+      successMessage = 'Override Removed'
+    }
+    API.setOverride(
       user.id,
+      newOverrideValue,
       (data) => {
         this.context.notify({
-          message: 'Override Removed',
+          message: successMessage,
           level: 'success',
           autoDismiss: 1,
           // redirect to CampaignActionDetail page for newly created CampaignAction
@@ -44,8 +65,8 @@ class OverridePage extends Component {
   }
 
   render() {
-    const users = this.state.users.sort().map(user => {
-      return <UserItem key={user.id} onClick={this.clickUser} {...user} />
+    const users = this.state.users.sort(compareUsers).map(user => {
+      return <UserItem key={user.id} onClick={this.clickUserOverride} {...user} />
     })
 
     return (
@@ -55,10 +76,7 @@ class OverridePage extends Component {
           {this.state.users && this.state.users.length > 0
             ? <div className="table">
               <div className="table-header">
-                <h1>Users With Overrides</h1>
-              </div>
-              <div className="override-explanation">
-                Click on a user's row to remove them from override mode and re-connect them to the automated bot.
+                <h1>Users</h1>
               </div>
               <table className="overrides-table">
                 <tbody>
@@ -66,12 +84,13 @@ class OverridePage extends Component {
                     <th>#</th>
                     <th>Name</th>
                     <th>Callback Path</th>
+                    <th>Override</th>
                   </tr>
                   {users}
                 </tbody>
               </table>
             </div>
-            : <div>There are currently no users with overrides. Message a user through facebook messenger to enter override mode.</div>
+            : <div>There are currently no subscribed users.</div>
           }
         </Loader>
       </div>
@@ -85,14 +104,15 @@ class UserItem extends Component {
   }
 
   render() {
-    return <tr onClick={() => this.props.onClick(this.props)}>
+    return <tr className="no-highlight">
       <td>{this.props.id}</td>
       <td>{this.props.firstName} {this.props.lastName}</td>
       <td>{this.props.callbackPath}</td>
+      <td><input type="checkbox" checked={this.props.override} onChange={this.props.onClick.bind(this, this.props)} /></td>
     </tr>
   }
 }
 
 export {
-  OverridePage,
+  UsersPage,
 }

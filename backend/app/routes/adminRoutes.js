@@ -85,28 +85,34 @@ module.exports = function(apiRouter) {
   apiRouter.get('/token', handleAuthTokenRequest)
   apiRouter.post('/token', handleAuthTokenRequest)
 
-  apiRouter.get('/overrides', async function (req, res) {
+  apiRouter.get('/users', async function (req, res) {
     // get bot from currently logged in admin
     const bot = req.adminUser.bot
 
-    // return users with callbackPath = '/override
+    // return users
     User
-      .find({bot: bot, callbackPath: '/override'})
+      .find({bot: bot})
       .exec(function (err, users) {
         if (err) return res.send(err)
         res.json(users)
       })
   }),
 
-  apiRouter.post('/remove-override', async function (req, res) {
+  apiRouter.post('/set-override', async function (req, res) {
 
     const bot = req.adminUser.bot
     const data = req.body
+    const newOverrideValue = data.overrideValue
     const user = await User.findOne({bot: bot, _id: data.userId})
-    await setUserCallback(user, null)
-    await logMessage(`++ removed override of user ${data.userId}`)
+    if (newOverrideValue === 1) {
+      await setUserCallback(user, '/override')
+      await logMessage(`++ set override of user ${data.userId}`)
+    } else {
+      await setUserCallback(user, null)
+      await logMessage(`++ removed override of user ${data.userId}`)
+    }
     User
-      .find({bot: bot, callbackPath: '/override'})
+      .find({bot: bot})
       .exec(function (err, users) {
         if (err) return res.send(err)
         res.json(users)

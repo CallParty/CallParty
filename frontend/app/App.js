@@ -5,7 +5,7 @@ import NotificationSystem from 'react-notification-system'
 import classNames from 'classnames'
 import { Campaigns, Campaign, NewCampaign } from './Campaign'
 import { PasswordPage } from './PasswordPage'
-import { OverridePage } from './OverridePage'
+import { UsersPage } from './UsersPage'
 import NewCampaignUpdate from './NewCampaignUpdate'
 import NewCampaignCall from './NewCampaignCall'
 import CampaignActionDetail from './CampaignActionDetail'
@@ -161,7 +161,7 @@ class App extends Component {
               <IndexRoute component={Campaigns} />
               <Route path="new" component={NewCampaign} />
               <Route path="settings/password" component={PasswordPage} />
-              <Route path="settings/override" component={OverridePage} />
+              <Route path="settings/users" component={UsersPage} />
               <Route path=":id">
                 <IndexRoute component={Campaign} />
                 <Route path="actions/:actionId" component={CampaignActionDetail} />
