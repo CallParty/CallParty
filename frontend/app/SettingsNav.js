@@ -12,7 +12,7 @@ class SettingsNav extends Component {
         <h1 className="settings-header">Settings</h1>
         <div className="settings-nav">
           <Link className="settings-link" to="/settings/password">Password</Link>
-          <Link className="settings-link" to="/settings/override">Override</Link>
+          <Link className="settings-link" to="/settings/users">Users</Link>
         </div>
       </div>
     )

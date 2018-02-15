@@ -110,7 +110,14 @@ button, input[type=button]
     a
       color: $cpred
       text-decoration: none
-      //cursor: pointer
+
+  tr.no-highlight
+    cursor: default
+    &:hover
+      background: $litegrey
+      color: black
+      cursor: default
+
   td, th
     padding: 1em
     text-align: left

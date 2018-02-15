@@ -43,6 +43,15 @@ userSchema.virtual('botId').get(function() {
   }
 })
 
+userSchema.virtual('override').get(function() {
+  if (this.callbackPath === '/override') {
+    return 1
+  }
+  else {
+    return 0
+  }
+})
+
 module.exports = mongoose.model('User', userSchema)
 
 //---Dummy User:
