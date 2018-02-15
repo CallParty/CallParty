@@ -55,7 +55,7 @@ function CampaignCallForm(props) {
           type="text"
           value={campaignAction.shareLink}
           onChange={onInputChange.bind(this, 'shareLink')}
-         />
+        />
       </fieldset>
     </div>
   )

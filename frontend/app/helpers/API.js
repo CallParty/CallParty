@@ -17,21 +17,21 @@ function get(endpoint, cb = data => data, onErr = Raven.captureException.bind(Ra
   return fetch(endpoint, {
     headers: { Authorization: `Bearer ${sessionToken}` }
   })
-  .then(resp => {
-    if (resp.status === 401) {
-      throw new Error('unauthorized')
-    }
-    return resp
-  })
-  .then(resp => resp.json())
-  .then(cb)
-  .catch(err => {
-    if (err.message === 'unauthorized') {
-      redirectToLogin()
-      return
-    }
-    onErr(err)
-  })
+    .then(resp => {
+      if (resp.status === 401) {
+        throw new Error('unauthorized')
+      }
+      return resp
+    })
+    .then(resp => resp.json())
+    .then(cb)
+    .catch(err => {
+      if (err.message === 'unauthorized') {
+        redirectToLogin()
+        return
+      }
+      onErr(err)
+    })
 }
 
 function post(endpoint, data = {}, cb = data => data, onErr = Raven.captureException.bind(Raven)) {
@@ -46,21 +46,21 @@ function post(endpoint, data = {}, cb = data => data, onErr = Raven.captureExcep
     method: 'post',
     body: JSON.stringify(data)
   })
-  .then(resp => {
-    if (resp.status === 401) {
-      throw new Error('unauthorized')
-    }
-    return resp
-  })
-  .then(resp => resp.json())
-  .then(cb)
-  .catch(err => {
-    if (err.message === 'unauthorized') {
-      redirectToLogin()
-      return
-    }
-    onErr(err)
-  })
+    .then(resp => {
+      if (resp.status === 401) {
+        throw new Error('unauthorized')
+      }
+      return resp
+    })
+    .then(resp => resp.json())
+    .then(cb)
+    .catch(err => {
+      if (err.message === 'unauthorized') {
+        redirectToLogin()
+        return
+      }
+      onErr(err)
+    })
 }
 
 export default {
@@ -133,10 +133,10 @@ export default {
     return fetch('/api/token', {
       headers: { Authorization: `Basic ${encodedCredentials}` }
     })
-    .then(resp => resp.json())
-    .then(({ token }) => window.localStorage.setItem('callparty_session_token', token))
-    .then(cb)
-    .catch(onErr)
+      .then(resp => resp.json())
+      .then(({ token }) => window.localStorage.setItem('callparty_session_token', token))
+      .then(cb)
+      .catch(onErr)
   },
 
   updateReps: function(cb = response => response) {

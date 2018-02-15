@@ -79,7 +79,7 @@ class PasswordPage extends Component {
             <input type="submit" value="Reset Password" />
           </form>
         </div>
-    </div>
+      </div>
     )
   }
 }
