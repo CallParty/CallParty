@@ -6,6 +6,7 @@ import classNames from 'classnames'
 import { Campaigns, Campaign, NewCampaign } from './Campaign'
 import { PasswordPage } from './PasswordPage'
 import { UsersPage } from './UsersPage'
+import { ExportPage } from './ExportPage'
 import NewCampaignUpdate from './NewCampaignUpdate'
 import NewCampaignCall from './NewCampaignCall'
 import CampaignActionDetail from './CampaignActionDetail'
@@ -162,6 +163,7 @@ class App extends Component {
               <Route path="new" component={NewCampaign} />
               <Route path="settings/password" component={PasswordPage} />
               <Route path="settings/users" component={UsersPage} />
+              <Route path="settings/export" component={ExportPage} />
               <Route path=":id">
                 <IndexRoute component={Campaign} />
                 <Route path="actions/:actionId" component={CampaignActionDetail} />

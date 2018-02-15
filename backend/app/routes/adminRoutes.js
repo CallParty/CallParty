@@ -7,6 +7,7 @@ const campaignUpdateMethods = require('../methods/campaignUpdateMethods')
 const { getDistricts } = require('../utilities/getDistricts')
 const { logMessage } = require('../utilities/logHelper')
 const { downloadRepsYamlFile, loadRepsFromFile } = require('../utilities/representatives')
+const { exportData } = require('../utilities/exportData')
 const {
   downloadCommitteeYamlFile,
   downloadCommitteeMembershipYamlFile,
@@ -117,5 +118,14 @@ module.exports = function(apiRouter) {
         if (err) return res.send(err)
         res.json(users)
       })
+  }),
+
+  apiRouter.post('/exportData', async function (req, res) {
+
+    const bot = req.adminUser.bot
+    const email = req.body.email
+    logMessage(`++ beginning data export for ${bot} to send to ${email}`)
+    exportData(bot, email)
+    res.json({success: true})
   })
 }

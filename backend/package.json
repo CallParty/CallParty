@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@google-cloud/storage": "^1.6.0",
     "any-promise": "^1.3.0",
     "basic-auth": "^1.1.0",
     "basic-auth-connect": "^1.0.0",
@@ -27,6 +28,7 @@
     "geocodio": "^2.0.0",
     "googleapis": "^19.0.0",
     "js-yaml": "^3.7.0",
+    "jsonfile": "^4.0.0",
     "jsonpointer": "^4.0.0",
     "jsonwebtoken": "^7.2.1",
     "migrate-mongoose": "^3.2.2",
@@ -36,6 +38,7 @@
     "monkii": "^1.2.0",
     "node-datetime": "^1.0.1",
     "node-slack": "0.0.7",
+    "nodemailer": "^4.4.2",
     "raven": "^1.1.1",
     "request": "^2.79.0",
     "request-promise-any": "^1.0.3",
