@@ -91,7 +91,7 @@ module.exports = function(apiRouter) {
 
     // return users
     User
-      .find({bot: bot})
+      .find({bot: bot, unsubscribed: false})
       .exec(function (err, users) {
         if (err) return res.send(err)
         res.json(users)
@@ -112,7 +112,7 @@ module.exports = function(apiRouter) {
       await logMessage(`++ removed override of user ${data.userId}`)
     }
     User
-      .find({bot: bot})
+      .find({bot: bot, unsubscribed: false})
       .exec(function (err, users) {
         if (err) return res.send(err)
         res.json(users)
