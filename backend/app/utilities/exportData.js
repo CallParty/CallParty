@@ -32,7 +32,8 @@ async function exportData(bot, email) {
 
   // upload the .json to google cloud
   const randomHash = Math.random(0, 1000000)
-  var tempFile = `/tmp/export-${randomHash}.json`
+  var tempFile = `/srv/tmp/export-${randomHash}.json`
+  logMessage(`++ writing export to ${tempFile}`)
   jsonfile.writeFileSync(tempFile, output)
   const destFileName = `exports/${randomHash}${bot}.json`
   await uploadFile(tempFile, destFileName)
