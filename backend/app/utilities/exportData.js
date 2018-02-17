@@ -50,3 +50,14 @@ async function exportData(bot, email) {
 module.exports = {
   exportData
 }
+
+if (require.main === module) {
+  const dotenv = require('dotenv')
+  dotenv.load()
+  const dbUri = process.env.MONGODB_URI || ''
+  mongoose.Promise = require('es6-promise')
+  mongoose.connect(dbUri)
+  exportData(process.env.DEFAULT_BOT, 'maxhfowler@gmail.com').catch(function(err) {
+    console.log(err)
+  })
+}
