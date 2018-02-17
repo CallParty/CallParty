@@ -1,7 +1,7 @@
-const nodemailer = require('nodemailer')
 const mustache = require('mustache')
 const path = require('path')
 const fs = require('fs')
+const sgMail = require('@sendgrid/mail')
 const { PROJECT_DIR } = require('../constants')
 
 
@@ -22,33 +22,14 @@ async function sendEmail(subject, templatePath, templateVars, destinationEmail) 
 
 function sendEmailHelper(subject, emailHTML, destinationEmail) {
   console.log(`++ sending email to ${destinationEmail}`)
-  // create reusable transporter object using the default SMTP transport
-  let transporter = nodemailer.createTransport({
-    name: 'CallParty',
-    host: 'just96.justhost.com',
-    port: 465,
-    secure: true, // true for 465, false for other ports
-    auth: {
-      user: process.env.FROM_EMAIL,
-      pass: process.env.EMAIL_PASSWORD
-    }
-  })
-
-  // setup email data with unicode symbols
-  let mailOptions = {
-    from: '"CallParty" <info@callparty.org>', // sender address
-    to: destinationEmail, // list of receivers
-    subject: subject, // Subject line
+  const msg = {
+    to: destinationEmail,
+    from: 'hi@callparty.org',
+    subject: subject,
     html: emailHTML
   }
-
-  // send mail with defined transport object
-  transporter.sendMail(mailOptions, (error) => {
-    if (error) {
-      throw new Error(error)
-    }
-    console.log(`++ successfully sent email to ${destinationEmail}`)
-  })
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+  sgMail.send(msg)
 }
 
 
