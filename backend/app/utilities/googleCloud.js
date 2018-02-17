@@ -16,7 +16,6 @@ function uploadFile(srcFileName, destFileName) {
     console.log(`++ uploading ${srcFileName} to gcs://${GCLOUD_BUCKET_NAME}/${destFileName}`)
     bucket.upload(srcFileName, {destination: destFileName}, function (err) {
       if (!err) {
-        // "zebra.jpg" is now in your bucket.
         console.log(`++ successfully uploaded ${srcFileName} to gcs://${GCLOUD_BUCKET_NAME}/${destFileName}`)
         return resolve()
       } else {
@@ -50,12 +49,41 @@ function makeFilePublic(filePath) {
   })
 }
 
+function generateSignedUrlForFile(filePath) {
+  let gcs = storage({
+    projectId: process.env.GCLOUD_PROJECT,
+    keyFilename: GCLOUD_KEY_PATH
+  })
+
+  var bucket = gcs.bucket(GCLOUD_BUCKET_NAME)
+  const signedUrlptions = {
+    action: 'read',
+    expires: '02-18-2018',
+  }
+
+  // return promise for file upload
+  return new Promise(function(resolve, reject) {
+    console.log(`++ making signedUrl for ${filePath}`)
+    bucket.file(filePath)
+      .getSignedUrl(signedUrlptions)
+      .then(results => {
+        const url = results[0]
+        return resolve(url)
+      })
+      .catch(err => {
+        reject(err)
+      })
+  })
+}
+
 module.exports = {
   uploadFile,
   makeFilePublic,
+  generateSignedUrlForFile
 }
 
 if (require.main === module) {
   // uploadFile('/Users/maxfowler/Desktop/temp.txt', 'exports/temp.txt')
-  makeFilePublic('exports/temp.txt')
+  // makeFilePublic('exports/temp.txt')
+  generateSignedUrlForFile('exports/temp.txt')
 }

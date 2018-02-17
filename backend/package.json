@@ -36,6 +36,7 @@
     "mongodb": "^2.1.20",
     "mongoose": "^4.8.2",
     "monkii": "^1.2.0",
+    "mustache": "^2.3.0",
     "node-datetime": "^1.0.1",
     "node-slack": "0.0.7",
     "nodemailer": "^4.4.2",
