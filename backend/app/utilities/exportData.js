@@ -21,16 +21,13 @@ async function exportData(bot, email) {
   const representatives = await Reps.find({})
   const committees = await RepresentativeCommittee.find({})
   const subCommittees = await RepresentativeSubcommittee.find({})
-  // const output = {
-  //   userActions: userActions,
-  //   users: users,
-  //   campaignActions: campaignActions,
-  //   representatives: representatives,
-  //   committees: committees,
-  //   subCommittees: subCommittees
-  // }
   const output = {
-    users: users
+    userActions: userActions,
+    users: users,
+    campaignActions: campaignActions,
+    representatives: representatives,
+    committees: committees,
+    subCommittees: subCommittees
   }
 
   // upload the .json to google cloud
