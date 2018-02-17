@@ -66,7 +66,7 @@ async function startCallConversation(user, userConversation, representatives, ca
 function areYouReadyConvo(user) {
   // begin the conversation
   return botReply(user,
-    `Hi ${user.currentConvo.convoData.firstName}. We've got an issue that needs your action.`
+    `Hi ${user.currentConvo.convoData.firstName}. We've got an issue to call about.`
   )
   .then(() => {
     return botReply(user, `${user.currentConvo.convoData.issueMessage} ` +
@@ -164,7 +164,7 @@ function firstTimeAreYouReadyConvo(user) {
 async function firstTimeReadyResponseConvo(user, message) {
   if (!Object.values(ACTION_TYPE_PAYLOADS).includes(message.text)) {
     logMessage(`++ User responded to firstTimeReadyResponseConvo with unexpected message: ${message.text}`)
-    return botReply(user, `I'm sorry, I didn't understand that! Try choosing from one of the options above, or shoot us an email to talk to a person at ${user.bot.orgEmail}.`)
+    return botReply(user, `I'm sorry, I didn't understand that! Try choosing from one of the options above, or shoot us an email to talk to a person at ${user.bot.orgEmail}. You can also say 'stop' or 'unsubscribe' to stop receiving messages.`)
   }
 
   await UserAction.create({
@@ -190,7 +190,7 @@ async function firstTimeReadyResponseConvo(user, message) {
 async function readyResponseConvo(user, message) {
   if (!Object.values(ACTION_TYPE_PAYLOADS).includes(message.text)) {
     logMessage(`++ User responded to readyResponseConvo with unexpected message: ${message.text}`)
-    return botReply(user, `I'm sorry, I didn't understand that! Try choosing from one of the options above, or shoot us an email to talk to a person at ${user.bot.orgEmail}.`)
+    return botReply(user, `I'm sorry, I didn't understand that! Try choosing from one of the options above, or shoot us an email to talk to a person at ${user.bot.orgEmail}. You can also say 'stop' or 'unsubscribe' to stop receiving messages.`)
   }
 
   await UserAction.create({
@@ -211,7 +211,7 @@ async function readyResponseConvo(user, message) {
       When you call:
 
       \u2022 Be sure to say you're a constituent calling about ${user.currentConvo.convoData.issueSubject}
-      \u2022 Let them know "I'd like ${representative.repTitle} to ${user.currentConvo.convoData.issueTask}"
+      \u2022 Let them know you'd like ${representative.repTitle} to ${user.currentConvo.convoData.issueTask}
       \u2022 Share any personal feelings or stories you have on the issue
       \u2022 Answer any questions the staffer has, and be friendly!
     `
@@ -220,7 +220,7 @@ async function readyResponseConvo(user, message) {
       Great! You'll be calling ${user.currentConvo.convoData.representatives.length} Members of Congress. You'll either talk to a staffer or leave a voicemail. When you call:
 
       \u2022 Be sure to say you're a constituent calling about ${user.currentConvo.convoData.issueSubject}
-      \u2022 Let them know you'd like them to "${user.currentConvo.convoData.issueTask}"
+      \u2022 Let them know you'd like them to ${user.currentConvo.convoData.issueTask}
       \u2022 Share any personal feelings or stories you have on the issue
       \u2022 Answer any questions the staffer has, and be friendly!
 
@@ -519,7 +519,7 @@ function somethingWentWrongResponse(user) {
 async function howDidItGoResponseConvo(user, message) {
   if (!Object.values(ACTION_TYPE_PAYLOADS).includes(message.text)) {
     logMessage(`++ User responded to howDidItGoResponseConvo with unexpected message: ${message.text}`)
-    return botReply(user, `I'm sorry, I didn't understand that! Try choosing from one of the options above, or shoot us an email to talk to a person at ${user.bot.orgEmail}.`)
+    return botReply(user, `I'm sorry, I didn't understand that! Try choosing from one of the options above, or shoot us an email to talk to a person at ${user.bot.orgEmail}. You can also say 'stop' or 'unsubscribe' to stop receiving messages.`)
   }
 
   await UserAction.create({
@@ -541,7 +541,7 @@ async function howDidItGoResponseConvo(user, message) {
 async function tryNextRepResponseConvo(user, message) {
   if (!Object.values(ACTION_TYPE_PAYLOADS).includes(message.text)) {
     logMessage(`++ User responded to tryNextRepResponseConvo with unexpected message: ${message.text}`)
-    return botReply(user, `I'm sorry, I didn't understand that! Try choosing from one of the options above, or shoot us an email to talk to a person at ${user.bot.orgEmail}.`)
+    return botReply(user, `I'm sorry, I didn't understand that! Try choosing from one of the options above, or shoot us an email to talk to a person at ${user.bot.orgEmail}. You can also say 'stop' or 'unsubscribe' to stop receiving messages.`)
   }
 
   await UserAction.create({
