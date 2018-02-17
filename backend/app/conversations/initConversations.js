@@ -22,7 +22,7 @@ async function initConvos(campaignAction, io) {
 
   // make an initial log statement to indicate we are about to start conversations for this campaignAction
   await logMessage(
-    `++++ [${campaignAction.botId}] initialize conversations for ${campaignAction.type}: ${campaignAction.title} (${campaignAction._id})`
+    `++++ [${campaignAction.botId}] initialize conversations for ${campaignAction.type}: ${campaignAction.label} (${campaignAction._id})`
   )
 
   // save that the campaignAction is sending
@@ -79,7 +79,7 @@ async function initConvos(campaignAction, io) {
   }
 
   // log completion to slack
-  await logMessage(`++++ [${campaignAction.botId}] finished initializing conversations for ${campaignAction.type}: ${campaignAction.title} (${campaignAction._id})`)
+  await logMessage(`++++ [${campaignAction.botId}] finished initializing conversations for ${campaignAction.type}: ${campaignAction.label} (${campaignAction._id})`)
 }
 
 async function emitCampaignAction(campaignAction, io) {

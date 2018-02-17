@@ -9,6 +9,7 @@ import { UsersPage } from './UsersPage'
 import NewCampaignUpdate from './NewCampaignUpdate'
 import NewCampaignCall from './NewCampaignCall'
 import CampaignActionDetail from './CampaignActionDetail'
+import EditCampaignAction from './EditCampaignAction'
 import RequireAuthenticationContainer from './RequireAuthenticationContainer'
 import Login from './Login'
 import API from './helpers/API'
@@ -165,6 +166,7 @@ class App extends Component {
               <Route path=":id">
                 <IndexRoute component={Campaign} />
                 <Route path="actions/:actionId" component={CampaignActionDetail} />
+                <Route path="actions/:actionId/edit" component={EditCampaignAction} />
               </Route>
               <Route path=":id/call/new" component={NewCampaignCall} />
               <Route path=":id/update/new" component={NewCampaignUpdate} />
