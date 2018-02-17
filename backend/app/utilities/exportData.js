@@ -35,12 +35,13 @@ async function exportData(bot, email) {
   var tempFile = `/srv/tmp/export-${randomHash}.json`
   logMessage(`++ writing export to ${tempFile}`)
   jsonfile.writeFileSync(tempFile, output)
+  logMessage(`++ successfully wrote file`)
   const destFileName = `exports/${randomHash}${bot}.json`
   await uploadFile(tempFile, destFileName)
-  console.log('++ upload complete')
+  logMessage('++ upload complete')
   const dataLink = await generateSignedUrlForFile(destFileName)
-  console.log(`++ signed URL at ${dataLink}`)
-  console.log('++ deleting temp file')
+  logMessage(`++ signed URL at ${dataLink}`)
+  logMessage('++ deleting temp file')
   fs.unlink(tempFile)
 
   // send an email with a link
