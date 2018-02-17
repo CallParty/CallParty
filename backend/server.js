@@ -53,6 +53,7 @@ const unauthenticatedPaths = [
   '/api/webhook',
   '/api/error',
   '/api/slack',
+  '/api/email',
   '/api/upload_ssl_certs',
 ]
 if (process.env.DEBUG_ENDPOINTS === 'true') {

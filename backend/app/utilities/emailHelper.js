@@ -8,7 +8,7 @@ const { PROJECT_DIR } = require('../constants')
 async function renderTemplateAsEmail(templatePath, emailVars) {
   const templateDir = path.join(PROJECT_DIR, 'app/templates')
   const fullTemplatePath = path.join(templateDir, templatePath)
-  const templateData = await fs.readFileSync(fullTemplatePath)
+  const templateData = fs.readFileSync(fullTemplatePath)
   const renderedTemplate = mustache.render(templateData.toString(), emailVars)
   return renderedTemplate
 }

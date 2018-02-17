@@ -1,5 +1,6 @@
 const { handleMessage, handleEcho } = require('../utilities/listener')
 const { logMessage, captureException } = require('../utilities/logHelper')
+const { sendEmail } = require('../utilities/emailHelper')
 const google = require('googleapis')
 const path = require('path')
 const fs = require('fs')
@@ -57,6 +58,12 @@ module.exports = function (apiRouter) {
   apiRouter.get('/slack', function (req, res) {
     logMessage('++ slack test')
     res.send('slack test')
+  })
+
+  apiRouter.get('/email', function (req, res) {
+    logMessage('++ email test')
+    sendEmail('CallParty Test Email', 'test.html', {test: 'test variable'}, 'maxhfowler@gmail.com')
+    res.send('email test')
   })
 
   apiRouter.post('/upload_ssl_certs', async function (req, res) {
