@@ -1,4 +1,5 @@
 var storage = require('@google-cloud/storage')
+const moment = require('moment')
 
 const { GCLOUD_KEY_PATH, GCLOUD_BUCKET_NAME } = require('../constants')
 
@@ -56,9 +57,13 @@ function generateSignedUrlForFile(filePath) {
   })
 
   var bucket = gcs.bucket(GCLOUD_BUCKET_NAME)
+  var now = moment()
+  const expirationDate = now.add(2, 'days')
+  const stringifiedExpirationDate = expirationDate.format('MM-DD-YYYY')
+  console.log(stringifiedExpirationDate)
   const signedUrlptions = {
     action: 'read',
-    expires: '02-18-2018',
+    expires: stringifiedExpirationDate,
   }
 
   // return promise for file upload
