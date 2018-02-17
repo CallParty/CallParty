@@ -2,8 +2,8 @@ require('any-promise/register/es6-promise')
 const Promise = require('any-promise')
 const mongoose = require('mongoose')
 const { logMessage } = require('../utilities/logHelper')
-const { uploadFile, makeFilePublic, generateSignedUrlForFile } = require('./googleCloud')
-const { sendEmail, sendEmailHelper } = require('./emailHelper')
+const { uploadFile, generateSignedUrlForFile } = require('./googleCloud')
+const { sendEmail } = require('./emailHelper')
 var jsonfile = require('jsonfile')
 const fs = require('fs')
 const { CampaignAction, User, UserAction, Reps, RepresentativeCommittee, RepresentativeSubcommittee } = require('../models')
@@ -43,7 +43,6 @@ async function exportData(bot, email) {
   fs.unlink(tempFile)
 
   // send an email with a link
-  // TODO: generate temporary link to google cloud document
   sendEmail('CallParty Export Complete', 'dataEmail.html', {dataLink: dataLink}, email)
 }
 

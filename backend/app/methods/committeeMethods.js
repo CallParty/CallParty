@@ -30,7 +30,7 @@ function insertCommittees() {
       return Promise.all([
         downloadCommitteeYamlFile(), downloadCommitteeMembershipYamlFile()
       ])
-      .then(loadCommitteesFromFiles)
+        .then(loadCommitteesFromFiles)
     })
 }
 

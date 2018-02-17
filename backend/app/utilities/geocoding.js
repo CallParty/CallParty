@@ -18,23 +18,23 @@ function getStateAndCongressionalDistrictFromAddress(address) {
       resolve(response)
     })
   })
-  .then(function(response) {
-    return JSON.parse(response)
-  })
-  .then(function(geocodingResponse) {
-    if (!geocodingResponse.results.length) {
-      throw new Error('No geocoding results found.')
-    }
-    var result = geocodingResponse.results[0]
+    .then(function(response) {
+      return JSON.parse(response)
+    })
+    .then(function(geocodingResponse) {
+      if (!geocodingResponse.results.length) {
+        throw new Error('No geocoding results found.')
+      }
+      var result = geocodingResponse.results[0]
 
-    // for more details on the values of congressional_district and state_legislative_district,
-    // see https://geocod.io/docs/#fields
-    return {
-      state: result.address_components.state,
-      congressional_district: result.fields.congressional_district,
-      state_legislative_districts: result.fields.state_legislative_districts
-    }
-  })
+      // for more details on the values of congressional_district and state_legislative_district,
+      // see https://geocod.io/docs/#fields
+      return {
+        state: result.address_components.state,
+        congressional_district: result.fields.congressional_district,
+        state_legislative_districts: result.fields.state_legislative_districts
+      }
+    })
 }
 
 module.exports = {

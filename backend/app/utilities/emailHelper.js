@@ -43,7 +43,7 @@ function sendEmailHelper(subject, emailHTML, destinationEmail) {
   }
 
   // send mail with defined transport object
-  transporter.sendMail(mailOptions, (error, info) => {
+  transporter.sendMail(mailOptions, (error) => {
     if (error) {
       throw new Error(error)
     }

@@ -65,23 +65,23 @@ function updateCommitteesFromYaml() {
       },
       { upsert: true, new: true, setDefaultsOnInsert: true }
     )
-    .exec()
-    .then(function(committee) {
-      console.log(`Adding subcommittees to the db for comittee: ${committee.name}`)
+      .exec()
+      .then(function(committee) {
+        console.log(`Adding subcommittees to the db for comittee: ${committee.name}`)
 
-      return Promise.all((committeeFromYaml.subcommittees || []).map(function(subcommittee) {
-        return Subcommittee.findOneAndUpdate(
-          { thomasId: subcommittee.thomas_id, committee: committee._id },
-          {
-            name: subcommittee.name,
-            address: subcommittee.address,
-            phone: subcommittee.phone
-          },
-          { upsert: true, new: true, setDefaultsOnInsert: true }
-        ).exec()
-      }))
-      .then(() => committee)
-    })
+        return Promise.all((committeeFromYaml.subcommittees || []).map(function(subcommittee) {
+          return Subcommittee.findOneAndUpdate(
+            { thomasId: subcommittee.thomas_id, committee: committee._id },
+            {
+              name: subcommittee.name,
+              address: subcommittee.address,
+              phone: subcommittee.phone
+            },
+            { upsert: true, new: true, setDefaultsOnInsert: true }
+          ).exec()
+        }))
+          .then(() => committee)
+      })
   }))
 }
 
