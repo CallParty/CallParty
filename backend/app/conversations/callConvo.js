@@ -68,11 +68,9 @@ function areYouReadyConvo(user) {
   return botReply(user,
     `Hi ${user.currentConvo.convoData.firstName}. We've got an issue to call about.`
   )
+  .then(() => botReply(user, `${user.currentConvo.convoData.issueMessage} You can find out more about it here:`))
+  .then(() => botReply(user, `${user.currentConvo.convoData.issueLink}`))
   .then(() => {
-    return botReply(user, `${user.currentConvo.convoData.issueMessage} ` +
-      `You can find out more about it here ${user.currentConvo.convoData.issueLink}.`
-    )
-  }).then(() => {
     const msg_attachment = {
       attachment: {
         type: 'template',
@@ -106,11 +104,8 @@ function firstTimeIntroConvo(user) {
   return botReply(user,
     `Hi ${user.currentConvo.convoData.firstName}. We've got an issue to call about.`
   )
-  .then(() => {
-    return botReply(user, `${user.currentConvo.convoData.issueMessage} ` +
-      `You can find out more about it here ${user.currentConvo.convoData.issueLink}.`
-    )
-  })
+  .then(() => botReply(user, `${user.currentConvo.convoData.issueMessage} You can find out more about it here: `))
+  .then(() => botReply(user, `${user.currentConvo.convoData.issueLink}`))
   .then(() => {
     return botReply(user, `It’s your first call so we’ll walk through the steps: When you call your member's office, you'll either talk to a staffer or leave a voicemail. The staffer is there to listen to you and pass your concerns on to the Member of Congress. They're your buddy (and you'll probably talk to them again) so be friendly.`)
   })
