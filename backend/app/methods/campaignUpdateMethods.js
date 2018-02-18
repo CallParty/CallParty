@@ -17,5 +17,5 @@ function getCampaignUpdate(req, res) {
 
 module.exports = {
   getCampaignUpdateDetail,
-  getCampaignUpdate,
+  getCampaignUpdate
 }

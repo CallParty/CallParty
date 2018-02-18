@@ -4,6 +4,7 @@ const campaignCallMethods = require('../methods/campaignCallMethods')
 const { setUserCallback } = require('../methods/userMethods')
 const adminMethods = require('../methods/adminMethods')
 const campaignUpdateMethods = require('../methods/campaignUpdateMethods')
+const campaignActionMethods = require('../methods/campaignActionMethods')
 const { getDistricts } = require('../utilities/getDistricts')
 const { logMessage } = require('../utilities/logHelper')
 const { downloadRepsYamlFile, loadRepsFromFile } = require('../utilities/representatives')
@@ -24,26 +25,8 @@ module.exports = function(apiRouter) {
   apiRouter.post('/campaigns', campaignMethods.newCampaign)
   apiRouter.post('/campaigns/:id/action/new', campaignMethods.newCampaignAction)
 
-  apiRouter.get('/campaign_actions/:id', async function (req, res) {
-
-    // get bot from currently logged in admin
-    const bot = req.adminUser.bot
-
-    // process request
-    const {type} = await CampaignAction.findOne({_id: req.params.id, bot: bot}).select({type: 1, _id: 0}).exec()
-    if (!type) {
-      return res.status(404).json({error: 'CampaignAction not found.'})
-    }
-
-    if (type === 'CampaignCall') {
-      return campaignCallMethods.getCampaignCallDetail(req, res)
-    } else if (type === 'CampaignUpdate') {
-      return campaignUpdateMethods.getCampaignUpdateDetail(req, res)
-    }
-    else {
-      throw new Error('Invalid action type')
-    }
-  })
+  apiRouter.get('/campaign_actions/:id', campaignActionMethods.getCampaignAction)
+  apiRouter.put('/campaign_actions/:id/edit', campaignActionMethods.editCampaignAction)
 
   apiRouter.get('/clone_action/:id', async function (req, res) {
 
