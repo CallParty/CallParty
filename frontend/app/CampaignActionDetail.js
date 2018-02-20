@@ -233,6 +233,8 @@ export default class CampaignActionDetail extends React.Component {
       CampaignUpdate: 'Update'
     }
 
+    const sent = this.state.action.status === 'sent'
+
     const userConversations = this.state.action.userConversations
     let userConvos = null
     let numSendTo = 0
@@ -253,7 +255,12 @@ export default class CampaignActionDetail extends React.Component {
       <Loader loaded={this.state.loaded}>
         <div className="campaign-action-detail">
           <div className="meta">
-            <h1>{this.state.action.label}</h1>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <h1>{this.state.action.label}</h1>
+              {!sent && <button className="red" onClick={() => this.props.router.push(`/${this.props.params.id}/actions/${this.props.params.actionId}/edit`)}>
+                Edit
+              </button>}
+            </div>
             <h4>Created at {createdAt}</h4>
           </div>
 
