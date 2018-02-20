@@ -13,6 +13,7 @@ class SettingsNav extends Component {
         <div className="settings-nav">
           <Link className="settings-link" to="/settings/password">Password</Link>
           <Link className="settings-link" to="/settings/users">Users</Link>
+          <Link className="settings-link" to="/settings/export">Export</Link>
         </div>
       </div>
     )

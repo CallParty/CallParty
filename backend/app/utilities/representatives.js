@@ -59,7 +59,7 @@ async function loadRepsFromFile() {
       },
       { upsert: true, new: true, setDefaultsOnInsert: true }
     )
-    .exec()
+      .exec()
   }))
 }
 

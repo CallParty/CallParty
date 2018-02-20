@@ -105,8 +105,7 @@ function finishSignup1Convo(user) {
     `including contact info for your rep and how to talk to them. ` +
     `I'll also send updates and outcomes on the issues. Have a nice day, and talk soon!`
   )
-
-  .then(() => setUserCallback(user, null))
+    .then(() => setUserCallback(user, null))
 }
 
 module.exports = {

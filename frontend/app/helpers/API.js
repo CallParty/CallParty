@@ -175,4 +175,8 @@ export default {
   updateReps: function(cb = response => response) {
     return post('/api/representatives/refresh', {}).then(cb)
   },
+
+  exportData: function(email, cb = response => response) {
+    return post('/api/exportData', {email: email}).then(cb)
+  },
 }

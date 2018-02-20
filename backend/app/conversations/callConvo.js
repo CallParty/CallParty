@@ -91,11 +91,10 @@ function areYouReadyConvo(user) {
           ]
         }
       }
-    }
-    return botReply(user, msg_attachment).then(() =>
-      setUserCallback(user, '/calltoaction/readyResponse')
-    )
-  })
+      return botReply(user, msg_attachment).then(() =>
+        setUserCallback(user, '/calltoaction/readyResponse')
+      )
+    })
 }
 
 function firstTimeIntroConvo(user) {
@@ -122,38 +121,38 @@ function firstTimeAreYouReadyConvo(user) {
       }
     }
   })
-  .then(() => botReply(user, stripIndent`
+    .then(() => botReply(user, stripIndent`
     Awesome. When you call, you're going to tell them your name, that you're a constituent (because you only want to be calling your own Members of Congress), and why you're calling. We'll give you a specific action to tell your representative to take, and feel free to share any personal feelings or stories so they understand why it matters to you.
   `))
-  .then(() => botReply(user, stripIndent`
+    .then(() => botReply(user, stripIndent`
      The staffer will probably ask for your address or phone number to confirm you're a constituent. Thank them, and that's it!
   `))
-  .then(() => {
-    const msg_attachment = {
-      attachment: {
-        type: 'template',
-        payload: {
-          template_type: 'button',
-          text: `Ready to make your first call? (You can come back later if you're busy)`,
-          buttons: [
-            {
-              type: 'postback',
-              title: 'Yes send me the info',
-              payload: ACTION_TYPE_PAYLOADS.isReady
-            },
-            {
-              type: 'postback',
-              title: "I don't want to call",
-              payload: ACTION_TYPE_PAYLOADS.noCall
-            }
-          ]
+    .then(() => {
+      const msg_attachment = {
+        attachment: {
+          type: 'template',
+          payload: {
+            template_type: 'button',
+            text: `Ready to make your first call? (You can come back later if you're busy)`,
+            buttons: [
+              {
+                type: 'postback',
+                title: 'Yes send me the info',
+                payload: ACTION_TYPE_PAYLOADS.isReady
+              },
+              {
+                type: 'postback',
+                title: "I don't want to call",
+                payload: ACTION_TYPE_PAYLOADS.noCall
+              }
+            ]
+          }
         }
       }
-    }
-    return botReply(user, msg_attachment).then(() =>
-      setUserCallback(user, '/calltoaction/firstTimeReadyResponse')
-    )
-  })
+      return botReply(user, msg_attachment).then(() =>
+        setUserCallback(user, '/calltoaction/firstTimeReadyResponse')
+      )
+    })
 }
 
 async function firstTimeReadyResponseConvo(user, message) {
@@ -172,7 +171,7 @@ async function firstTimeReadyResponseConvo(user, message) {
   if (message.text === ACTION_TYPE_PAYLOADS.isReady) {
     const representative = user.currentConvo.convoData.representatives[0]
     return botReply(user, `Here’s your first script and the information for your representative: "Hello, my name is ${user.currentConvo.convoData.firstName} and I’m a constituent of ${representative.repTitle}. I’m calling about ${user.currentConvo.convoData.issueSubject}. I’d like to ask that ${representative.repTitle} ${user.currentConvo.convoData.issueTask}. Thanks for listening, have a good day!"`)
-    .then(() => sendRepCard(user, message))
+      .then(() => sendRepCard(user, message))
   }
   else if (message.text === ACTION_TYPE_PAYLOADS.noCall) {
     return noCallConvo(user, message)
@@ -275,8 +274,8 @@ function sendRepCard(user) {
       }
     }
   })
-  .then(() => botReply(user, `Give me a thumbs up once you've tried to call!`))
-  .then(() => setUserCallback(user, `/calltoaction/howDidItGo`))
+    .then(() => botReply(user, `Give me a thumbs up once you've tried to call!`))
+    .then(() => setUserCallback(user, `/calltoaction/howDidItGo`))
 }
 
 function noCallConvo(user) {
@@ -334,82 +333,82 @@ function noNextRepResponse(user, message, numCalls) {
       }
     }
   })
-  .then(() => {
-    // if the user is the first caller
-    if (numCalls <= 1) {
-      return botReply(user, stripIndent`
+    .then(() => {
+      // if the user is the first caller
+      if (numCalls <= 1) {
+        return botReply(user, stripIndent`
         Congrats, you're the first caller on this issue! I'll reach out with updates and an outcome on this issue. Thanks for your work!
       `)
-    }
-    // if the user is only person who has made calls, then it's weird to tell them how many calls so far so remove that part
-    else if (numCalls === user.currentConvo.convoData.numUserCalls) {
-      return botReply(user, stripIndent`
+      }
+      // if the user is only person who has made calls, then it's weird to tell them how many calls so far so remove that part
+      else if (numCalls === user.currentConvo.convoData.numUserCalls) {
+        return botReply(user, stripIndent`
         Woo thanks for your work! We'll reach out when we have updates and an outcome on the issue.
       `)
-    }
-    // otherwise tell them how many calls have been made so far
-    else {
-      return botReply(user, stripIndent`
+      }
+      // otherwise tell them how many calls have been made so far
+      else {
+        return botReply(user, stripIndent`
         Woo thanks for your work! We've had ${numCalls} calls so far. We'll reach out when we have updates and an outcome on the issue.
       `)
-    }
-  }).then(() => {
-    // if callparty then send share link
-    if (user.bot.botType === 'callparty') {
-      const share_msg = {
-        attachment: {
-          type: 'template',
-          payload: {
-            template_type: 'generic',
-            elements: [{
-              title: 'Share this issue with your friends to make it a party',
-              subtitle: user.currentConvo.convoData.issueSubject,
-              image_url: 'https://storage.googleapis.com/callparty/cpshare.jpg',
-              buttons: [
-                {
-                  type: 'element_share',
-                  share_contents: {
-                    attachment: {
-                      type: 'template',
-                      payload: {
-                        template_type: 'generic',
-                        elements: [{
-                          title: 'Call your Members of Congress and join the CallParty!',
-                          subtitle: user.currentConvo.convoData.issueSubject,
-                          image_url: 'https://storage.googleapis.com/callparty/cpshare.jpg',
-                          default_action: {
-                            type: 'web_url',
-                            url: user.currentConvo.convoData.shareLink
-                          },
-                          buttons: [
-                            {
+      }
+    }).then(() => {
+      // if callparty then send share link
+      if (user.bot.botType === 'callparty') {
+        const share_msg = {
+          attachment: {
+            type: 'template',
+            payload: {
+              template_type: 'generic',
+              elements: [{
+                title: 'Share this issue with your friends to make it a party',
+                subtitle: user.currentConvo.convoData.issueSubject,
+                image_url: 'https://storage.googleapis.com/callparty/cpshare.jpg',
+                buttons: [
+                  {
+                    type: 'element_share',
+                    share_contents: {
+                      attachment: {
+                        type: 'template',
+                        payload: {
+                          template_type: 'generic',
+                          elements: [{
+                            title: 'Call your Members of Congress and join the CallParty!',
+                            subtitle: user.currentConvo.convoData.issueSubject,
+                            image_url: 'https://storage.googleapis.com/callparty/cpshare.jpg',
+                            default_action: {
                               type: 'web_url',
-                              url: user.currentConvo.convoData.shareLink,
-                              title: 'View More Info'
-                            }
-                          ]
-                        }]
+                              url: user.currentConvo.convoData.shareLink
+                            },
+                            buttons: [
+                              {
+                                type: 'web_url',
+                                url: user.currentConvo.convoData.shareLink,
+                                title: 'View More Info'
+                              }
+                            ]
+                          }]
+                        }
                       }
                     }
-                  }
-                },
-                {
-                  type: 'web_url',
-                  url: user.currentConvo.convoData.shareLink,
-                  title: 'View More Info'
-                },
-              ]
-            }]
+                  },
+                  {
+                    type: 'web_url',
+                    url: user.currentConvo.convoData.shareLink,
+                    title: 'View More Info'
+                  },
+                ]
+              }]
+            }
           }
         }
+        return botReply(user, share_msg).then(() => setUserCallback(user, null))
       }
-      return botReply(user, share_msg).then(() => setUserCallback(user, null))
-    }
-    // no share fo gov track
-    else {
-      return setUserCallback(user, null)
-    }
-  })
+      // no share fo gov track
+      else {
+        return setUserCallback(user, null)
+      }
+    })
 }
 
 function hasNextRepResponse(user, message, numCalls) {
@@ -480,33 +479,33 @@ function somethingWentWrongResponse(user) {
         return botReply(user, stripIndent`
           We're sorry to hear that, but good on you for trying!
         `)
-        .then(() => botReply(user, {
-          attachment: {
-            type: 'template',
-            payload: {
-              template_type: 'button',
-              text: ' Do you want to try your next member?',
-              buttons: [
-                {
-                  type: 'postback',
-                  title: 'Yes',
-                  payload: ACTION_TYPE_PAYLOADS.tryNextRep
-                },
-                {
-                  type: 'postback',
-                  title: 'No',
-                  payload: ACTION_TYPE_PAYLOADS.noCall
-                }
-              ]
+          .then(() => botReply(user, {
+            attachment: {
+              type: 'template',
+              payload: {
+                template_type: 'button',
+                text: ' Do you want to try your next member?',
+                buttons: [
+                  {
+                    type: 'postback',
+                    title: 'Yes',
+                    payload: ACTION_TYPE_PAYLOADS.tryNextRep
+                  },
+                  {
+                    type: 'postback',
+                    title: 'No',
+                    payload: ACTION_TYPE_PAYLOADS.noCall
+                  }
+                ]
+              }
             }
-          }
-        }))
-        .then(() => setUserCallback(user, '/calltoaction/tryNextRepResponse'))
+          }))
+          .then(() => setUserCallback(user, '/calltoaction/tryNextRepResponse'))
       } else {
         return botReply(user,
           'We’re sorry to hear that, but good on you for trying! Want to tell us about it?'
         )
-        .then(() => setUserCallback(user, '/calltoaction/thanksForSharing'))
+          .then(() => setUserCallback(user, '/calltoaction/thanksForSharing'))
       }
     })
 }

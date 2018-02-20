@@ -35,10 +35,12 @@ class UsersPage extends Component {
     super(props)
     this.state = {
       users: [],
+      usersById: {},
       loaded: false
     }
 
     this.clickUserOverride = this.clickUserOverride.bind(this)
+    this.updateUsersState = this.updateUsersState.bind(this)
   }
 
   static get contextTypes() {
@@ -47,10 +49,23 @@ class UsersPage extends Component {
 
   componentWillMount() {
     API.users(data => {
+      this.updateUsersState(data)
       this.setState({
-        users: data,
         loaded: true
       })
+    })
+  }
+
+  updateUsersState(users) {
+    const usersById = {}
+    let user
+    for (var i = 0; i < users.length; ++i) {
+      user = users[i]
+      usersById[user.id] = user
+    }
+    this.setState({
+      users: users,
+      usersById: usersById
     })
   }
 
@@ -61,6 +76,11 @@ class UsersPage extends Component {
       newOverrideValue = 0
       successMessage = 'Override Removed'
     }
+    let usersById = this.state.usersById
+    let userData = usersById[user.id]
+    userData.override = newOverrideValue
+    usersById[user.id] = userData
+    this.setState({usersById: usersById})
     API.setOverride(
       user.id,
       newOverrideValue,
@@ -72,13 +92,14 @@ class UsersPage extends Component {
           // redirect to CampaignActionDetail page for newly created CampaignAction
           onRemove: () => {}
         })
-        this.setState({users: data})
+        this.updateUsersState(data)
       })
   }
 
   render() {
     const users = this.state.users.sort(compareUsers).map(user => {
-      return <UserItem key={user.id} onClick={this.clickUserOverride} {...user} />
+      let userData = this.state.usersById[user.id]
+      return <UserItem key={user.id} onClick={this.clickUserOverride} {...userData} />
     })
 
     return (

@@ -130,7 +130,7 @@ campaignActionSchema.methods.getMatchingUsers = async function() {
 
 campaignActionSchema.methods.getMatchingUsersWithRepresentatives = function () {
 
-   // filter reps based on any rep filtering criteria (e.g. belongs to X committee)
+  // filter reps based on any rep filtering criteria (e.g. belongs to X committee)
   const repsPromise = this.getMatchingRepresentatives()
 
   // also filter users based on any user filtering criteria (e.g. user belongs to X district)
@@ -138,24 +138,24 @@ campaignActionSchema.methods.getMatchingUsersWithRepresentatives = function () {
 
   // we take all matchingReps and matchingUsers and send to any user in matchingUsers who has a rep in matchingReps
   return Promise.all([repsPromise, usersPromise])
-  .then(function([matchingRepresentatives, users]) {
-    const repsByUser = users.reduce(function(repsByUser, user) {
-      for (let rep of matchingRepresentatives) {
-        const matchesSenator = (rep.legislator_type === 'sen' && rep.state === user.state)
-        const matchesHouseRep = (
-          rep.legislator_type === 'rep' &&
-          rep.district === user.district
-        )
-        if (matchesSenator || matchesHouseRep) {
-          repsByUser[user._id] = repsByUser[user._id] || { user, representatives: [] }
-          repsByUser[user._id].representatives.push(rep)
+    .then(function([matchingRepresentatives, users]) {
+      const repsByUser = users.reduce(function(repsByUser, user) {
+        for (let rep of matchingRepresentatives) {
+          const matchesSenator = (rep.legislator_type === 'sen' && rep.state === user.state)
+          const matchesHouseRep = (
+            rep.legislator_type === 'rep' &&
+            rep.district === user.district
+          )
+          if (matchesSenator || matchesHouseRep) {
+            repsByUser[user._id] = repsByUser[user._id] || { user, representatives: [] }
+            repsByUser[user._id].representatives.push(rep)
+          }
         }
-      }
-      return repsByUser
-    }, {})
+        return repsByUser
+      }, {})
 
-    return Object.values(repsByUser)
-  })
+      return Object.values(repsByUser)
+    })
 }
 
 campaignActionSchema.virtual('botId').get(function() {

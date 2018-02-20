@@ -1,6 +1,9 @@
   - name: ensure log directory
     action: file dest={{log_dir}} state=directory
 
+  - name: ensure tmp directory
+    action: file dest={{tmp_dir}} state=directory
+
   - name: make ssl directory
     action: file dest=/etc/nginx/ssl state=directory
 
