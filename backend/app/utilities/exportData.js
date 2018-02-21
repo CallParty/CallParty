@@ -14,13 +14,29 @@ mongoose.Promise = Promise
 async function exportData(bot, email) {
   logMessage(`++ exporting data for ${bot}`)
 
-  // create an object with the data we need
-  const userActions = await UserAction.find({bot: bot})
+  // get users
   const users = await User.find({bot: bot, unsubscribed: false})
+
+  // get userActions for those users
+  let userActionQuery = UserAction.aggregate()
+    .lookup({ from: 'users', localField: 'user', foreignField: '_id', as: 'userInfo' })
+    .unwind({ path: '$userInfo', preserveNullAndEmptyArrays: true })
+  const matchParams = {
+    'userInfo.bot': {$eq: bot},
+    'userInfo.unsubscribed': {$eq: false}
+  }
+  userActionQuery = userActionQuery.match(matchParams)
+  const userActions = await userActionQuery.exec()
+
+  // get campaignActions
   const campaignActions = await CampaignAction.find({bot: bot})
+
+  // get reps and committees
   const representatives = await Reps.find({})
   const committees = await RepresentativeCommittee.find({})
   const subCommittees = await RepresentativeSubcommittee.find({})
+
+  // return the whole output
   const output = {
     userActions: userActions,
     users: users,
