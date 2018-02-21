@@ -5,27 +5,21 @@ import API from './helpers/API'
 
 
 function compareUsers(a, b) {
-  if (a.override > b.override) {
-    return -1
-  } else if (b.override > a.override) {
-    return 1
-  } else {
-    if (a.firstName === b.firstName) {
-      if (a.lastName > b.lastName) {
-        return 1
-      } else if (a.lastName === b.lastName) {
-        return 0
-      } else {
-        return -1
-      }
+  if (a.firstName === b.firstName) {
+    if (a.lastName > b.lastName) {
+      return 1
+    } else if (a.lastName === b.lastName) {
+      return 0
     } else {
-      if (a.firstName > b.firstName) {
-        return 1
-      } else if (a.firstName === b.firstName) {
-        return 0
-      } else {
-        return -1
-      }
+      return -1
+    }
+  } else {
+    if (a.firstName > b.firstName) {
+      return 1
+    } else if (a.firstName === b.firstName) {
+      return 0
+    } else {
+      return -1
     }
   }
 }
