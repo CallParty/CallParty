@@ -1,6 +1,7 @@
 var path = require('path')
 var webpack = require('webpack')
 var ExtractTextPlugin = require('extract-text-webpack-plugin')
+var CopyWebpackPlugin = require('copy-webpack-plugin')
 
 
 const params = {}
@@ -12,6 +13,10 @@ else {
   params.BUILD_DIR = path.resolve(__dirname, 'build/staging')
   params.SENTRY_FRONTEND_DSN = 'https://4bac552fe9ba4a62a1cc7dffed3ac1d9@sentry.io/138146'
 }
+
+const CopyWebpackPluginConfig = new CopyWebpackPlugin([
+  { from: 'public', to: 'public' },
+])
 
 module.exports = {
   entry: ['react-hot-loader/patch', 'babel-polyfill', 'whatwg-fetch', './main'],
@@ -43,6 +48,7 @@ module.exports = {
     new webpack.DefinePlugin({
       'process.env.SENTRY_FRONTEND_DSN ': params.SENTRY_FRONTEND_DSN,
     }),
+    CopyWebpackPluginConfig
   ],
   resolve: {
     extensions: ['', '.js', '.sass'],
