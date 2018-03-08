@@ -103,7 +103,23 @@ async function editCampaignAction(req, res) {
   return res.json(campaignAction)
 }
 
+async function deleteCampaignAction(req, res) {
+
+  // get bot from currently logged in admin
+  const bot = req.adminUser.bot
+  const campaignActionId = req.params.id
+
+  // process request
+  const campaignAction = await CampaignAction.findOne({_id: campaignActionId, bot: bot}).exec()
+  campaignAction.deleted = true
+  await campaignAction.save()
+
+  // return response
+  return res.json(campaignAction)
+}
+
 module.exports = {
   getCampaignAction,
+  deleteCampaignAction,
   editCampaignAction
 }

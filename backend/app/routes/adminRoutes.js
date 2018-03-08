@@ -27,6 +27,7 @@ module.exports = function(apiRouter) {
   apiRouter.post('/campaigns/:id/action/new', campaignMethods.newCampaignAction)
 
   apiRouter.get('/campaign_actions/:id', campaignActionMethods.getCampaignAction)
+  apiRouter.delete('/campaign_actions/:id', campaignActionMethods.deleteCampaignAction)
   apiRouter.put('/campaign_actions/:id/edit', campaignActionMethods.editCampaignAction)
 
   apiRouter.get('/clone_action/:id', async function (req, res) {

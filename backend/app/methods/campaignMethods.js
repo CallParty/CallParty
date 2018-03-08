@@ -51,6 +51,7 @@ exports.getCampaign = function(req, res) {
     .findOne({ _id: req.params.id, bot: bot })
     .populate({
       path: 'campaignActions',
+      match: { deleted: { $ne: 'true' }}
     })
     .exec(function(err, campaign) {
       if (err) return res.send(err)

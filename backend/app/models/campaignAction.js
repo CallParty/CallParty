@@ -13,6 +13,7 @@ const CAMPAIGN_ACTION_STATUS = {
 
 const campaignActionSchema = new Schema({
   bot: { type: String, ref: 'Bot' }, // this should always be the same as associated Campaign, but storing here for convenience
+  deleted: { type: Boolean, default: false }, // set to true when the user account is archived/deleted
   label: String,
   createdAt: { type: Date, default: () => moment.utc().toDate() },
   sent: { type: Boolean, default: false },

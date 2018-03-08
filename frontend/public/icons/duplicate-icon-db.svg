@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="20px" height="24px" viewBox="0 0 20 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 43.2 (39069) - http://www.bohemiancoding.com/sketch -->
+    <title>Group 4</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <rect id="path-1" x="4" y="0" width="16" height="20"></rect>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Action" transform="translate(-974.000000, -1228.000000)">
+            <g id="Group-4" transform="translate(974.000000, 1228.000000)">
+                <rect id="Rectangle-3" stroke="#241F3D" stroke-width="2" x="1" y="5" width="14" height="18"></rect>
+                <g id="Rectangle-3">
+                    <use fill="#E9E9ED" fill-rule="evenodd" xlink:href="#path-1"></use>
+                    <rect stroke="#241F3D" stroke-width="2" x="5" y="1" width="14" height="18"></rect>
+                </g>
+                <path d="M12,8 L12,12" id="Line" stroke="#241F3D" stroke-width="2" stroke-linecap="square"></path>
+                <path d="M14.0710678,10 L10.0710678,10" id="Line" stroke="#241F3D" stroke-width="2" stroke-linecap="square"></path>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -3,6 +3,9 @@ import { Link, browserHistory } from 'react-router'
 import moment from 'moment'
 import Loader from 'react-loader'
 import API from './helpers/API'
+import Modal from 'react-modal'
+import ReactTooltip from 'react-tooltip'
+import { CONFIRMATION_MODAL_STYLE } from './helpers/constants'
 
 const DATE_FORMAT = 'h:mma on M/DD/YYYY'
 
@@ -25,6 +28,11 @@ class Campaigns extends Component {
     }
 
     this.viewCampaign = this.viewCampaign.bind(this)
+  }
+
+
+  static get contextTypes() {
+    return { notify: React.PropTypes.func.isRequired }
   }
 
   componentWillMount() {
@@ -112,7 +120,17 @@ class Campaign extends Component {
       campaignActions: [],
       title: '',
       loaded: false,
+      confirmationModalIsOpen: false
     }
+
+    this.closeConfirmationModal = this.closeConfirmationModal.bind(this)
+    this.openConfirmationModal = this.openConfirmationModal.bind(this)
+    this.deleteCampaignAction = this.deleteCampaignAction.bind(this)
+    this.clickDeleteCampaignAction = this.clickDeleteCampaignAction.bind(this)
+  }
+
+  static get contextTypes() {
+    return { notify: React.PropTypes.func.isRequired }
   }
 
   componentWillMount() {
@@ -126,6 +144,44 @@ class Campaign extends Component {
     return this.state.title || this.props.params.id
   }
 
+  deleteCampaignAction () {
+    this.closeConfirmationModal()
+    // remove this campaignAction from state
+    const campaignActions = this.state.campaignActions
+    const filteredActions = campaignActions.filter(action => action.id !== this.state.campaignToDelete.id)
+    this.setState({
+      campaignActions: filteredActions
+    })
+
+    // make call to API
+    const notifyCallback = () => {
+      this.context.notify({
+        message: 'Deleted Campaign Action',
+        level: 'success',
+        autoDismiss: 1,
+        onRemove: () => {}
+      })
+    }
+    return API.deleteCampaignAction(this.state.campaignToDelete.id).then(notifyCallback)
+  }
+
+  clickDeleteCampaignAction (ev, campaignAction) {
+    ev.preventDefault()
+    ev.stopPropagation()
+    this.openConfirmationModal(campaignAction)
+  }
+
+  closeConfirmationModal() {
+    this.setState({ confirmationModalIsOpen: false })
+  }
+
+  openConfirmationModal(campaignAction) {
+    this.setState({
+      confirmationModalIsOpen: true,
+      campaignToDelete: campaignAction
+    })
+  }
+
   render() {
     const createdAt = moment.utc(this.state.createdAt).local().format(DATE_FORMAT)
     const campaignActions = this.state.campaignActions.sort(compareCampaignActions).map((campaignAction, i) => {
@@ -134,6 +190,7 @@ class Campaign extends Component {
         num={i}
         campaignId={this.props.params.id}
         campaignActionId={campaignAction.id}
+        clickDeleteCampaignAction={this.clickDeleteCampaignAction}
         {...campaignAction}
       />
     })
@@ -141,6 +198,18 @@ class Campaign extends Component {
     return (
       <Loader loaded={this.state.loaded}>
         <div className="campaign">
+          <ReactTooltip effect="solid" place="top" wrapper="span" />
+          <Modal
+            isOpen={this.state.confirmationModalIsOpen}
+            style={CONFIRMATION_MODAL_STYLE}
+            contentLabel="Confirm"
+          >
+            <p style={{ marginBottom: '10px' }}>Are you sure you want to delete the campaign action {this.state.campaignToDelete  ? this.state.campaignToDelete.label : 'unknown'}?</p>
+            <div>
+              <button onClick={this.deleteCampaignAction} style={{ marginRight: '10px' }}>Yes</button>
+              <button onClick={this.closeConfirmationModal}>No</button>
+            </div>
+          </Modal>
           <div className="meta">
             <h1>Campaign: <span>{this.state.title}</span></h1>
             <p>Description: {this.state.description}</p>
@@ -161,7 +230,8 @@ class Campaign extends Component {
                   <th>Type</th>
                   <th>Label</th>
                   <th>Date Created</th>
-                  <th>Clone?</th>
+                  <th>Date Sent</th>
+                  <th>Actions</th>
                 </tr>
                 {campaignActions}
               </tbody>
@@ -180,6 +250,11 @@ const ACTION_TYPES = {
 
 function CampaignAction(props) {
   const createdAt = moment.utc(props.createdAt).local().format(DATE_FORMAT)
+  let sentAt = '-'
+  if (props.sentAt) {
+    sentAt = moment.utc(props.sentAt).local().format(DATE_FORMAT)
+  }
+
   const createDuplicateUrl = `/${props.campaignId}/${ACTION_TYPES[props.type]}/new?cloneId=${props.campaignActionId}`
   const redirectToCampaignActionPage = () => browserHistory.push(`/${props.campaignId}/actions/${props.campaignActionId}`)
 
@@ -189,7 +264,15 @@ function CampaignAction(props) {
       <td>{ACTION_TYPES[props.type]}</td>
       <td>{props.label}</td>
       <td>{createdAt}</td>
-      <td><Link to={createDuplicateUrl} onClick={e => e.stopPropagation()}>Clone</Link></td>
+      <td>{sentAt}</td>
+      <td>
+        <Link className="actionLink" to={createDuplicateUrl} onClick={e => e.stopPropagation()}>
+          <img data-tip="Duplicate" src="/public/icons/duplicate-icon-db.svg" />
+        </Link>
+        <a className="actionLink" onClick={e => props.clickDeleteCampaignAction(e, props)}>
+          <img data-tip="Delete" src="/public/icons/trash-icon-db.svg" />
+        </a>
+      </td>
     </tr>
   )
 }
