@@ -30,6 +30,11 @@ class Campaigns extends Component {
     this.viewCampaign = this.viewCampaign.bind(this)
   }
 
+
+  static get contextTypes() {
+    return { notify: React.PropTypes.func.isRequired }
+  }
+
   componentWillMount() {
     API.campaigns(data => {
       this.setState({
@@ -124,6 +129,10 @@ class Campaign extends Component {
     this.clickDeleteCampaignAction = this.clickDeleteCampaignAction.bind(this)
   }
 
+  static get contextTypes() {
+    return { notify: React.PropTypes.func.isRequired }
+  }
+
   componentWillMount() {
     API.campaign(this.props.params.id, data => {
       this.setState(data)
@@ -136,21 +145,41 @@ class Campaign extends Component {
   }
 
   deleteCampaignAction () {
-    alert('++ deleting')
+    this.closeConfirmationModal()
+    // remove this campaignAction from state
+    const campaignActions = this.state.campaignActions
+    const filteredActions = campaignActions.filter(action => action.id !== this.state.campaignToDelete.id)
+    this.setState({
+      campaignActions: filteredActions
+    })
+
+    // make call to API
+    const notifyCallback = () => {
+      this.context.notify({
+        message: 'Deleted Campaign Action',
+        level: 'success',
+        autoDismiss: 1,
+        onRemove: () => {}
+      })
+    }
+    return API.deleteCampaignAction(this.state.campaignToDelete.id).then(notifyCallback)
   }
 
   clickDeleteCampaignAction (ev, campaignAction) {
     ev.preventDefault()
     ev.stopPropagation()
-    this.openConfirmationModal()
+    this.openConfirmationModal(campaignAction)
   }
 
   closeConfirmationModal() {
     this.setState({ confirmationModalIsOpen: false })
   }
 
-  openConfirmationModal() {
-    this.setState({ confirmationModalIsOpen: true })
+  openConfirmationModal(campaignAction) {
+    this.setState({
+      confirmationModalIsOpen: true,
+      campaignToDelete: campaignAction
+    })
   }
 
   render() {
@@ -175,7 +204,7 @@ class Campaign extends Component {
             style={CONFIRMATION_MODAL_STYLE}
             contentLabel="Confirm"
           >
-            <p style={{ marginBottom: '10px' }}>Are you sure you want to delete this campaign action?</p>
+            <p style={{ marginBottom: '10px' }}>Are you sure you want to delete the campaign action {this.state.campaignToDelete  ? this.state.campaignToDelete.label : 'unknown'}?</p>
             <div>
               <button onClick={this.deleteCampaignAction} style={{ marginRight: '10px' }}>Yes</button>
               <button onClick={this.closeConfirmationModal}>No</button>
@@ -201,6 +230,7 @@ class Campaign extends Component {
                   <th>Type</th>
                   <th>Label</th>
                   <th>Date Created</th>
+                  <th>Date Sent</th>
                   <th>Actions</th>
                 </tr>
                 {campaignActions}
@@ -220,6 +250,11 @@ const ACTION_TYPES = {
 
 function CampaignAction(props) {
   const createdAt = moment.utc(props.createdAt).local().format(DATE_FORMAT)
+  let sentAt = '-'
+  if (props.sentAt) {
+    sentAt = moment.utc(props.sentAt).local().format(DATE_FORMAT)
+  }
+
   const createDuplicateUrl = `/${props.campaignId}/${ACTION_TYPES[props.type]}/new?cloneId=${props.campaignActionId}`
   const redirectToCampaignActionPage = () => browserHistory.push(`/${props.campaignId}/actions/${props.campaignActionId}`)
 
@@ -229,6 +264,7 @@ function CampaignAction(props) {
       <td>{ACTION_TYPES[props.type]}</td>
       <td>{props.label}</td>
       <td>{createdAt}</td>
+      <td>{sentAt}</td>
       <td>
         <Link className="actionLink" to={createDuplicateUrl} onClick={e => e.stopPropagation()}>
           <img data-tip="Duplicate" src="/public/icons/duplicate-icon-db.svg" />
