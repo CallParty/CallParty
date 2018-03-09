@@ -1,3 +1,6 @@
+  - name: make /tmp writeable by webgroup
+    action: file path=/tmp mode=u=rwX,g=rwX,o=X recurse=yes group=webgroup owner=ubuntu
+
   - name: ensure log directory
     action: file dest={{log_dir}} state=directory
 
@@ -31,6 +34,7 @@
       - { from: '../../frontend/index.html', to: '{{public_dir}}' }
       - { from: '../../frontend/main.js', to: '{{public_dir}}' }
       - { from: '../../frontend/build/{{frontend_build_dir}}/', to: '{{public_dir}}/build/' }
+      - { from: '../../frontend/build/{{frontend_build_dir}}/assetts/', to: '{{public_dir}}' }
     tags:
       quick
 
