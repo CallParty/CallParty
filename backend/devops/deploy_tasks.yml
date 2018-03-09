@@ -34,7 +34,7 @@
       - { from: '../../frontend/index.html', to: '{{public_dir}}' }
       - { from: '../../frontend/main.js', to: '{{public_dir}}' }
       - { from: '../../frontend/build/{{frontend_build_dir}}/', to: '{{public_dir}}/build/' }
-      - { from: '../../frontend/build/{{frontend_build_dir}}/assetts/', to: '{{public_dir}}' }
+      - { from: '../../frontend/build/{{frontend_build_dir}}/assetts/', to: '{{public_dir}}/assetts/' }
     tags:
       quick
 
