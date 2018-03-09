@@ -267,10 +267,10 @@ function CampaignAction(props) {
       <td>{sentAt}</td>
       <td>
         <Link className="actionLink" to={createDuplicateUrl} onClick={e => e.stopPropagation()}>
-          <img data-tip="Duplicate" src="/public/icons/duplicate-icon-db.svg" />
+          <img data-tip="Duplicate" src="/assetts/icons/duplicate-icon-db.svg" />
         </Link>
         <a className="actionLink" onClick={e => props.clickDeleteCampaignAction(e, props)}>
-          <img data-tip="Delete" src="/public/icons/trash-icon-db.svg" />
+          <img data-tip="Delete" src="/assetts/icons/trash-icon-db.svg" />
         </a>
       </td>
     </tr>

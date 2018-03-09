@@ -15,7 +15,7 @@ else {
 }
 
 const CopyWebpackPluginConfig = new CopyWebpackPlugin([
-  { from: 'public', to: 'public' },
+  { from: 'assetts', to: 'assetts' },
 ])
 
 module.exports = {
