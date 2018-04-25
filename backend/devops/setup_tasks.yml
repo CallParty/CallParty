@@ -81,5 +81,5 @@
     command: certbot certonly --text -n --no-self-upgrade -m hi@callparty.org -d admin.callparty.org,staging.callparty.org --agree-tos --webroot -w /usr/share/nginx/html --expand --allow-subset-of-names
 
   - name: create cron job for auto renewing Let's Encrypt cert
-    cron: name="renew letsencrypt cert" hour="2,11" minute=0 job="certbot renew --quiet --no-self-upgrade --renew-hook {{backend_dir}}/bash/upload_ssl.sh"
+    cron: name="renew letsencrypt cert" hour="2,12" minute=20 job="date > /srv/log/ssl-cron.log && certbot renew --no-self-upgrade >> /srv/log/ssl-cron.log"
 
