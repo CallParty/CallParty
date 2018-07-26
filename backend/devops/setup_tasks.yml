@@ -83,3 +83,6 @@
   - name: create cron job for auto renewing Let's Encrypt cert
     cron: name="renew letsencrypt cert" hour="2,12" minute=20 job="date > /srv/log/ssl-cron.log && certbot renew --no-self-upgrade >> /srv/log/ssl-cron.log"
 
+  - name: create cron job to restart nginx
+    cron: name="restart nginx" hour="4" minute=35 job="date > /srv/log/nginx-cron.log && service nginx restart >> /srv/log/nginx-cron.log"
+
