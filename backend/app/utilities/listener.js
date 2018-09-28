@@ -49,7 +49,7 @@ async function handleEcho(senderId, recipientId, message) {
     // if they do exist, then change the callback of the user to override
     else {
       logMessage(`++ setting user to override mode ${recipientId}`, '#_override')
-      setUserCallback(user, '/calltoaction/readyResponse')
+      setUserCallback(user, '/override')
     }
   }
 }
