@@ -35,7 +35,7 @@ module.exports = function (apiRouter) {
       let recipientId = event.recipient.id
       if (event.message) {
         if (event.message.is_echo) {
-          handleEcho(senderId, recipientId, event.message)
+          //handleEcho(senderId, recipientId, event.message)
         } else {
           handleMessage(senderId, recipientId, event.message)
         }
